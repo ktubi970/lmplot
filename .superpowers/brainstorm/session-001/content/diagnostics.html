@@ -1,0 +1,38 @@
+<h2>Visualisation des Diagnostics</h2>
+<p class="subtitle">Comment souhaitez-vous explorer les résultats et la validité du modèle ?</p>
+
+<div class="split">
+  <!-- Option A: Fixed Grid -->
+  <div class="card" data-choice="fixed_grid" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 150px; background: #f0f0f0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; padding: 10px;">
+      <div class="placeholder" style="font-size: 8px;">Res vs Fit</div>
+      <div class="placeholder" style="font-size: 8px;">Normal Q-Q</div>
+      <div class="placeholder" style="font-size: 8px;">Scale-Loc</div>
+      <div class="placeholder" style="font-size: 8px;">Residuals vs Lev</div>
+    </div>
+    <div class="card-body">
+      <h3>Grille Fixe (Standard)</h3>
+      <p>Les 4 graphiques de base (plot(mod)) affichés en permanence pour une vue d'ensemble rapide.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Tabbed / Selectable -->
+  <div class="card" data-choice="tabbed_selection" onclick="toggleSelect(this)">
+    <div class="card-image" style="height: 150px; background: #f0f0f0; display: flex; flex-direction: column; padding: 10px;">
+      <div style="display: flex; gap: 2px; margin-bottom: 5px;">
+        <div class="mock-button" style="font-size: 8px; padding: 2px 4px; background: white;">Diagnostic 1</div>
+        <div class="mock-button" style="font-size: 8px; padding: 2px 4px;">Diagnostic 2</div>
+        <div class="mock-button" style="font-size: 8px; padding: 2px 4px;">Données</div>
+      </div>
+      <div class="placeholder" style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">Graphique Agrandi</div>
+    </div>
+    <div class="card-body">
+      <h3>Onglets / Sélection</h3>
+      <p>Un seul grand graphique à la fois. Permet de basculer entre diagnostics, tableau de données, et résumé statistique (summary).</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p class="subtitle">Note: On pourra aussi ajouter un bouton d'export pour les rapports PDF/HTML plus tard.</p>
+</div>

@@ -1,0 +1,100 @@
+<h2>Aperçu du Layout : LM Plot Explorer</h2>
+<p class="subtitle">Basé sur votre croquis. Qu'en pensez-vous pour la structure globale ?</p>
+
+<div class="mockup">
+  <div class="mockup-header">Application LM Plot Explorer</div>
+  <div class="mockup-body" style="height: 600px; display: flex; flex-direction: row; gap: 10px; padding: 10px;">
+    
+    <!-- Sidebar -->
+    <div class="mock-sidebar" style="width: 200px; display: flex; flex-direction: column; gap: 10px;">
+      <div class="label">Sélection du Modèle</div>
+      <div class="option selected" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">lm (Linear Model)</div>
+      <div class="option" style="padding: 5px;">glm (Logistique)</div>
+      <div class="option" style="padding: 5px;">glm (Poisson)</div>
+      <div class="option" style="padding: 5px;">glmm (Mixte)</div>
+      <div style="flex-grow: 1;"></div>
+      <button class="mock-button" style="width: 100%;">Lancer Simulation</button>
+    </div>
+
+    <!-- Main Content -->
+    <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 10px;">
+      
+      <!-- Top Plot Area -->
+      <div class="placeholder" style="flex: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f9f9f9;">
+        <div class="label">Graphique Principal : Nuage de points & Régression</div>
+        <svg width="100%" height="100%" viewBox="0 0 400 200" style="max-height: 300px;">
+          <!-- Axes -->
+          <line x1="20" y1="180" x2="380" y2="180" stroke="black" />
+          <line x1="20" y1="180" x2="20" y2="20" stroke="black" />
+          <!-- Points -->
+          <circle cx="50" cy="150" r="2" fill="blue" />
+          <circle cx="80" cy="140" r="2" fill="blue" />
+          <circle cx="120" cy="120" r="2" fill="blue" />
+          <circle cx="150" cy="130" r="2" fill="blue" />
+          <circle cx="200" cy="90" r="2" fill="blue" />
+          <circle cx="250" cy="70" r="2" fill="blue" />
+          <circle cx="300" cy="80" r="2" fill="blue" />
+          <circle cx="350" cy="40" r="2" fill="blue" />
+          <!-- Regression line -->
+          <line x1="40" y1="160" x2="360" y2="35" stroke="red" stroke-width="2" />
+        </svg>
+      </div>
+
+      <!-- Bottom Areas -->
+      <div style="flex: 2; display: flex; flex-direction: row; gap: 10px;">
+        <!-- Bottom Left: Model & Code -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+          <div class="label">Paramètres du Modèle</div>
+          <div class="mock-input" style="height: 40px; margin-bottom: 5px; display: flex; align-items: center; padding: 0 10px;">y ~ x1 + x2</div>
+          <div class="label">Code de Simulation</div>
+          <pre style="font-size: 10px; background: #eee; padding: 5px; flex-grow: 1; border-radius: 4px;">
+n <- 100
+x <- rnorm(n)
+y <- 2 + 0.5*x + rnorm(n)
+mod <- lm(y ~ x)
+          </pre>
+        </div>
+        
+        <!-- Bottom Right: Diagnostics & Data -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 10px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+          <div class="label">Diagnostics & Résultats</div>
+          <div style="display: flex; gap: 5px;">
+            <div class="placeholder" style="width: 50%; height: 60px; font-size: 8px;">Res vs Fit</div>
+            <div class="placeholder" style="width: 50%; height: 60px; font-size: 8px;">Normal QQ</div>
+          </div>
+          <div class="label">Données (Aperçu)</div>
+          <div style="font-size: 10px; border: 1px solid #eee; flex-grow: 1;">
+            <table style="width: 100%;">
+              <tr style="background: #eee;"><td>ID</td><td>X</td><td>Y</td></tr>
+              <tr><td>1</td><td>0.5</td><td>2.3</td></tr>
+              <tr><td>2</td><td>-1.2</td><td>1.1</td></tr>
+              <tr><td>3</td><td>2.0</td><td>3.5</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Question de Design</h3>
+  <p>Pour la sélection du modèle dans la barre latérale, préférez-vous :</p>
+  <div class="options">
+    <div class="option" data-choice="simple_list" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>Liste Simple (comme le croquis)</h3>
+        <p>Une liste directe des types de modèles (lm, glm, glmm...).</p>
+      </div>
+    </div>
+    <div class="option" data-choice="grouped_accordion" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>Groupé par Catégorie (Accordion)</h3>
+        <p>Regrouper par "Régression Linéaire", "Modèles Généralisés", "Effets Mixtes", etc.</p>
+      </div>
+    </div>
+  </div>
+</div>
