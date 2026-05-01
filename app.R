@@ -12,6 +12,9 @@ source("R/mod_simulation.R")
 ui <- page_sidebar(
   title = "LM Plot Explorer",
   theme = bs_theme(version = 5, bootswatch = "flatly"),
+  header = tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+  ),
   sidebar = sidebar(
     title = "Configuration",
     accordion(
@@ -45,7 +48,9 @@ ui <- page_sidebar(
       navset_card_tab(
         title = "Diagnostics & Résultats",
         nav_panel("Diagnostics", plotOutput("diag_plot")),
-        nav_panel("Données", DTOutput("data_table")),
+        nav_panel("Données", 
+                  div(class = "p-2", downloadButton("download_data", "Exporter CSV", class = "btn-sm mb-2")),
+                  DTOutput("data_table")),
         nav_panel("Summary", verbatimTextOutput("model_summary"))
       )
     )
@@ -59,25 +64,36 @@ server <- function(input, output, session) {
   output$main_plot <- renderPlotly({
     df <- sim_data()
     req(df)
+    fit <- lm(y ~ x, data = df)
+    
+    df$residual <- resid(fit)
     
     p <- ggplot(df, aes(x = x, y = y)) +
-      geom_point(color = "#3498db", alpha = 0.6) +
+      geom_point(aes(text = paste0("X: ", round(x, 2), 
+                                   "<br>Y: ", round(y, 2), 
+                                   "<br>Résidu: ", round(residual, 3))), 
+                 color = "#3498db", alpha = 0.6) +
       geom_smooth(method = "lm", color = "#e74c3c", se = TRUE) +
       theme_minimal()
       
-    ggplotly(p)
+    ggplotly(p, tooltip = "text") |> 
+      layout(margin = list(l = 50, r = 50, b = 50, t = 50))
   })
   
   output$data_table <- renderDT({
     req(sim_data())
-    datatable(sim_data(), options = list(pageLength = 5))
+    datatable(sim_data(), 
+              selection = "single",
+              options = list(pageLength = 5, dom = 'tp'))
   })
   
   output$diag_plot <- renderPlot({
     df <- sim_data()
     req(df)
     fit <- lm(y ~ x, data = df)
-    autoplot(fit, which = 1:4, ncol = 2) + theme_minimal()
+    autoplot(fit, which = 1:4, ncol = 2, colour = "#2c3e50") + 
+      theme_bw() +
+      theme(panel.grid.minor = element_blank())
   })
   
   output$model_summary <- renderPrint({
@@ -85,6 +101,15 @@ server <- function(input, output, session) {
     req(df)
     summary(lm(y ~ x, data = df))
   })
+  
+  output$download_data <- downloadHandler(
+    filename = function() {
+      paste("data-", Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(sim_data(), file, row.names = FALSE)
+    }
+  )
 }
 
 shinyApp(ui, server)
