@@ -4,6 +4,10 @@ library(plotly)
 library(DT)
 library(ggfortify)
 library(shinyAce)
+library(shinyWidgets)
+
+# Modules
+source("R/mod_simulation.R")
 
 ui <- page_sidebar(
   title = "LM Plot Explorer",
@@ -36,8 +40,7 @@ ui <- page_sidebar(
       width = 1/2,
       card(
         card_header("Simulation & Code"),
-        # Simulation UI placeholders
-        uiOutput("sim_controls")
+        sim_ui("sim_mod")
       ),
       navset_card_tab(
         title = "Diagnostics & Résultats",
@@ -50,10 +53,37 @@ ui <- page_sidebar(
 )
 
 server <- function(input, output, session) {
-  # Server logic to be implemented
+  # Server logic
+  sim_data <- sim_server("sim_mod")
+  
   output$main_plot <- renderPlotly({
-    plot_ly(type = "scatter", mode = "markers") |> 
-      layout(title = "En attente de données...")
+    df <- sim_data()
+    req(df)
+    
+    p <- ggplot(df, aes(x = x, y = y)) +
+      geom_point(color = "#3498db", alpha = 0.6) +
+      geom_smooth(method = "lm", color = "#e74c3c", se = TRUE) +
+      theme_minimal()
+      
+    ggplotly(p)
+  })
+  
+  output$data_table <- renderDT({
+    req(sim_data())
+    datatable(sim_data(), options = list(pageLength = 5))
+  })
+  
+  output$diag_plot <- renderPlot({
+    df <- sim_data()
+    req(df)
+    fit <- lm(y ~ x, data = df)
+    autoplot(fit, which = 1:4, ncol = 2) + theme_minimal()
+  })
+  
+  output$model_summary <- renderPrint({
+    df <- sim_data()
+    req(df)
+    summary(lm(y ~ x, data = df))
   })
 }
 
