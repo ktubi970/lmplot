@@ -1,6 +1,26 @@
 # Main entry point for the Shiny 3‑D Linear Model Explorer
 # The UI, server logic and Plotly 3‑D plot will be added later.
 
+library(shiny)
+library(plotly)
+library(shinythemes)
+
+ui <- fluidPage(
+  theme = shinythemes::shinytheme("darkly"),
+  tags$head(tags$link(rel = "stylesheet", href = "style.css")),
+  titlePanel("Random 3‑D Linear Model Explorer"),
+  sidebarLayout(
+    sidebarPanel(
+      actionButton("regen", "Regenerate Data"),
+      checkboxInput("show_plane", "Show Regression Plane", TRUE),
+      downloadButton("download_csv", "Export CSV")
+    ),
+    mainPanel(
+      plotlyOutput("plot3d", height = "700px")
+    )
+  )
+)
+
 # Helper: generate random data ------------------------------------------------
 generate_data <- function(n = 200) {
   set.seed(as.numeric(Sys.time()))
