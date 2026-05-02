@@ -1,117 +1,14 @@
-/* 1. IMPORT DES POLICES */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap');
-
-/* 2. VARIABLES DE THÈME (Système Adaptatif) */
-:root {
-  /* Palette Laboratoire (Light Mode) */
-  --bg-app: #f8fafc;
-  --bg-card: #ffffff;
-  --border: #e2e8f0;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --accent: #2563eb;
-  
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Palette Deep Analysis (Dark Mode) */
-    --bg-app: #0f172a;
-    --bg-card: #1e293b;
-    --border: #334155;
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
-    --accent: #38bdf8;
-  }
-}
-
-/* 3. BASE */
 body {
-  font-family: var(--font-sans);
-  background-color: var(--bg-app) !important;
-  color: var(--text-main);
+  background-color: #1e1e2f;
+  color: #e0e0ff;
 }
 
-/* 4. HARMONISATION BSLIB (Cards) */
-.card {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
-  margin-bottom: 20px;
-  overflow: hidden;
+.shiny-input-container button, .shiny-input-container .checkbox {
+  margin-top: 0.5rem;
 }
 
-.card-header {
-  background-color: transparent !important;
-  border-bottom: 1px solid var(--border) !important;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  padding: 1rem 1.25rem !important;
-}
-
-/* 5. SIDEBAR & ACCORDION */
-.bslib-sidebar-layout .sidebar {
-  background-color: var(--bg-app) !important;
-  border-right: 1px solid var(--border) !important;
-}
-
-.accordion {
-  --bs-accordion-bg: transparent;
-  --bs-accordion-border-color: transparent;
-}
-
-.accordion-button {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--text-main) !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.accordion-button:not(.collapsed) {
-  color: var(--accent) !important;
-  border-bottom: 1px solid var(--accent);
-}
-
-/* 6. HELPERS & COMPONENTS */
-.label {
-  font-weight: 700;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-/* Formattage du summary(model) */
-pre#model_summary {
-  font-family: var(--font-mono);
-  background-color: #0f172a; /* Toujours sombre pour le code */
-  color: #38bdf8;
-  padding: 1.25rem;
+#plot3d {
+  border: 2px solid #4e79a7;
   border-radius: 8px;
-  font-size: 0.85rem;
-  border-left: 4px solid var(--accent);
-}
-
-/* Ace Editor styling override */
-.ace_editor {
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-/* Boutons */
-.btn-success {
-  background-color: var(--accent) !important;
-  border: none !important;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
