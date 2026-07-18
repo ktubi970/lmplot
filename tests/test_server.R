@@ -20,6 +20,16 @@ set_standard_inputs <- function(session, n = 80L, seed = 12L) {
   )
 }
 
+set_link_choice <- function(session, model_type, link) {
+  default_link <- model_config(model_type)$default_link
+  session$setInputs(link_sel = default_link)
+  session$flushReact()
+  if (!identical(link, default_link)) {
+    session$setInputs(link_sel = link)
+    session$flushReact()
+  }
+}
+
 test_that("UI exposes beta identity and required controls", {
   html <- rendered_html(ui)
 
@@ -56,7 +66,7 @@ test_that("model transitions reset a shared valid link to the new default", {
   shiny::testServer(server, {
     session$setInputs(model_type = "glm_poisson")
     session$flushReact()
-    session$setInputs(link_sel = "identity")
+    set_link_choice(session, "glm_poisson", "identity")
     set_standard_inputs(session)
     session$flushReact()
 
@@ -67,6 +77,35 @@ test_that("model transitions reset a shared valid link to the new default", {
     expect_identical(last_result()$link, "inverse")
     gamma_html <- rendered_html(output$link_ui)
     expect_match(gamma_html, 'value="inverse" selected', fixed = TRUE)
+  })
+})
+
+test_that("delayed old link events wait for the new default acknowledgement", {
+  shiny::testServer(server, {
+    session$setInputs(model_type = "glm_poisson")
+    session$flushReact()
+    set_link_choice(session, "glm_poisson", "identity")
+    expect_identical(selected_link(), "identity")
+
+    session$setInputs(model_type = "glm_gamma")
+    session$flushReact()
+    expect_identical(selected_link(), "inverse")
+
+    session$setInputs(link_sel = "identity")
+    session$flushReact()
+    expect_identical(selected_link(), "inverse")
+
+    session$setInputs(link_sel = "inverse")
+    session$flushReact()
+    session$setInputs(link_sel = "log")
+    session$flushReact()
+    expect_identical(selected_link(), "log")
+
+    set_standard_inputs(session)
+    session$setInputs(generate = 1L)
+    session$flushReact()
+    expect_identical(last_result()$model_type, "glm_gamma")
+    expect_identical(last_result()$link, "log")
   })
 })
 
@@ -103,7 +142,7 @@ test_that("server generates plot summary diagnostics and table for all six modes
       session$setInputs(model_type = model_type)
       session$flushReact()
       if (length(valid_links(model_type)) > 1L) {
-        session$setInputs(link_sel = link)
+        set_link_choice(session, model_type, link)
       }
       set_standard_inputs(session)
       session$setInputs(generate = 1L, show_surface = TRUE)
@@ -139,7 +178,7 @@ test_that("model and link changes do not replace the last generated snapshot", {
 
     session$setInputs(model_type = "glm_binomial")
     session$flushReact()
-    session$setInputs(link_sel = "probit")
+    set_link_choice(session, "glm_binomial", "probit")
     session$flushReact()
 
     expect_identical(last_result(), first)
@@ -251,7 +290,7 @@ test_that("download data is enriched from the same last successful result", {
   shiny::testServer(server, {
     session$setInputs(model_type = "glm_poisson")
     session$flushReact()
-    session$setInputs(link_sel = "log")
+    set_link_choice(session, "glm_poisson", "log")
     set_standard_inputs(session, n = 75L, seed = 33L)
     session$setInputs(generate = 1L)
     session$flushReact()

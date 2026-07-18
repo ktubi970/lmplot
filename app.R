@@ -106,7 +106,8 @@ server <- function(input, output, session) {
     config <- model_config(input$model_type)
     link_selection(list(
       model_type = input$model_type,
-      link = config$default_link
+      link = config$default_link,
+      awaiting_default_ack = TRUE
     ))
     shiny::updateSelectInput(
       session,
@@ -119,13 +120,25 @@ server <- function(input, output, session) {
   shiny::observeEvent(input$link_sel, {
     state <- link_selection()
     shiny::req(state)
+    default_link <- model_config(input$model_type)$default_link
+    if (isTRUE(state$awaiting_default_ack)) {
+      if (identical(input$link_sel, default_link)) {
+        link_selection(list(
+          model_type = input$model_type,
+          link = default_link,
+          awaiting_default_ack = FALSE
+        ))
+      }
+      return()
+    }
     if (
       identical(state$model_type, input$model_type) &&
       input$link_sel %in% valid_links(input$model_type)
     ) {
       link_selection(list(
         model_type = input$model_type,
-        link = input$link_sel
+        link = input$link_sel,
+        awaiting_default_ack = FALSE
       ))
     }
   }, ignoreInit = TRUE)
