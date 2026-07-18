@@ -1,5 +1,6 @@
 model_path <- file.path("..", "R", "mod_model.R")
 if (file.exists(model_path)) source(model_path)
+source(file.path("..", "R", "mod_simulation.R"))
 
 expected_matrix <- list(
   lm_2d = "identity",
@@ -20,4 +21,29 @@ test_that("registry exposes the beta acceptance matrix", {
 test_that("invalid models and links fail explicitly", {
   expect_error(model_config("unknown"), "Unknown model type")
   expect_error(validate_model_link("glm_binomial", "identity"), "Invalid link")
+})
+
+test_that("every beta combination fits and returns response-scale values", {
+  matrix <- do.call(rbind, lapply(model_ids(), function(id) {
+    data.frame(model_type = id, link = valid_links(id), stringsAsFactors = FALSE)
+  }))
+  for (row in seq_len(nrow(matrix))) {
+    model_type <- matrix$model_type[[row]]
+    link <- matrix$link[[row]]
+    df <- simulate_data(model_type, link, n = 120L, seed = row)
+    if (model_type == "glm_binomial" && link == "cloglog") {
+      expect_warning(
+        fit <- fit_model(df, model_type, link),
+        "fitted probabilities numerically 0 or 1 occurred"
+      )
+    } else {
+      expect_silent(fit <- fit_model(df, model_type, link))
+    }
+    expected_class <- if (model_type == "glmm") "lmerMod" else if (startsWith(model_type, "glm_")) "glm" else "lm"
+    if (model_type == "glmm") expect_s4_class(fit, "lmerMod")
+    else expect_s3_class(fit, expected_class)
+    expect_length(fitted_response(fit), nrow(df))
+    expect_length(response_residuals(fit), nrow(df))
+    expect_true(all(is.finite(fitted_response(fit))))
+  }
 })
