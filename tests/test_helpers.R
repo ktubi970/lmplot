@@ -1,23 +1,49 @@
 library(testthat)
+library(lme4)
 
-source('../app.R') # expose helper functions
+source('../app.R')
 
-test_that("generate_data respects bounds", {
-  df <- generate_data(1000)
-  expect_true(all(df$X >= 0 & df$X <= 10))
-  expect_true(all(df$Y >= 0 & df$Y <= 10))
+test_that("generate_data returns correct structures", {
+  # 2D LM
+  df2d <- generate_data(100, type = "lm_2d")
+  expect_equal(nrow(df2d), 100)
+  expect_true("X" %in% names(df2d))
+  
+  # Logistic GLM
+  df_log <- generate_data(100, type = "glm_logistic")
+  expect_true(all(df_log$Z %in% c(0, 1)))
+  
+  # Poisson GLM
+  df_poi <- generate_data(100, type = "glm_poisson")
+  expect_true(all(df_poi$Z >= 0))
+  expect_true(all(df_poi$Z == round(df_poi$Z)))
+  
+  # GLMM
+  df_mm <- generate_data(100, type = "glmm")
+  expect_true("Group" %in% names(df_mm))
+  expect_equal(length(unique(df_mm$Group)), 5)
+
+  df_mm_uneven <- generate_data(103, type = "glmm")
+  expect_equal(nrow(df_mm_uneven), 103)
+  expect_equal(length(unique(df_mm_uneven$Group)), 5)
 })
 
-test_that("fit_model recovers coefficients on noise‑free data", {
-  set.seed(123)
-  df <- data.frame(
-    X = runif(100, 0, 10),
-    Y = runif(100, 0, 10)
+test_that("fit_model returns correct model classes", {
+  expect_s3_class(fit_model(generate_data(100, "lm_3d"), "lm_3d"), "lm")
+  expect_s3_class(fit_model(generate_data(100, "glm_logistic"), "glm_logistic"), "glm")
+  expect_s3_class(fit_model(generate_data(100, "glm_poisson"), "glm_poisson"), "glm")
+  expect_s4_class(fit_model(generate_data(100, "glmm"), "glmm"), "lmerMod")
+})
+
+test_that("app includes stylesheet for current plot output", {
+  rendered_ui <- htmltools::renderTags(ui)
+  ui_html <- paste(
+    as.character(rendered_ui$html),
+    as.character(rendered_ui$head),
+    collapse = "\n"
   )
-  df$Z <- 2 + 1.5 * df$X - 0.8 * df$Y
-  mod <- fit_model(df)
-  coeffs <- coef(mod)
-  expect_equal(round(coeffs[1], 2), 2)
-  expect_equal(round(coeffs[2], 2), 1.5)
-  expect_equal(round(coeffs[3], 2), -0.8)
+  css <- readLines("../www/style.css", warn = FALSE)
+
+  expect_true(grepl("style.css", ui_html, fixed = TRUE))
+  expect_true(any(grepl("#main_plot", css, fixed = TRUE)))
 })

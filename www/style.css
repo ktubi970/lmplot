@@ -7,7 +7,7 @@ body {
   margin-top: 0.5rem;
 }
 
-#plot3d {
+#main_plot {
   border: 2px solid #4e79a7;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
