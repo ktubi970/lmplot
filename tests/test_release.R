@@ -94,10 +94,13 @@ test_that("ignore rules exclude transient state without hiding release evidence"
   expect_false(any(c("renv.lock", "tests/", "tests/shinytest2/") %in% ignore))
 })
 
-test_that("TODO distinguishes delivered runtime from pending browser verification", {
+test_that("TODO records completed automated beta verification", {
   todo <- read_release_file("TODO.md")
 
-  expect_match(todo, "- [x] Reproducible runtime", fixed = TRUE)
-  expect_match(todo, "- [ ] Browser-based beta verification", fixed = TRUE)
-  expect_no_match(todo, "- [x] Reproducible runtime and automated beta verification", fixed = TRUE)
+  expect_match(
+    todo,
+    "- [x] Reproducible runtime and automated beta verification",
+    fixed = TRUE
+  )
+  expect_no_match(todo, "- [ ] Browser-based beta verification", fixed = TRUE)
 })
