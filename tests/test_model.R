@@ -62,3 +62,17 @@ test_that("every beta combination fits and returns response-scale values", {
     }
   }
 })
+
+test_that("Poisson identity fits the documented acceptance simulation", {
+  data <- simulate_data(
+    "glm_poisson",
+    "identity",
+    n = 100L,
+    seed = 107L
+  )
+
+  expect_silent(fit <- fit_model(data, "glm_poisson", "identity"))
+  expect_s3_class(fit, "glm")
+  expect_true(all(is.finite(fitted_response(fit))))
+  expect_true(all(fitted_response(fit) > 0))
+})

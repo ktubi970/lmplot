@@ -49,6 +49,18 @@ fit_model <- function(df, model_type, link = NULL) {
   if (model_type == "lm_3d") return(stats::lm(Z ~ X + Y, data = df))
   if (model_type == "glmm") return(lme4::lmer(Z ~ X + Y + (1 | Group), data = df))
   family_object <- do.call(config$family, list(link = link))
+  if (model_type == "glm_poisson" && link == "identity") {
+    design <- stats::model.matrix(Z ~ X + Y, data = df)
+    start <- numeric(ncol(design))
+    names(start) <- colnames(design)
+    start[["(Intercept)"]] <- mean(df$Z) + 0.1
+    return(stats::glm(
+      Z ~ X + Y,
+      data = df,
+      family = family_object,
+      start = start
+    ))
+  }
   stats::glm(Z ~ X + Y, data = df, family = family_object)
 }
 
