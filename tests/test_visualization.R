@@ -40,6 +40,27 @@ test_that("GLMM prediction grids represent a population surface", {
   expect_false(isTRUE(all.equal(grid$.fitted, as.numeric(conditional))))
 })
 
+test_that("GLMM surfaces accept character group data", {
+  link <- model_config("glmm")$default_link
+  df <- simulate_data("glmm", link, seed = 11L)
+  df$Group <- as.character(df$Group)
+  fit <- fit_model(df, "glmm", link)
+
+  grid <- prediction_grid(df, fit, "glmm", length_out = 4L)
+  expected_levels <- levels(stats::model.frame(fit)$Group)
+  expect_s3_class(grid$Group, "factor")
+  expect_identical(levels(grid$Group), expected_levels)
+  expect_true(all(is.finite(grid$.fitted)))
+
+  built <- plotly::plotly_build(
+    build_main_plot(df, fit, "glmm", show_surface = TRUE)
+  )
+  surface_count <- sum(vapply(built$x$data, function(trace) {
+    identical(trace$type, "surface")
+  }, logical(1)))
+  expect_equal(surface_count, 1L)
+})
+
 test_that("enrichment adds exactly fitted values and response residuals", {
   for (model_type in model_ids()) {
     model <- fit_beta_model(model_type)
@@ -67,7 +88,13 @@ test_that("2D LM plot contains observations and an X-ordered fitted line", {
 })
 
 test_that("3D plots contain point clouds and optional response surfaces", {
-  for (model_type in c("lm_3d", "glm_binomial", "glm_gamma", "glmm")) {
+  for (model_type in c(
+    "lm_3d",
+    "glm_binomial",
+    "glm_poisson",
+    "glm_gamma",
+    "glmm"
+  )) {
     model <- fit_beta_model(model_type)
     with_surface <- plotly::plotly_build(
       build_main_plot(model$df, model$fit, model_type, show_surface = TRUE)
@@ -137,4 +164,15 @@ test_that("diagnostic plots use supported representations", {
     unique(glmm_plot$data$panel),
     c("Residuals vs fitted", "Normal Q-Q")
   )
+})
+
+test_that("diagnostic warning filtering preserves non-lifecycle warnings", {
+  expect_warning(
+    result <- with_lifecycle_warnings_muffled({
+      warning("ordinary diagnostic warning", call. = FALSE)
+      "result"
+    }),
+    "ordinary diagnostic warning"
+  )
+  expect_identical(result, "result")
 })

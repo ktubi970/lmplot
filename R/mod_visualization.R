@@ -8,7 +8,13 @@ prediction_grid <- function(df, fit, model_type, length_out = 30L) {
     y <- seq(min(df$Y), max(df$Y), length.out = length_out)
     grid <- expand.grid(X = x, Y = y)
     if (config$requires_group) {
-      grid$Group <- factor(levels(df$Group)[1L], levels = levels(df$Group))
+      fitted_group <- stats::model.frame(fit)[["Group"]]
+      if (!is.factor(fitted_group)) fitted_group <- factor(fitted_group)
+      group_levels <- levels(fitted_group)
+      grid$Group <- factor(
+        rep(group_levels[1L], nrow(grid)),
+        levels = group_levels
+      )
     }
   }
 
@@ -116,12 +122,21 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
   )
 }
 
+with_lifecycle_warnings_muffled <- function(expr) {
+  withCallingHandlers(
+    expr,
+    lifecycle_warning_deprecated = function(warning) {
+      invokeRestart("muffleWarning")
+    }
+  )
+}
+
 build_diagnostic_plot <- function(fit) {
   if (!inherits(fit, "merMod")) {
     if (!requireNamespace("ggfortify", quietly = TRUE)) {
       stop("Package 'ggfortify' is required for LM and GLM diagnostics", call. = FALSE)
     }
-    return(suppressWarnings(
+    return(with_lifecycle_warnings_muffled(
       ggplot2::autoplot(
         fit,
         which = 1:4,
