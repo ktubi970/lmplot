@@ -74,6 +74,17 @@ test_that("enrichment adds exactly fitted values and response residuals", {
   }
 })
 
+test_that("valid GLMM fitting and enrichment preserve every input row", {
+  df <- simulate_data("glmm", "identity", n = 103L, groups = 7L, seed = 19L)
+  fit <- fit_model(df, "glmm", "identity")
+  enriched <- enrich_data(df, fit)
+
+  expect_length(fitted_response(fit), nrow(df))
+  expect_length(response_residuals(fit), nrow(df))
+  expect_equal(nrow(enriched), nrow(df))
+  expect_identical(enriched[setdiff(names(enriched), c(".fitted", ".residual"))], df)
+})
+
 test_that("2D LM plot contains observations and an X-ordered fitted line", {
   model <- fit_beta_model("lm_2d")
   plot <- build_main_plot(model$df, model$fit, "lm_2d")

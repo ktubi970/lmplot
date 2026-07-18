@@ -33,6 +33,16 @@ required_model_columns <- function(model_type) {
   c("X", "Z", if (config$dimensions == 3L) "Y", if (config$requires_group) "Group")
 }
 
+validate_glmm_groups <- function(group) {
+  if (anyNA(group)) {
+    stop("GLMM Group must not contain missing values", call. = FALSE)
+  }
+  if (length(unique(group)) < 5L) {
+    stop("GLMM data must contain at least 5 observed groups", call. = FALSE)
+  }
+  invisible(group)
+}
+
 fit_model <- function(df, model_type, link = NULL) {
   config <- model_config(model_type)
   link <- validate_model_link(model_type, link)
@@ -45,9 +55,14 @@ fit_model <- function(df, model_type, link = NULL) {
   if (model_type == "glm_binomial" && any(!df$Z %in% c(0, 1))) stop("Binomial response must contain only 0 and 1", call. = FALSE)
   if (model_type == "glm_poisson" && any(df$Z < 0 | df$Z != floor(df$Z))) stop("Poisson response must contain non-negative integers", call. = FALSE)
   if (model_type == "glm_gamma" && any(df$Z <= 0)) stop("Gamma response must be strictly positive", call. = FALSE)
+  if (model_type == "glmm") validate_glmm_groups(df$Group)
   if (model_type == "lm_2d") return(stats::lm(Z ~ X, data = df))
   if (model_type == "lm_3d") return(stats::lm(Z ~ X + Y, data = df))
-  if (model_type == "glmm") return(lme4::lmer(Z ~ X + Y + (1 | Group), data = df))
+  if (model_type == "glmm") {
+    model_data <- df
+    model_data$Group <- factor(model_data$Group)
+    return(lme4::lmer(Z ~ X + Y + (1 | Group), data = model_data))
+  }
   family_object <- do.call(config$family, list(link = link))
   if (model_type == "glm_poisson" && link == "identity") {
     design <- stats::model.matrix(Z ~ X + Y, data = df)

@@ -7,7 +7,21 @@ simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
                           sigma = 1, shape = 2, group_sd = 1, groups = 5L) {
   config <- model_config(model_type)
   link <- validate_model_link(model_type, link)
-  stopifnot(n >= 10L, groups >= 2L, sigma > 0, shape > 0, group_sd >= 0)
+  if (model_type == "glmm") {
+    valid_groups <- length(groups) == 1L && is.numeric(groups) &&
+      !is.na(groups) && is.finite(groups) && groups == floor(groups) &&
+      groups >= 5L
+    if (!valid_groups) {
+      stop(
+        "GLMM groups must be a single integer of at least 5",
+        call. = FALSE
+      )
+    }
+    if (groups > n) {
+      stop("GLMM groups must not exceed sample size n", call. = FALSE)
+    }
+  }
+  stopifnot(n >= 10L, sigma > 0, shape > 0, group_sd >= 0)
   set.seed(as.integer(seed))
   X <- stats::runif(n, -1, 1)
   Y <- stats::runif(n, -1, 1)
@@ -53,6 +67,7 @@ validate_simulation_data <- function(df, model_type) {
   if (model_type == "glm_binomial" && any(!df$Z %in% c(0, 1))) stop("Binomial response must contain only 0 and 1", call. = FALSE)
   if (model_type == "glm_poisson" && any(df$Z < 0 | df$Z != floor(df$Z))) stop("Poisson response must contain non-negative integers", call. = FALSE)
   if (model_type == "glm_gamma" && any(df$Z <= 0)) stop("Gamma response must be strictly positive", call. = FALSE)
+  if (model_type == "glmm") validate_glmm_groups(df$Group)
   invisible(df)
 }
 
@@ -143,7 +158,7 @@ sim_server <- function(id, model_type, link, trigger) {
           ),
           shiny::numericInput(
             session$ns("groups"), "Groups", 5L,
-            min = 2L, max = 20L
+            min = 5L, max = 20L
           )
         ))
       }

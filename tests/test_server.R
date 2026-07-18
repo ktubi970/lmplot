@@ -38,7 +38,33 @@ test_that("UI exposes beta identity and required controls", {
   expect_match(html, "link_ui", fixed = TRUE)
   expect_match(html, "simulation-expert_mode", fixed = TRUE)
   expect_match(html, "generate", fixed = TRUE)
+  expect_match(html, "surface_ui", fixed = TRUE)
+  expect_false(grepl("show_surface", html, fixed = TRUE))
   expect_match(html, "download_data", fixed = TRUE)
+})
+
+test_that("surface control is shown only where a fitted surface is meaningful", {
+  shiny::testServer(server, {
+    session$setInputs(model_type = "lm_2d")
+    session$flushReact()
+    expect_false(grepl(
+      "show_surface",
+      rendered_html(output$surface_ui),
+      fixed = TRUE
+    ))
+
+    session$setInputs(model_type = "lm_3d")
+    session$flushReact()
+    surface_html <- rendered_html(output$surface_ui)
+    expect_match(surface_html, "show_surface", fixed = TRUE)
+    expect_match(surface_html, "checked", fixed = TRUE)
+
+    session$setInputs(model_type = "glmm")
+    session$flushReact()
+    controls_html <- rendered_html(output$`simulation-controls_ui`)
+    expect_match(controls_html, 'id="simulation-groups"', fixed = TRUE)
+    expect_match(controls_html, 'min="5"', fixed = TRUE)
+  })
 })
 
 test_that("dynamic link UI exposes only links valid for the selected model", {
@@ -227,6 +253,53 @@ test_that("a failed generation leaves the last successful result visible", {
   })
 
   expect_identical(notifications[[length(notifications)]]$type, "error")
+})
+
+test_that("invalid expert GLMM data preserves the previous result and CSV", {
+  notifications <- list()
+  rlang::local_bindings(
+    showNotification = function(ui, type = NULL, ...) {
+      notifications[[length(notifications) + 1L]] <<- list(
+        message = as.character(ui),
+        type = type
+      )
+      invisible("notification")
+    },
+    .env = environment(server)
+  )
+
+  shiny::testServer(server, {
+    session$setInputs(model_type = "lm_2d")
+    session$flushReact()
+    set_standard_inputs(session, n = 60L, seed = 29L)
+    session$setInputs(generate = 1L)
+    session$flushReact()
+    successful <- last_result()
+    expected <- enrich_data(successful$data, successful$fit)
+
+    session$setInputs(model_type = "glmm")
+    session$flushReact()
+    session$setInputs(
+      `simulation-expert_mode` = TRUE,
+      `simulation-code` = paste(
+        "data.frame(X = seq_len(n), Y = seq_len(n), Z = seq_len(n),",
+        "Group = rep(1:4, length.out = n))"
+      )
+    )
+    session$setInputs(generate = 2L)
+    session$flushReact()
+
+    expect_identical(last_result(), successful)
+    download <- output$download_data
+    downloaded <- utils::read.csv(download)
+    expect_identical(names(downloaded), names(expected))
+    expect_equal(downloaded, expected, tolerance = 1e-12)
+  })
+
+  expect_true(any(vapply(notifications, function(notification) {
+    identical(notification$type, "error") &&
+      grepl("at least 5 observed groups", notification$message, fixed = TRUE)
+  }, logical(1))))
 })
 
 test_that("fit warnings notify non-fatally and are muffled narrowly", {

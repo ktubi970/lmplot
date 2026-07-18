@@ -76,3 +76,44 @@ test_that("Poisson identity fits the documented acceptance simulation", {
   expect_true(all(is.finite(fitted_response(fit))))
   expect_true(all(fitted_response(fit) > 0))
 })
+
+test_that("fit_model validates GLMM groups without relying on simulation", {
+  valid <- data.frame(
+    X = seq_len(20L),
+    Y = seq_len(20L) / 2,
+    Z = seq_len(20L) + rep(c(-1, 1), 10L),
+    Group = rep(1:5, each = 4L)
+  )
+
+  for (representation in list(
+    factor(valid$Group),
+    as.character(valid$Group),
+    valid$Group
+  )) {
+    candidate <- valid
+    candidate$Group <- representation
+    original <- candidate
+    fit <- suppressMessages(suppressWarnings(
+      fit_model(candidate, "glmm", "identity")
+    ))
+    expect_s4_class(fit, "lmerMod")
+    expect_s3_class(stats::model.frame(fit)$Group, "factor")
+    expect_identical(candidate, original)
+  }
+
+  missing_group <- valid
+  missing_group$Group[[1L]] <- NA
+  expect_error(
+    fit_model(missing_group, "glmm", "identity"),
+    "GLMM Group must not contain missing values",
+    fixed = TRUE
+  )
+
+  too_few_groups <- valid
+  too_few_groups$Group <- rep(1:4, length.out = nrow(too_few_groups))
+  expect_error(
+    fit_model(too_few_groups, "glmm", "identity"),
+    "GLMM data must contain at least 5 observed groups",
+    fixed = TRUE
+  )
+})

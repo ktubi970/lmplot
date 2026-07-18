@@ -36,9 +36,7 @@ ui <- bslib::page_sidebar(
       "generate", "Generate & Fit",
       class = "btn-primary w-100"
     ),
-    shiny::checkboxInput(
-      "show_surface", "Show fitted surface", TRUE
-    ),
+    shiny::uiOutput("surface_ui"),
     shiny::downloadButton(
       "download_data", "Download enriched CSV",
       class = "w-100"
@@ -81,6 +79,14 @@ ui <- bslib::page_sidebar(
 )
 
 server <- function(input, output, session) {
+  output$surface_ui <- shiny::renderUI({
+    shiny::req(input$model_type)
+    if (identical(input$model_type, "lm_2d")) return(NULL)
+    shiny::checkboxInput(
+      "show_surface", "Show fitted surface", TRUE
+    )
+  })
+
   output$link_ui <- shiny::renderUI({
     config <- model_config(input$model_type)
     if (length(config$links) == 1L) {
