@@ -40,18 +40,69 @@ unexpected_app_logs <- function(logs) {
   ]
 }
 
-test_that("browser log classification rejects warning levels without a Warning prefix", {
-  logs <- data.frame(
-    location = "chromote",
-    level = "warning",
-    message = "Unhandled promise rejection",
-    stringsAsFactors = FALSE
+test_that("browser log classification uses strict levels and warning pairs", {
+  log_frame <- function(location, level, message) {
+    data.frame(
+      location = location,
+      level = level,
+      message = message,
+      stringsAsFactors = FALSE
+    )
+  }
+  plotly_header <- "Warning in plotly_build.plotly(x) :"
+  plotly_message <- "shinytest can't currently render WebGL-based graphics."
+  binary_warning <- "Warning: package 'shiny' was built under R version 4.6.1"
+  level_logs <- log_frame(
+    rep("chromote", 5L),
+    c("warning", "warn", "error", "severe", "fatal"),
+    c(
+      "Unhandled promise rejection",
+      "Promise settled late",
+      "Request failed",
+      "Console entry",
+      "Browser stopped"
+    )
+  )
+  cases <- list(
+    diagnostic_levels = list(logs = level_logs, expected = 5L),
+    exact_plotly_pair = list(
+      logs = log_frame(
+        rep("shiny", 2L),
+        rep("stderr", 2L),
+        c(plotly_header, plotly_message)
+      ),
+      expected = 0L
+    ),
+    orphan_plotly_header = list(
+      logs = log_frame("shiny", "stderr", plotly_header),
+      expected = 1L
+    ),
+    orphan_plotly_message = list(
+      logs = log_frame("shiny", "stderr", plotly_message),
+      expected = 1L
+    ),
+    exact_binary_warning = list(
+      logs = log_frame("shiny", "stderr", binary_warning),
+      expected = 0L
+    ),
+    binary_warning_wrong_location = list(
+      logs = log_frame("chromote", "stderr", binary_warning),
+      expected = 1L
+    ),
+    binary_warning_wrong_level = list(
+      logs = log_frame("shiny", "warning", binary_warning),
+      expected = 1L
+    )
   )
 
-  unexpected <- unexpected_app_logs(logs)
-
-  expect_equal(nrow(unexpected), 1L)
-  expect_identical(unexpected$message, "Unhandled promise rejection")
+  for (name in names(cases)) {
+    case <- cases[[name]]
+    expect_equal(
+      nrow(unexpected_app_logs(case$logs)),
+      case$expected,
+      info = name
+    )
+  }
 })
 
 test_that("the real beta app completes its browser smoke workflow", {
@@ -141,29 +192,7 @@ test_that("the real beta app completes its browser smoke workflow", {
   expect_equal(nrow(enriched), 80L)
   expect_true(all(c(".fitted", ".residual") %in% names(enriched)))
 
-  logs <- app$get_logs()
-  known_binary_warning <- grepl(
-    "^Warning: package '[^']+' was built under R version 4\\.6\\.1$",
-    logs$message
-  )
-  plotly_test_warning_header <- grepl(
-    "^Warning in plotly_build\\.plotly\\((x|instance)\\) :",
-    trimws(logs$message)
-  )
-  next_message <- c(trimws(logs$message[-1L]), "")
-  known_plotly_test_warning <- plotly_test_warning_header &
-    next_message == "shinytest can't currently render WebGL-based graphics."
-  warning_log <- grepl("^Warning", trimws(logs$message))
-  error_log <- logs$level %in% c("error", "severe") |
-    grepl(
-      "(^|[[:space:]])(Error|Execution halted|TypeError|ReferenceError)(:|[[:space:]]|$)",
-      logs$message
-    )
-  unexpected_logs <- logs[
-    (warning_log & !known_binary_warning & !known_plotly_test_warning) | error_log,
-    c("location", "level", "message"),
-    drop = FALSE
-  ]
+  unexpected_logs <- unexpected_app_logs(app$get_logs())
   expect_equal(
     nrow(unexpected_logs),
     0L,
