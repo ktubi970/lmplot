@@ -7,13 +7,17 @@ Interactive local exploration of linear, generalized linear, and Gaussian mixed 
 Requires R 4.6.x. From the project root:
 
 ```r
-install.packages("renv")
 renv::restore()
 shiny::runApp(".")
 ```
 
-On Windows, `run.bat` performs the restore and launches the app from its own
-directory with R 4.6.0.
+Starting R in the project root loads the committed `.Rprofile`, which activates
+the project library and bootstraps the locked `renv` version when necessary.
+`renv::restore()` then installs the exact runtime and test dependencies recorded
+in `renv.lock` into that isolated project library.
+
+On Windows, `run.bat` first changes to its own directory so the same activation
+takes effect, then performs the restore and launches the app with R 4.6.0.
 
 Run tests from the project root with:
 

@@ -11,11 +11,29 @@ test_that("release artifacts agree on the beta version", {
   expect_match(read_release_file("README.md"), "0.9.0-beta.1", fixed = TRUE)
   expect_match(read_release_file("TODO.md"), "0.9.0-beta.1", fixed = TRUE)
   expect_true(file.exists(file.path(release_root, "renv.lock")))
+  expect_true(file.exists(file.path(release_root, ".Rprofile")))
+  expect_true(file.exists(file.path(release_root, "renv", "activate.R")))
   expect_match(
     read_release_file("run.bat"),
     "shiny::runApp('.', launch.browser=TRUE)",
     fixed = TRUE
   )
+})
+
+test_that("a fresh R process activates the project library", {
+  rscript <- file.path(R.home("bin"), "Rscript.exe")
+  expression <- paste(
+    "cat(normalizePath(.libPaths(), winslash = '/', mustWork = FALSE),",
+    "sep = '\n')"
+  )
+  output <- withr::with_dir(
+    release_root,
+    system2(rscript, c("-e", shQuote(expression)), stdout = TRUE, stderr = TRUE)
+  )
+  normalized_root <- normalizePath(release_root, winslash = "/", mustWork = TRUE)
+  expected_library <- paste0(normalized_root, "/renv/library/")
+
+  expect_true(any(startsWith(output, expected_library)), info = paste(output, collapse = "\n"))
 })
 
 test_that("README documents the exact beta matrix and trusted expert boundary", {
@@ -74,4 +92,12 @@ test_that("ignore rules exclude transient state without hiding release evidence"
     "tests/testthat/_snaps/_new/", "tests/shinytest2/_screenshots/", "*.tmp.png"
   ) %in% ignore))
   expect_false(any(c("renv.lock", "tests/", "tests/shinytest2/") %in% ignore))
+})
+
+test_that("TODO distinguishes delivered runtime from pending browser verification", {
+  todo <- read_release_file("TODO.md")
+
+  expect_match(todo, "- [x] Reproducible runtime", fixed = TRUE)
+  expect_match(todo, "- [ ] Browser-based beta verification", fixed = TRUE)
+  expect_no_match(todo, "- [x] Reproducible runtime and automated beta verification", fixed = TRUE)
 })
