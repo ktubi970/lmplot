@@ -31,19 +31,34 @@ test_that("every beta combination fits and returns response-scale values", {
     model_type <- matrix$model_type[[row]]
     link <- matrix$link[[row]]
     df <- simulate_data(model_type, link, n = 120L, seed = row)
-    if (model_type == "glm_binomial" && link == "cloglog") {
-      expect_warning(
-        fit <- fit_model(df, model_type, link),
-        "fitted probabilities numerically 0 or 1 occurred"
-      )
+    warnings <- character()
+    fit <- withCallingHandlers(
+      fit_model(df, model_type, link),
+      warning = function(warning) {
+        warnings <<- c(warnings, conditionMessage(warning))
+        invokeRestart("muffleWarning")
+      }
+    )
+    expected_warnings <- if (model_type == "glm_binomial" && link == "cloglog") {
+      "glm.fit: fitted probabilities numerically 0 or 1 occurred"
     } else {
-      expect_silent(fit <- fit_model(df, model_type, link))
+      character()
     }
+    expect_identical(warnings, expected_warnings)
     expected_class <- if (model_type == "glmm") "lmerMod" else if (startsWith(model_type, "glm_")) "glm" else "lm"
     if (model_type == "glmm") expect_s4_class(fit, "lmerMod")
     else expect_s3_class(fit, expected_class)
     expect_length(fitted_response(fit), nrow(df))
     expect_length(response_residuals(fit), nrow(df))
     expect_true(all(is.finite(fitted_response(fit))))
+    if (startsWith(model_type, "glm_")) {
+      expected <- stats::predict(fit, type = "response")
+      expect_equal(predict_response(fit), expected)
+      expect_equal(fitted_response(fit), as.numeric(expected))
+    }
+    if (model_type == "glmm") {
+      expected <- stats::predict(fit, newdata = df, re.form = NA, allow.new.levels = TRUE)
+      expect_equal(predict_response(fit, newdata = df, population = TRUE), expected)
+    }
   }
 })
