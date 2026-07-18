@@ -69,66 +69,133 @@ simulation_code <- function(model_type, link, parameters) {
 }
 
 sim_ui <- function(id) {
-  ns <- NS(id)
-  tagList(
-    div(
-      class = "d-flex justify-content-between align-items-center mb-3",
-      span(class = "label", "Mode de simulation"),
-      switchInput(
-        ns("expert_mode"),
-        value = FALSE,
-        size = "small",
-        onLabel = "Expert",
-        offLabel = "Standard"
-      )
+  ns <- shiny::NS(id)
+  shiny::tagList(
+    shinyWidgets::switchInput(
+      ns("expert_mode"),
+      "Simulation mode",
+      onLabel = "Expert",
+      offLabel = "Standard",
+      value = FALSE
     ),
-    uiOutput(ns("controls_ui"))
+    shiny::uiOutput(ns("controls_ui"))
   )
 }
 
-sim_server <- function(id) {
-  moduleServer(id, function(input, output, session) {
-    ns <- session$ns
+sim_server <- function(id, model_type, link, trigger) {
+  shiny::moduleServer(id, function(input, output, session) {
+    output$controls_ui <- shiny::renderUI({
+      config <- model_config(model_type())
 
-    output$controls_ui <- renderUI({
-      if (!isTRUE(input$expert_mode)) {
-        tagList(
-          sliderInput(ns("beta1"), "Pente (beta1)", min = -2, max = 2, value = 0.5, step = 0.1),
-          sliderInput(ns("sigma"), "Bruit (sigma)", min = 0.1, max = 5, value = 1, step = 0.1),
-          numericInput(ns("n"), "Taille d'echantillon (n)", value = 100, min = 10, max = 1000),
-          numericInput(ns("seed"), "Graine (Seed)", value = 123)
+      if (isTRUE(input$expert_mode)) {
+        default_code <- simulation_code(
+          model_type(),
+          link(),
+          list(n = 200L, seed = 123L)
         )
-      } else {
-        aceEditor(
-          ns("code"),
-          value = "set.seed(input$seed)\nn <- input$n\nx <- rnorm(n)\ny <- 2 + 0.5*x + rnorm(n, 0, 1)\ndata.frame(x=x, y=y)",
+        return(shinyAce::aceEditor(
+          session$ns("code"),
+          value = default_code,
           mode = "r",
           theme = "monokai",
-          height = "200px"
+          height = "220px"
+        ))
+      }
+
+      controls <- list(
+        shiny::numericInput(
+          session$ns("n"), "Sample size", 200L,
+          min = 10L, max = 2000L
+        ),
+        shiny::numericInput(session$ns("seed"), "Seed", 123L),
+        shiny::sliderInput(
+          session$ns("beta0"), "Intercept", -3, 5, 2,
+          step = 0.1
+        ),
+        shiny::sliderInput(
+          session$ns("beta1"), "X coefficient", -2, 2, 0.5,
+          step = 0.1
+        )
+      )
+      if (config$dimensions == 3L) {
+        controls <- c(controls, list(shiny::sliderInput(
+          session$ns("beta2"), "Y coefficient", -2, 2, -0.25,
+          step = 0.1
+        )))
+      }
+      if (model_type() %in% c("lm_2d", "lm_3d", "glmm")) {
+        controls <- c(controls, list(shiny::sliderInput(
+          session$ns("sigma"), "Noise sigma", 0.1, 5, 1,
+          step = 0.1
+        )))
+      }
+      if (model_type() == "glm_gamma") {
+        controls <- c(controls, list(shiny::sliderInput(
+          session$ns("shape"), "Gamma shape", 0.5, 10, 2,
+          step = 0.5
+        )))
+      }
+      if (model_type() == "glmm") {
+        controls <- c(controls, list(
+          shiny::sliderInput(
+            session$ns("group_sd"), "Group SD", 0, 4, 1,
+            step = 0.1
+          ),
+          shiny::numericInput(
+            session$ns("groups"), "Groups", 5L,
+            min = 2L, max = 20L
+          )
+        ))
+      }
+      do.call(shiny::tagList, controls)
+    })
+
+    shiny::eventReactive(trigger(), {
+      model_snapshot <- model_type()
+      link_snapshot <- link()
+      parameters <- list(
+        n = input$n %||% 200L,
+        seed = input$seed %||% 123L,
+        beta0 = input$beta0 %||% 2,
+        beta1 = input$beta1 %||% 0.5,
+        beta2 = input$beta2 %||% -0.25,
+        sigma = input$sigma %||% 1,
+        shape = input$shape %||% 2,
+        group_sd = input$group_sd %||% 1,
+        groups = input$groups %||% 5L
+      )
+      expert_mode <- isTRUE(input$expert_mode)
+      code <- if (expert_mode) {
+        input$code
+      } else {
+        simulation_code(model_snapshot, link_snapshot, parameters)
+      }
+      if (expert_mode && (is.null(code) || !nzchar(code))) {
+        stop("Expert simulation code is required", call. = FALSE)
+      }
+      data <- if (expert_mode) {
+        evaluate_expert_simulation(
+          code,
+          parameters,
+          model_snapshot,
+          link_snapshot
+        )
+      } else {
+        do.call(
+          simulate_data,
+          c(
+            list(model_type = model_snapshot, link = link_snapshot),
+            parameters
+          )
         )
       }
-    })
-
-    reactive_data <- reactive({
-      if (!isTRUE(input$expert_mode)) {
-        req(input$beta1, input$sigma, input$n, input$seed)
-        set.seed(input$seed)
-        x <- rnorm(input$n)
-        y <- 2 + input$beta1 * x + rnorm(input$n, 0, input$sigma)
-        data.frame(x = x, y = y)
-      } else {
-        req(input$code)
-        env <- new.env()
-        env$input <- input
-        tryCatch({
-          eval(parse(text = input$code), envir = env)
-        }, error = function(e) {
-          showNotification(paste("Erreur dans le code expert:", e$message), type = "error")
-          NULL
-        })
-      }
-    })
-
-    return(reactive_data)
+      list(
+        data = data,
+        code = code,
+        parameters = parameters,
+        model_type = model_snapshot,
+        link = link_snapshot
+      )
+    }, ignoreInit = FALSE)
   })
 }
