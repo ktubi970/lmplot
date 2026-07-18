@@ -84,10 +84,13 @@ server <- function(input, output, session) {
   output$link_ui <- shiny::renderUI({
     config <- model_config(input$model_type)
     if (length(config$links) == 1L) {
-      return(shiny::tags$input(
-        id = "link_sel",
-        type = "hidden",
-        value = config$default_link
+      return(shiny::div(
+        style = "display:none;",
+        shiny::selectInput(
+          "link_sel", NULL,
+          choices = config$links,
+          selected = config$default_link
+        )
       ))
     }
     shiny::selectInput(
@@ -97,11 +100,40 @@ server <- function(input, output, session) {
     )
   })
 
-  selected_link <- shiny::reactive({
+  link_selection <- shiny::reactiveVal(NULL)
+
+  shiny::observeEvent(input$model_type, {
     config <- model_config(input$model_type)
-    candidate <- input$link_sel %||% config$default_link
-    if (!candidate %in% config$links) candidate <- config$default_link
-    validate_model_link(input$model_type, candidate)
+    link_selection(list(
+      model_type = input$model_type,
+      link = config$default_link
+    ))
+    shiny::updateSelectInput(
+      session,
+      "link_sel",
+      choices = config$links,
+      selected = config$default_link
+    )
+  }, ignoreInit = FALSE, priority = 100)
+
+  shiny::observeEvent(input$link_sel, {
+    state <- link_selection()
+    shiny::req(state)
+    if (
+      identical(state$model_type, input$model_type) &&
+      input$link_sel %in% valid_links(input$model_type)
+    ) {
+      link_selection(list(
+        model_type = input$model_type,
+        link = input$link_sel
+      ))
+    }
+  }, ignoreInit = TRUE)
+
+  selected_link <- shiny::reactive({
+    state <- link_selection()
+    shiny::req(state, identical(state$model_type, input$model_type))
+    validate_model_link(state$model_type, state$link)
   })
 
   simulation <- sim_server(

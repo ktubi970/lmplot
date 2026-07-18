@@ -46,7 +46,44 @@ test_that("dynamic link UI exposes only links valid for the selected model", {
     session$flushReact()
     fixed_html <- rendered_html(output$link_ui)
     expect_match(fixed_html, "identity", fixed = TRUE)
-    expect_false(grepl("<select", fixed_html, fixed = TRUE))
+    expect_match(fixed_html, "link_sel", fixed = TRUE)
+    expect_match(fixed_html, "<select", fixed = TRUE)
+    expect_match(fixed_html, "display:none", fixed = TRUE)
+  })
+})
+
+test_that("model transitions reset a shared valid link to the new default", {
+  shiny::testServer(server, {
+    session$setInputs(model_type = "glm_poisson")
+    session$flushReact()
+    session$setInputs(link_sel = "identity")
+    set_standard_inputs(session)
+    session$flushReact()
+
+    session$setInputs(model_type = "glm_gamma", generate = 1L)
+    session$flushReact()
+
+    expect_identical(last_result()$model_type, "glm_gamma")
+    expect_identical(last_result()$link, "inverse")
+    gamma_html <- rendered_html(output$link_ui)
+    expect_match(gamma_html, 'value="inverse" selected', fixed = TRUE)
+  })
+})
+
+test_that("fixed-link models generate through a Shiny-bound link input", {
+  shiny::testServer(server, {
+    session$setInputs(model_type = "lm_2d")
+    session$flushReact()
+
+    fixed_html <- rendered_html(output$link_ui)
+    expect_match(fixed_html, "<select", fixed = TRUE)
+    expect_match(fixed_html, "identity", fixed = TRUE)
+
+    set_standard_inputs(session)
+    session$setInputs(generate = 1L)
+    session$flushReact()
+    expect_identical(last_result()$model_type, "lm_2d")
+    expect_identical(last_result()$link, "identity")
   })
 })
 
@@ -65,7 +102,9 @@ test_that("server generates plot summary diagnostics and table for all six modes
     shiny::testServer(server, {
       session$setInputs(model_type = model_type)
       session$flushReact()
-      session$setInputs(link_sel = link)
+      if (length(valid_links(model_type)) > 1L) {
+        session$setInputs(link_sel = link)
+      }
       set_standard_inputs(session)
       session$setInputs(generate = 1L, show_surface = TRUE)
       session$flushReact()
@@ -86,7 +125,6 @@ test_that("model and link changes do not replace the last generated snapshot", {
   shiny::testServer(server, {
     session$setInputs(model_type = "lm_2d")
     session$flushReact()
-    session$setInputs(link_sel = "identity")
     set_standard_inputs(session, seed = 41L)
     session$setInputs(generate = 1L)
     session$flushReact()
@@ -134,7 +172,6 @@ test_that("a failed generation leaves the last successful result visible", {
   shiny::testServer(server, {
     session$setInputs(model_type = "lm_2d")
     session$flushReact()
-    session$setInputs(link_sel = "identity")
     set_standard_inputs(session, n = 80L, seed = 17L)
     session$setInputs(generate = 1L)
     session$flushReact()
@@ -174,7 +211,6 @@ test_that("fit warnings notify non-fatally and are muffled narrowly", {
   expect_silent(shiny::testServer(server, {
     session$setInputs(model_type = "lm_2d")
     session$flushReact()
-    session$setInputs(link_sel = "identity")
     set_standard_inputs(session)
     session$setInputs(generate = 1L)
     session$flushReact()
@@ -190,7 +226,6 @@ test_that("trusted-local expert mode uses canonical evaluation and output paths"
   shiny::testServer(server, {
     session$setInputs(model_type = "lm_2d")
     session$flushReact()
-    session$setInputs(link_sel = "identity")
     set_standard_inputs(session, n = 60L, seed = 27L)
     session$setInputs(
       `simulation-expert_mode` = TRUE,
