@@ -77,6 +77,8 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
       y = ~Y,
       z = ~Z,
       color = ~Group,
+      colors = grDevices::hcl.colors(nlevels(enriched$Group),
+                                    palette = "Dynamic"),
       type = "scatter3d",
       mode = "markers",
       marker = list(size = 4)

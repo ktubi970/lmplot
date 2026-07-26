@@ -201,3 +201,55 @@ load_real_example <- function(example_id, root = ".") {
     metadata = config
   )
 }
+
+enrich_real_example <- function(example, fit) {
+  enriched <- example$display
+  enriched$.fitted <- fitted_response(fit)
+  enriched$.residual <- response_residuals(fit)
+  enriched
+}
+
+example_plot <- function(example, fit, show_surface = TRUE) {
+  metadata <- example$metadata
+  plot <- build_main_plot(example$analysis, fit, metadata$model_type,
+                          show_surface = show_surface)
+  citation <- if (nzchar(metadata$publication_doi)) {
+    paste0("Publication DOI: ", metadata$publication_doi)
+  } else {
+    paste0("Publication: ", metadata$publication_url)
+  }
+  if (model_config(metadata$model_type)$dimensions == 2L) {
+    plotly::layout(
+      plot,
+      title = list(text = paste0(metadata$title, "<br><sup>", citation, "</sup>")),
+      xaxis = list(title = metadata$predictor_x_label),
+      yaxis = list(title = metadata$response_label)
+    )
+  } else {
+    plotly::layout(
+      plot,
+      title = list(text = paste0(metadata$title, "<br><sup>", citation, "</sup>")),
+      showlegend = metadata$model_type != "glmm",
+      scene = list(
+        xaxis = list(title = metadata$predictor_x_label),
+        yaxis = list(title = metadata$predictor_y_label),
+        zaxis = list(title = metadata$response_label)
+      )
+    )
+  }
+}
+
+export_real_example_png <- function(example, fit, file, width = 1200L,
+                                    height = 800L) {
+  dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
+  html <- tempfile(fileext = ".html")
+  on.exit(unlink(html), add = TRUE)
+  htmlwidgets::saveWidget(example_plot(example, fit), html,
+                          selfcontained = TRUE)
+  webshot2::webshot(html, file = file, vwidth = width, vheight = height,
+                    delay = 0.5)
+  if (!file.exists(file) || file.info(file)$size == 0) {
+    stop("Static plot export failed: ", file, call. = FALSE)
+  }
+  invisible(file)
+}

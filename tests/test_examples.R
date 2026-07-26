@@ -1,5 +1,6 @@
 source(file.path("..", "R", "mod_model.R"))
 source(file.path("..", "R", "mod_simulation.R"))
+source(file.path("..", "R", "mod_visualization.R"))
 examples_path <- file.path("..", "R", "mod_examples.R")
 if (file.exists(examples_path)) source(examples_path)
 
@@ -122,4 +123,39 @@ test_that("example metadata retains exact scientific labels and units", {
     )
     expect_equal(actual, expected[[id]], info = id)
   }
+})
+
+test_that("real examples expose scientific plots and enriched diagnostics", {
+  for (id in example_ids(root = "..")) {
+    example <- load_real_example(id, root = "..")
+    fit <- fit_model(
+      example$analysis,
+      example$metadata$model_type,
+      example$metadata$default_link
+    )
+
+    plot <- example_plot(example, fit)
+    enriched <- enrich_real_example(example, fit)
+
+    expect_s3_class(plot, "plotly")
+    built <- plotly::plotly_build(plot)
+    expect_match(built$x$layout$title$text, example$metadata$title, fixed = TRUE)
+    expect_equal(nrow(enriched), nrow(example$analysis))
+    expect_true(all(c(".fitted", ".residual") %in% names(enriched)))
+    expect_true(all(is.finite(enriched$.fitted)))
+  }
+})
+
+test_that("GLMM example omits the unreadable 65-school legend", {
+  example <- load_real_example("inner_london_exam", root = "..")
+  fit <- fit_model(
+    example$analysis,
+    example$metadata$model_type,
+    example$metadata$default_link
+  )
+  expect_warning(
+    built <- plotly::plotly_build(example_plot(example, fit)),
+    NA
+  )
+  expect_false(built$x$layout$showlegend)
 })
