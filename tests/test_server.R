@@ -43,6 +43,14 @@ test_that("UI exposes beta identity and required controls", {
   expect_match(html, "download_data", fixed = TRUE)
 })
 
+test_that("UI exposes simulation and real-data sources", {
+  html <- rendered_html(ui)
+
+  expect_match(html, "data_source", fixed = TRUE)
+  expect_match(html, "Real data", fixed = TRUE)
+  expect_match(html, "example_info", fixed = TRUE)
+})
+
 test_that("surface control is shown only where a fitted surface is meaningful", {
   shiny::testServer(server, {
     session$setInputs(model_type = "lm_2d")
@@ -83,8 +91,20 @@ test_that("dynamic link UI exposes only links valid for the selected model", {
     fixed_html <- rendered_html(output$link_ui)
     expect_match(fixed_html, "identity", fixed = TRUE)
     expect_match(fixed_html, "link_sel", fixed = TRUE)
-    expect_match(fixed_html, "<select", fixed = TRUE)
-    expect_match(fixed_html, "display:none", fixed = TRUE)
+    expect_match(fixed_html, 'type="hidden"', fixed = TRUE)
+  })
+})
+
+test_that("real-data links identify literature-backed and exploratory choices", {
+  shiny::testServer(server, {
+    session$setInputs(model_type = "glm_gamma", data_source = "real")
+    session$flushReact()
+
+    link_html <- rendered_html(output$link_ui)
+    expect_match(link_html, "log (literature-backed)", fixed = TRUE)
+    expect_match(link_html, "inverse (exploratory)", fixed = TRUE)
+    expect_match(link_html, "identity (exploratory)", fixed = TRUE)
+    expect_match(link_html, 'value="log" selected', fixed = TRUE)
   })
 })
 
@@ -141,7 +161,7 @@ test_that("fixed-link models generate through a Shiny-bound link input", {
     session$flushReact()
 
     fixed_html <- rendered_html(output$link_ui)
-    expect_match(fixed_html, "<select", fixed = TRUE)
+    expect_match(fixed_html, 'type="hidden"', fixed = TRUE)
     expect_match(fixed_html, "identity", fixed = TRUE)
 
     set_standard_inputs(session)
@@ -184,6 +204,62 @@ test_that("server generates plot summary diagnostics and table for all six modes
       expect_false(is.null(output$data_table), info = model_type)
     })
   }
+})
+
+test_that("server fits every real-data example without evaluating simulation", {
+  real_links <- c(
+    lm_2d = "identity",
+    lm_3d = "identity",
+    glm_binomial = "logit",
+    glm_poisson = "log",
+    glm_gamma = "log",
+    glmm = "identity"
+  )
+  real_rows <- c(
+    lm_2d = 151L,
+    lm_3d = 425L,
+    glm_binomial = 146L,
+    glm_poisson = 4177L,
+    glm_gamma = 270L,
+    glmm = 4059L
+  )
+  rlang::local_bindings(
+    simulate_data = function(...) {
+      stop("Simulation must remain lazy in real-data mode", call. = FALSE)
+    },
+    .env = environment(server)
+  )
+
+  shiny::testServer(server, {
+    for (model_type in names(real_links)) {
+      session$setInputs(model_type = model_type, data_source = "real")
+      session$flushReact()
+      session$setInputs(
+        generate = shiny::isolate(input$generate %||% 0L) + 1L,
+        show_surface = TRUE
+      )
+      session$flushReact()
+
+      result <- last_result()
+      expect_identical(result$model_type, model_type, info = model_type)
+      expect_identical(result$link, real_links[[model_type]], info = model_type)
+      expect_equal(nrow(result$data), real_rows[[model_type]], info = model_type)
+      expect_false(is.null(result$example), info = model_type)
+      expect_false(is.null(output$main_plot), info = model_type)
+      info <- rendered_html(output$example_info)
+      expect_match(info, "Publication", fixed = TRUE, info = model_type)
+      expect_match(info, "Dataset", fixed = TRUE, info = model_type)
+      expect_match(info, "License", fixed = TRUE, info = model_type)
+      expect_match(info, "Rows", fixed = TRUE, info = model_type)
+      expect_false(is.null(output$data_table), info = model_type)
+      displayed <- display_result(result)
+      expect_equal(nrow(displayed), real_rows[[model_type]], info = model_type)
+      expect_true(
+        all(c(".fitted", ".residual") %in% names(displayed)),
+        info = model_type
+      )
+    }
+  })
 })
 
 test_that("model and link changes do not replace the last generated snapshot", {

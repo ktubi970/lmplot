@@ -192,6 +192,45 @@ test_that("the real beta app completes its browser smoke workflow", {
   expect_equal(nrow(enriched), 80L)
   expect_true(all(c(".fitted", ".residual") %in% names(enriched)))
 
+  real_models <- c(
+    "lm_2d",
+    "lm_3d",
+    "glm_binomial",
+    "glm_poisson",
+    "glm_gamma",
+    "glmm"
+  )
+  for (model_type in real_models) {
+    app$set_inputs(data_source = "real", model_type = model_type)
+    app$wait_for_idle()
+    app$wait_for_js(
+      "document.querySelector('#example_info .example-provenance') !== null",
+      timeout = 2e4
+    )
+    app$click("generate")
+    app$wait_for_idle()
+    app$wait_for_js(
+      paste0(
+        "document.querySelector('#main_plot .plot-container') !== null && ",
+        "document.querySelector('#model_summary')?.textContent.trim().length > 0 && ",
+        "document.querySelector('#data_table table') !== null"
+      ),
+      timeout = 2e4
+    )
+    expect_false(
+      is.null(app$get_value(output = "main_plot")),
+      info = model_type
+    )
+    expect_false(
+      is.null(app$get_value(output = "model_summary")),
+      info = model_type
+    )
+    expect_false(
+      is.null(app$get_value(output = "data_table")),
+      info = model_type
+    )
+  }
+
   unexpected_logs <- unexpected_app_logs(app$get_logs())
   expect_equal(
     nrow(unexpected_logs),
