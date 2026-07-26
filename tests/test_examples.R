@@ -159,3 +159,43 @@ test_that("GLMM example omits the unreadable 65-school legend", {
   )
   expect_false(built$x$layout$showlegend)
 })
+
+test_that("all source hashes pass before any builder or writer runs", {
+  root <- tempfile("real-example-root-")
+  sources <- file.path(root, "data", "real", "sources")
+  dir.create(sources, recursive = TRUE)
+  on.exit(unlink(root, recursive = TRUE, force = TRUE), add = TRUE)
+
+  expect_true(file.copy(
+    file.path("..", "data", "real", "manifest.csv"),
+    file.path(root, "data", "real", "manifest.csv")
+  ))
+  committed_sources <- list.files(
+    file.path("..", "data", "real", "sources"),
+    full.names = TRUE
+  )
+  expect_true(all(file.copy(committed_sources, sources)))
+
+  tampered <- file.path(sources, "adelie.csv")
+  connection <- file(tampered, open = "ab")
+  writeBin(as.raw(10L), connection)
+  close(connection)
+
+  output <- file.path(
+    root, "data", "real", "adelie_flipper_mass", "model-data.csv"
+  )
+  dir.create(dirname(output), recursive = TRUE)
+  sentinel <- charToRaw("reviewed-output-sentinel")
+  writeBin(sentinel, output)
+
+  expect_error(
+    build_real_examples(root),
+    paste0(
+      "SHA-256 mismatch for adelie.csv: expected ",
+      "76a2b8eeadc052b31753e525115698785a68299d07a827d63867446579cb9138",
+      ", actual [0-9a-f]+"
+    )
+  )
+  actual <- readBin(output, what = "raw", n = file.info(output)$size)
+  expect_identical(actual, sentinel)
+})

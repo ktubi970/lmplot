@@ -36,6 +36,27 @@ example_sha256_file <- function(path) {
         collapse = "")
 }
 
+verify_real_example_sources <- function(root = ".") {
+  manifest <- read_example_manifest(root)
+  specs <- unique(manifest[c("source_file", "source_sha256")])
+  paths <- file.path(root, "data", "real", "sources", specs$source_file)
+  actual <- vapply(paths, function(path) {
+    if (!file.exists(path)) return("<missing>")
+    example_sha256_file(path)
+  }, character(1))
+  matches <- actual != "<missing>" &
+    tolower(actual) == tolower(specs$source_sha256)
+  if (!all(matches)) {
+    row <- which(!matches)[[1L]]
+    stop(
+      "SHA-256 mismatch for ", specs$source_file[[row]], ": expected ",
+      specs$source_sha256[[row]], ", actual ", actual[[row]],
+      call. = FALSE
+    )
+  }
+  invisible(specs$source_file)
+}
+
 canonical_columns <- function(model_type) {
   config <- model_config(model_type)
   c("X", if (config$dimensions == 3L) "Y", "Z",
@@ -163,6 +184,7 @@ prepare_inner_london_glmm <- function(path) {
 }
 
 build_real_examples <- function(root = ".") {
+  verify_real_example_sources(root)
   sources <- file.path(root, "data", "real", "sources")
   builders <- list(
     adelie_flipper_mass = function() prepare_adelie_lm_2d(file.path(sources, "adelie.csv")),
