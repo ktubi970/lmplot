@@ -190,6 +190,11 @@ scientific_provenance_specs <- list(
     response = c("Body mass (g)", "Body Mass (g)"),
     x = c("Flipper length (mm)", "Flipper Length (mm)"),
     preprocessing = paste(
+      "From 152 Ad\u00e9lie source rows, retain complete finite flipper",
+      "length and body mass values; remove 1 incomplete row, retain 151",
+      "rows, and apply no unit conversion."
+    ),
+    interpretation = paste(
       "Descriptive within-species association; sex, island, and year",
       "are omitted."
     )
@@ -204,6 +209,11 @@ scientific_provenance_specs <- list(
     x = c("Cement (kg/m\u00b3)", "Cement (component 1)(kg in a m^3 mixture)"),
     y = c("Water (kg/m\u00b3)", "Water  (component 4)(kg in a m^3 mixture)"),
     preprocessing = paste(
+      "Verify and extract Concrete_Data.xls, retain rows with age exactly",
+      "28 days, and map cement, water, and compressive strength; retain",
+      "425 rows with kg/m\u00b3 and MPa unchanged."
+    ),
+    interpretation = paste(
       "Educational additive plane at fixed age 28 days; the published",
       "engineering relationship is nonlinear and uses more ingredients."
     )
@@ -215,6 +225,11 @@ scientific_provenance_specs <- list(
     x = c("Bill length (mm)", "Culmen Length (mm)"),
     y = c("Body mass (g)", "Body Mass (g)"),
     preprocessing = paste(
+      "From 152 Ad\u00e9lie source rows, retain finite culmen length and",
+      "body mass with Sex equal to FEMALE or MALE, sort by Sample Number,",
+      "and encode FEMALE = 1 and MALE = 0; retain 146 rows (73/73)."
+    ),
+    interpretation = paste(
       "Full-data pedagogical fit of a paper-supported two-predictor model;",
       "the paper used splitting and model averaging."
     )
@@ -226,6 +241,11 @@ scientific_provenance_specs <- list(
     x = c("Shell length (mm)", "Length"),
     y = c("Dried shell weight (g)", "Shell_weight"),
     preprocessing = paste(
+      "Retain all 4,177 source rows, convert normalized Length and",
+      "Shell_weight by \u00d7200 to millimetres and grams, and keep integer",
+      "Rings unchanged."
+    ),
+    interpretation = paste(
       "Associative Poisson mean model with moderate underdispersion and",
       "correlated size predictors."
     )
@@ -237,6 +257,11 @@ scientific_provenance_specs <- list(
     x = c("Temperature (\u00b0C)", "temp"),
     y = c("Relative humidity (%)", "RH"),
     preprocessing = paste(
+      "From 517 source rows, retain area &gt; 0, remove 247 zero-area rows,",
+      "and retain 270 rows; temperature (\u00b0C), relative humidity (%),",
+      "and area (ha) remain unchanged."
+    ),
+    interpretation = paste(
       "Conditional severity model after excluding 247 zero-area records;",
       "not an occurrence model."
     )
@@ -249,6 +274,11 @@ scientific_provenance_specs <- list(
     y = c("School mean intake score", "schavg"),
     group = c("School", "school"),
     preprocessing = paste(
+      "Verify and extract Exam.rda, retain all 4,059 rows, order and",
+      "factor school into 65 levels, and map standLRT, schavg, and",
+      "normexam; apply no unit conversion."
+    ),
+    interpretation = paste(
       "Two-continuous-predictor teaching specification of a richer",
       "published multilevel analysis."
     )
@@ -270,7 +300,12 @@ test_that("every real provenance card defines variables and preprocessing", {
 
       expect_match(info, "Model family", fixed = TRUE, info = model_type)
       expect_match(info, expected$family, fixed = TRUE, info = model_type)
-      expect_match(info, "Link", fixed = TRUE, info = model_type)
+      expect_match(
+        info,
+        "Literature-backed default link",
+        fixed = TRUE,
+        info = model_type
+      )
       expect_match(info, expected$link, fixed = TRUE, info = model_type)
       expect_match(info, "Response", fixed = TRUE, info = model_type)
       expect_match(info, "Predictor X", fixed = TRUE, info = model_type)
@@ -291,6 +326,18 @@ test_that("every real provenance card defines variables and preprocessing", {
       expect_match(
         info,
         expected$preprocessing,
+        fixed = TRUE,
+        info = model_type
+      )
+      expect_match(
+        info,
+        "Interpretation / pedagogical adaptation",
+        fixed = TRUE,
+        info = model_type
+      )
+      expect_match(
+        info,
+        expected$interpretation,
         fixed = TRUE,
         info = model_type
       )

@@ -166,7 +166,7 @@ server <- function(input, output, session) {
       shiny::tags$dl(
         shiny::tags$dt("Model family"),
         shiny::tags$dd(config$label),
-        shiny::tags$dt("Link"),
+        shiny::tags$dt("Literature-backed default link"),
         shiny::tags$dd(metadata$default_link),
         shiny::tags$dt("Publication"),
         shiny::tags$dd(shiny::tags$a(
@@ -212,6 +212,8 @@ server <- function(input, output, session) {
           ))
         ),
         shiny::tags$dt("Preprocessing"),
+        shiny::tags$dd(metadata$preprocessing_summary),
+        shiny::tags$dt("Interpretation / pedagogical adaptation"),
         shiny::tags$dd(metadata$adaptation_note)
       )
     )
