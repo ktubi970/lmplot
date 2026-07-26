@@ -233,24 +233,50 @@ enrich_real_example <- function(example, fit) {
 
 example_plot <- function(example, fit, show_surface = TRUE) {
   metadata <- example$metadata
-  plot <- build_main_plot(example$analysis, fit, metadata$model_type,
-                          show_surface = show_surface)
+  config <- model_config(metadata$model_type)
+  labels <- list(
+    x = metadata$predictor_x_label,
+    z = metadata$response_label
+  )
+  if (config$dimensions == 3L) {
+    labels$y <- metadata$predictor_y_label
+  }
+  if (config$requires_group) {
+    labels$group <- tools::toTitleCase(
+      gsub("_", " ", metadata$group_source, fixed = TRUE)
+    )
+  }
+  plot <- build_main_plot(
+    example$analysis,
+    fit,
+    metadata$model_type,
+    show_surface = show_surface,
+    labels = labels
+  )
   citation <- if (nzchar(metadata$publication_doi)) {
     paste0("Publication DOI: ", metadata$publication_doi)
   } else {
     paste0("Publication: ", metadata$publication_url)
   }
-  if (model_config(metadata$model_type)$dimensions == 2L) {
+  title <- paste0(
+    metadata$title,
+    "<br><sup>",
+    config$label,
+    " | ",
+    citation,
+    "</sup>"
+  )
+  if (config$dimensions == 2L) {
     plotly::layout(
       plot,
-      title = list(text = paste0(metadata$title, "<br><sup>", citation, "</sup>")),
+      title = list(text = title),
       xaxis = list(title = metadata$predictor_x_label),
       yaxis = list(title = metadata$response_label)
     )
   } else {
     plotly::layout(
       plot,
-      title = list(text = paste0(metadata$title, "<br><sup>", citation, "</sup>")),
+      title = list(text = title),
       showlegend = metadata$model_type != "glmm",
       scene = list(
         xaxis = list(title = metadata$predictor_x_label),

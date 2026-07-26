@@ -30,12 +30,55 @@ enrich_data <- function(df, fit) {
   df
 }
 
-build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
+normalize_plot_labels <- function(labels = NULL) {
+  resolved <- list(x = "X", y = "Y", z = "Z", group = "Group")
+  if (is.null(labels)) return(resolved)
+  if (!is.list(labels)) {
+    stop("Plot labels must be supplied as a named list", call. = FALSE)
+  }
+  supplied <- intersect(names(labels), names(resolved))
+  for (name in supplied) {
+    value <- labels[[name]]
+    if (!is.character(value) || length(value) != 1L ||
+        is.na(value) || !nzchar(value)) {
+      stop("Plot label '", name, "' must be one non-empty string",
+           call. = FALSE)
+    }
+    resolved[[name]] <- value
+  }
+  resolved
+}
+
+observed_hover_text <- function(data, labels, include_y, include_group) {
+  text <- paste0(labels$x, ": ", sprintf("%.3f", data$X))
+  if (include_y) {
+    text <- paste0(text, "<br>", labels$y, ": ", sprintf("%.3f", data$Y))
+  }
+  text <- paste0(text, "<br>", labels$z, ": ", sprintf("%.3f", data$Z))
+  if (include_group) {
+    text <- paste0(text, "<br>", labels$group, ": ", data$Group)
+  }
+  paste0(text, "<br>Residual: ", sprintf("%.3f", data$.residual))
+}
+
+build_main_plot <- function(df, fit, model_type, show_surface = TRUE,
+                            labels = NULL) {
   config <- model_config(model_type)
+  labels <- normalize_plot_labels(labels)
   enriched <- enrich_data(df, fit)
+  enriched$.observed_hover <- observed_hover_text(
+    enriched,
+    labels,
+    include_y = config$dimensions == 3L,
+    include_group = config$requires_group
+  )
 
   if (config$dimensions == 2L) {
     curve <- enriched[order(enriched$X), ]
+    curve$.fitted_hover <- paste0(
+      labels$x, ": ", sprintf("%.3f", curve$X),
+      "<br>Fitted ", labels$z, ": ", sprintf("%.3f", curve$.fitted)
+    )
     return(
       plotly::plot_ly(
         enriched,
@@ -43,12 +86,7 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
         y = ~Z,
         type = "scatter",
         mode = "markers",
-        text = ~sprintf(
-          "X: %.3f<br>Z: %.3f<br>Residual: %.3f",
-          X,
-          Z,
-          .residual
-        ),
+        text = ~.observed_hover,
         hoverinfo = "text",
         marker = list(color = "#2563eb", opacity = 0.65),
         name = "Observed"
@@ -59,13 +97,15 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
           y = ~.fitted,
           type = "scatter",
           mode = "lines",
+          text = ~.fitted_hover,
+          hoverinfo = "text",
           name = "Fitted",
           line = list(color = "#ef4444"),
           inherit = FALSE
         ) |>
         plotly::layout(
-          xaxis = list(title = "X"),
-          yaxis = list(title = "Z")
+          xaxis = list(title = labels$x),
+          yaxis = list(title = labels$z)
         )
     )
   }
@@ -81,6 +121,8 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
                                     palette = "Dynamic"),
       type = "scatter3d",
       mode = "markers",
+      text = ~.observed_hover,
+      hoverinfo = "text",
       marker = list(size = 4)
     )
   } else {
@@ -91,6 +133,8 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
       z = ~Z,
       type = "scatter3d",
       mode = "markers",
+      text = ~.observed_hover,
+      hoverinfo = "text",
       marker = list(size = 4, color = "#2563eb", opacity = 0.7),
       name = "Observed"
     )
@@ -110,6 +154,11 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
       opacity = 0.45,
       showscale = FALSE,
       name = "Population fit",
+      hovertemplate = paste0(
+        labels$x, ": %{x:.3f}<br>",
+        labels$y, ": %{y:.3f}<br>",
+        labels$z, ": %{z:.3f}<extra>Population fit</extra>"
+      ),
       inherit = FALSE
     )
   }
@@ -117,9 +166,9 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE) {
   plotly::layout(
     markers,
     scene = list(
-      xaxis = list(title = "X"),
-      yaxis = list(title = "Y"),
-      zaxis = list(title = "Z")
+      xaxis = list(title = labels$x),
+      yaxis = list(title = labels$y),
+      zaxis = list(title = labels$z)
     )
   )
 }

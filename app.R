@@ -15,6 +15,15 @@ model_choices <- stats::setNames(
   vapply(MODEL_REGISTRY, `[[`, character(1), "label")
 )
 
+scientific_variable_definition <- function(label, source) {
+  shiny::tagList(
+    label,
+    " (source: ",
+    shiny::tags$code(source),
+    ")"
+  )
+}
+
 ui <- bslib::page_sidebar(
   title = shiny::div(
     "LM Plot Explorer ",
@@ -145,6 +154,7 @@ server <- function(input, output, session) {
       example_for_model(input$model_type, root = app_root),
       root = app_root
     )
+    config <- model_config(metadata$model_type)
     publication_label <- if (nzchar(metadata$publication_doi)) {
       metadata$publication_doi
     } else {
@@ -153,8 +163,11 @@ server <- function(input, output, session) {
     bslib::card(
       class = "example-provenance",
       bslib::card_header(metadata$title),
-      shiny::tags$p(metadata$adaptation_note),
       shiny::tags$dl(
+        shiny::tags$dt("Model family"),
+        shiny::tags$dd(config$label),
+        shiny::tags$dt("Link"),
+        shiny::tags$dd(metadata$default_link),
         shiny::tags$dt("Publication"),
         shiny::tags$dd(shiny::tags$a(
           href = metadata$publication_url,
@@ -171,7 +184,35 @@ server <- function(input, output, session) {
           target = "_blank", metadata$license_name
         )),
         shiny::tags$dt("Rows"),
-        shiny::tags$dd(format(metadata$expected_rows, big.mark = ","))
+        shiny::tags$dd(format(metadata$expected_rows, big.mark = ",")),
+        shiny::tags$dt("Response"),
+        shiny::tags$dd(scientific_variable_definition(
+          metadata$response_label,
+          metadata$response_source
+        )),
+        shiny::tags$dt("Predictor X"),
+        shiny::tags$dd(scientific_variable_definition(
+          metadata$predictor_x_label,
+          metadata$predictor_x_source
+        )),
+        if (nzchar(metadata$predictor_y_source)) shiny::tagList(
+          shiny::tags$dt("Predictor Y"),
+          shiny::tags$dd(scientific_variable_definition(
+            metadata$predictor_y_label,
+            metadata$predictor_y_source
+          ))
+        ),
+        if (nzchar(metadata$group_source)) shiny::tagList(
+          shiny::tags$dt("Group"),
+          shiny::tags$dd(scientific_variable_definition(
+            tools::toTitleCase(gsub(
+              "_", " ", metadata$group_source, fixed = TRUE
+            )),
+            metadata$group_source
+          ))
+        ),
+        shiny::tags$dt("Preprocessing"),
+        shiny::tags$dd(metadata$adaptation_note)
       )
     )
   })
