@@ -31,3 +31,95 @@ test_that("prepared examples satisfy their exact domains", {
   expect_true(all(gamma$Z > 0))
   expect_equal(nlevels(mixed$Group), 65L)
 })
+
+test_that("each model resolves to its assigned scientific example", {
+  expected <- c(
+    lm_2d = "adelie_flipper_mass",
+    lm_3d = "concrete_28d",
+    glm_binomial = "adelie_sex",
+    glm_poisson = "abalone_rings",
+    glm_gamma = "forest_fire_positive_area",
+    glmm = "inner_london_exam"
+  )
+  actual <- vapply(
+    names(expected),
+    example_for_model,
+    character(1),
+    root = ".."
+  )
+  expect_equal(actual, expected)
+})
+
+test_that("prepared examples retain exact source-role display columns", {
+  expected <- list(
+    adelie_flipper_mass = c(
+      "Sample Number", "Flipper Length (mm)", "Body Mass (g)"
+    ),
+    concrete_28d = c(
+      "source_row", "cement_kg_m3", "water_kg_m3", "strength_mpa"
+    ),
+    adelie_sex = c(
+      "Sample Number", "Culmen Length (mm)", "Body Mass (g)", "Sex"
+    ),
+    abalone_rings = c(
+      "source_row", "length_mm", "shell_weight_g", "rings"
+    ),
+    forest_fire_positive_area = c(
+      "source_row", "temp_c", "rh_pct", "area_ha"
+    ),
+    inner_london_exam = c(
+      "source_row", "standLRT", "schavg", "normexam", "school"
+    )
+  )
+  for (id in names(expected)) {
+    example <- load_real_example(id, root = "..")
+    expect_equal(names(example$display), expected[[id]], info = id)
+  }
+})
+
+test_that("example metadata retains exact scientific labels and units", {
+  expected <- list(
+    adelie_flipper_mass = c(
+      response_label = "Body mass (g)",
+      predictor_x_label = "Flipper length (mm)",
+      predictor_y_label = ""
+    ),
+    concrete_28d = c(
+      response_label = "Compressive strength (MPa)",
+      predictor_x_label = "Cement (kg/m\u00b3)",
+      predictor_y_label = "Water (kg/m\u00b3)"
+    ),
+    adelie_sex = c(
+      response_label = "Probability molecular sex is female",
+      predictor_x_label = "Bill length (mm)",
+      predictor_y_label = "Body mass (g)"
+    ),
+    abalone_rings = c(
+      response_label = "Expected ring count",
+      predictor_x_label = "Shell length (mm)",
+      predictor_y_label = "Dried shell weight (g)"
+    ),
+    forest_fire_positive_area = c(
+      response_label = "Expected burned area given area > 0 (ha)",
+      predictor_x_label = "Temperature (\u00b0C)",
+      predictor_y_label = "Relative humidity (%)"
+    ),
+    inner_london_exam = c(
+      response_label = "Normalized examination achievement",
+      predictor_x_label = "Standardized London Reading Test",
+      predictor_y_label = "School mean intake score"
+    )
+  )
+  label_fields <- c(
+    "response_label", "predictor_x_label", "predictor_y_label"
+  )
+  for (id in names(expected)) {
+    metadata <- load_real_example(id, root = "..")$metadata
+    actual <- vapply(
+      label_fields,
+      function(field) metadata[[field]],
+      character(1)
+    )
+    expect_equal(actual, expected[[id]], info = id)
+  }
+})
