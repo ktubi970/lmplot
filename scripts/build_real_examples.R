@@ -1,0 +1,4 @@
+source("R/mod_model.R")
+source("R/mod_simulation.R")
+source("R/mod_examples.R")
+build_real_examples(".")

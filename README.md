@@ -27,12 +27,15 @@ testthat::test_dir("tests", reporter = "summary")
 
 ## Supported models
 
-The beta supports exactly 12 model/link combinations.
+The beta supports exactly 15 model/link combinations.
 
 | Model ID | UI label | Fit | Predictors | Link |
 |---|---|---|---|---|
 | `lm_2d` | Simple LM (2D) | `lm` | `X` | `identity` |
 | `lm_3d` | Multiple LM (3D) | `lm` | `X + Y` | `identity` |
+| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `logit` |
+| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `probit` |
+| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `cloglog` |
 | `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `logit` |
 | `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `probit` |
 | `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `cloglog` |
@@ -51,3 +54,40 @@ expose it to untrusted or remote users.
 
 This beta does not provide hosted-user isolation, arbitrary formulas, uploaded
 datasets, random slopes, or generalized mixed models.
+
+## Scientific real-data examples
+
+Each supported model has one bundled, reproducible teaching example. The
+prepared CSV, provenance metadata, example-specific README, and static preview
+are committed so normal app sessions remain fully offline. External provenance
+links are opened only when a user chooses them; the app does not download data
+at runtime.
+
+| Example | Model family | Default link | Rows | Publication identifier | Dataset identifier | License |
+|---|---|---:|---:|---|---|---|
+| [Adélie penguin body mass](data/real/adelie_flipper_mass/README.md) | Linear model (2D) | `identity` | 151 | [10.1371/journal.pone.0090081](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081) | [10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f](https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| [28-day concrete compressive strength](data/real/concrete_28d/README.md) | Linear model (3D) | `identity` | 425 | [10.1016/S0008-8846(98)00165-3](https://doi.org/10.1016/S0008-8846(98)00165-3) | [10.24432/C5PK67](https://doi.org/10.24432/C5PK67) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| [Adélie penguin sex from morphology](data/real/adelie_sex/README.md) | Binomial GLM | `logit` | 146 | [10.1371/journal.pone.0090081](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081) | [10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f](https://doi.org/10.6073/pasta/98b16d7d563f265cb52372c8ca99e60f) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| [Abalone shell-ring count](data/real/abalone_rings/README.md) | Poisson GLM | `log` | 4,177 | [10.1071/MF9880167](https://doi.org/10.1071/MF9880167) | [10.24432/C55C7W](https://doi.org/10.24432/C55C7W) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| [Positive forest-fire burned area](data/real/forest_fire_positive_area/README.md) | Gamma GLM | `log` | 270 | [hdl:1822/8039](https://hdl.handle.net/1822/8039) | [10.24432/C5D88D](https://doi.org/10.24432/C5D88D) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| [Inner London examination achievement](data/real/inner_london_exam/README.md) | Gaussian GLMM | `identity` | 4,059 | [10.1080/0305498930190401](https://doi.org/10.1080/0305498930190401) | [10.32614/CRAN.package.mlmRev](https://doi.org/10.32614/CRAN.package.mlmRev) | [GPL-2-or-later](https://www.r-project.org/Licenses/GPL-2) |
+
+The source snapshots are already bundled. Rebuild the model-ready CSV files
+and static plots offline with R 4.6.0:
+
+```powershell
+& "C:\Program Files\R\R-4.6.0\bin\x64\Rscript.exe" scripts/build_real_examples.R
+& "C:\Program Files\R\R-4.6.0\bin\x64\Rscript.exe" scripts/export_real_example_plots.R
+```
+
+To refresh the reviewed source snapshots, run the fetch step separately while
+online, then rebuild offline:
+
+```powershell
+& "C:\Program Files\R\R-4.6.0\bin\x64\Rscript.exe" scripts/fetch_real_examples.R
+```
+
+Restore the exact package set before reproducing artifacts with
+`renv::restore()`. The fetch script verifies the recorded checksums; the build
+scripts preserve source row order and enforce each example's declared schema,
+exclusions, units, row count, and statistical domain.

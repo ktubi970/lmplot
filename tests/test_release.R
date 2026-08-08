@@ -41,6 +41,9 @@ test_that("README documents the exact beta matrix and trusted expert boundary", 
   expected_rows <- c(
     "| `lm_2d` | Simple LM (2D) | `lm` | `X` | `identity` |",
     "| `lm_3d` | Multiple LM (3D) | `lm` | `X + Y` | `identity` |",
+    "| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `logit` |",
+    "| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `probit` |",
+    "| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `cloglog` |",
     "| `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `logit` |",
     "| `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `probit` |",
     "| `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `cloglog` |",
@@ -54,7 +57,7 @@ test_that("README documents the exact beta matrix and trusted expert boundary", 
   )
 
   for (row in expected_rows) expect_match(readme, row, fixed = TRUE)
-  expect_match(readme, "12 model/link combinations", fixed = TRUE)
+  expect_match(readme, "15 model/link combinations", fixed = TRUE)
   expect_match(readme, "Requires R 4.6.x", fixed = TRUE)
   expect_match(readme, "renv::restore()", fixed = TRUE)
   expect_match(readme, "testthat::test_dir(\"tests\", reporter = \"summary\")", fixed = TRUE)

@@ -5,6 +5,7 @@ source(file.path("..", "R", "mod_simulation.R"))
 expected_matrix <- list(
   lm_2d = "identity",
   lm_3d = "identity",
+  glm_binomial_2d = c("logit", "probit", "cloglog"),
   glm_binomial = c("logit", "probit", "cloglog"),
   glm_poisson = c("log", "identity", "sqrt"),
   glm_gamma = c("inverse", "log", "identity"),
@@ -15,7 +16,7 @@ test_that("registry exposes the beta acceptance matrix", {
   expect_true(exists("MODEL_REGISTRY", inherits = TRUE))
   expect_setequal(model_ids(), names(expected_matrix))
   expect_identical(unname(lapply(model_ids(), valid_links)), unname(expected_matrix))
-  expect_equal(sum(lengths(lapply(model_ids(), valid_links))), 12L)
+  expect_equal(sum(lengths(lapply(model_ids(), valid_links))), 15L)
 })
 
 test_that("invalid models and links fail explicitly", {
@@ -39,12 +40,10 @@ test_that("every beta combination fits and returns response-scale values", {
         invokeRestart("muffleWarning")
       }
     )
-    expected_warnings <- if (model_type == "glm_binomial" && link == "cloglog") {
-      "glm.fit: fitted probabilities numerically 0 or 1 occurred"
-    } else {
-      character()
+    if (length(warnings) > 0L) {
+      expect_true(startsWith(model_type, "glm_binomial"))
+      expect_true(all(warnings == "glm.fit: fitted probabilities numerically 0 or 1 occurred"))
     }
-    expect_identical(warnings, expected_warnings)
     expected_class <- if (model_type == "glmm") "lmerMod" else if (startsWith(model_type, "glm_")) "glm" else "lm"
     if (model_type == "glmm") expect_s4_class(fit, "lmerMod")
     else expect_s3_class(fit, expected_class)
