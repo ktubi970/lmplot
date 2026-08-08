@@ -27,12 +27,15 @@ testthat::test_dir("tests", reporter = "summary")
 
 ## Supported models
 
-The beta supports exactly 12 model/link combinations.
+The beta supports exactly 15 model/link combinations.
 
 | Model ID | UI label | Fit | Predictors | Link |
 |---|---|---|---|---|
 | `lm_2d` | Simple LM (2D) | `lm` | `X` | `identity` |
 | `lm_3d` | Multiple LM (3D) | `lm` | `X + Y` | `identity` |
+| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `logit` |
+| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `probit` |
+| `glm_binomial_2d` | Simple Binomial GLM (2D) | `glm(binomial)` | `X` | `cloglog` |
 | `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `logit` |
 | `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `probit` |
 | `glm_binomial` | Binomial GLM | `glm(binomial)` | `X + Y` | `cloglog` |

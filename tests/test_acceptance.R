@@ -12,7 +12,7 @@ test_that("the complete beta matrix executes end to end", {
     )
   }))
 
-  expect_equal(nrow(combinations), 12L)
+  expect_equal(nrow(combinations), 15L)
 
   for (row in seq_len(nrow(combinations))) {
     model_type <- combinations$model_type[[row]]
@@ -28,7 +28,7 @@ test_that("the complete beta matrix executes end to end", {
         invokeRestart("muffleWarning")
       }
     )
-    if (model_type == "glm_binomial" && link == "cloglog") {
+    if (startsWith(model_type, "glm_binomial") && link == "cloglog") {
       expect_true(
         length(warnings) <= 1L && all(
           warnings == "glm.fit: fitted probabilities numerically 0 or 1 occurred"

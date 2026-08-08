@@ -6,7 +6,7 @@ acceptance_matrix <- do.call(rbind, lapply(model_ids(), function(id) {
 }))
 
 test_that("all beta combinations simulate deterministically", {
-  expect_equal(nrow(acceptance_matrix), 12L)
+  expect_equal(nrow(acceptance_matrix), 15L)
   for (row in seq_len(nrow(acceptance_matrix))) {
     args <- acceptance_matrix[row, ]
     first <- simulate_data(args$model_type, args$link, n = 80L, seed = 42L)

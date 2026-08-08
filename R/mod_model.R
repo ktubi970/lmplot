@@ -1,6 +1,7 @@
 MODEL_REGISTRY <- list(
   lm_2d = list(label = "Simple LM (2D)", family = "gaussian", links = "identity", default_link = "identity", dimensions = 2L, requires_group = FALSE),
   lm_3d = list(label = "Multiple LM (3D)", family = "gaussian", links = "identity", default_link = "identity", dimensions = 3L, requires_group = FALSE),
+  glm_binomial_2d = list(label = "Simple Binomial GLM (2D)", family = "binomial", links = c("logit", "probit", "cloglog"), default_link = "logit", dimensions = 2L, requires_group = FALSE),
   glm_binomial = list(label = "Binomial GLM", family = "binomial", links = c("logit", "probit", "cloglog"), default_link = "logit", dimensions = 3L, requires_group = FALSE),
   glm_poisson = list(label = "Poisson GLM", family = "poisson", links = c("log", "identity", "sqrt"), default_link = "log", dimensions = 3L, requires_group = FALSE),
   glm_gamma = list(label = "Gamma GLM", family = "Gamma", links = c("inverse", "log", "identity"), default_link = "inverse", dimensions = 3L, requires_group = FALSE),
@@ -52,7 +53,7 @@ fit_model <- function(df, model_type, link = NULL) {
   if (any(!vapply(df[numeric], is.numeric, logical(1))) || any(!is.finite(as.matrix(df[numeric])))) {
     stop("Model data must contain finite numeric predictors and response", call. = FALSE)
   }
-  if (model_type == "glm_binomial" && any(!df$Z %in% c(0, 1))) stop("Binomial response must contain only 0 and 1", call. = FALSE)
+  if (startsWith(model_type, "glm_binomial") && any(!df$Z %in% c(0, 1))) stop("Binomial response must contain only 0 and 1", call. = FALSE)
   if (model_type == "glm_poisson" && any(df$Z < 0 | df$Z != floor(df$Z))) stop("Poisson response must contain non-negative integers", call. = FALSE)
   if (model_type == "glm_gamma" && any(df$Z <= 0)) stop("Gamma response must be strictly positive", call. = FALSE)
   if (model_type == "glmm") validate_glmm_groups(df$Group)
@@ -64,6 +65,9 @@ fit_model <- function(df, model_type, link = NULL) {
     return(lme4::lmer(Z ~ X + Y + (1 | Group), data = model_data))
   }
   family_object <- do.call(config$family, list(link = link))
+  if (config$dimensions == 2L) {
+    return(stats::glm(Z ~ X, data = df, family = family_object))
+  }
   if (model_type == "glm_poisson" && link == "identity") {
     design <- stats::model.matrix(Z ~ X + Y, data = df)
     start <- numeric(ncol(design))

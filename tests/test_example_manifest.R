@@ -7,7 +7,7 @@ test_that("real-data manifest covers the six beta models exactly", {
     check.names = FALSE
   )
   expect_equal(nrow(manifest), 6L)
-  expect_setequal(manifest$model_type, model_ids())
+  expect_setequal(manifest$model_type, setdiff(model_ids(), "glm_binomial_2d"))
   expect_identical(anyDuplicated(manifest$example_id), 0L)
   expect_identical(anyDuplicated(manifest$model_type), 0L)
   required <- c(

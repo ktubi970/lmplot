@@ -25,7 +25,7 @@ simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
   set.seed(as.integer(seed))
   X <- stats::runif(n, -1, 1)
   Y <- stats::runif(n, -1, 1)
-  eta <- beta0 + beta1 * X + beta2 * Y
+  eta <- if (config$dimensions == 2L) beta0 + beta1 * X else beta0 + beta1 * X + beta2 * Y
 
   if (model_type == "lm_2d") {
     result <- data.frame(X = X, Z = beta0 + beta1 * X + stats::rnorm(n, 0, sigma))
@@ -50,7 +50,7 @@ simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
       if (any(mu <= 0)) stop("Selected coefficients produce non-positive Gamma means", call. = FALSE)
       Z <- stats::rgamma(n, shape = shape, rate = shape / mu)
     }
-    result <- data.frame(X = X, Y = Y, Z = Z)
+    result <- if (config$dimensions == 2L) data.frame(X = X, Z = Z) else data.frame(X = X, Y = Y, Z = Z)
   }
   validate_simulation_data(result, model_type)
   result
