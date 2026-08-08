@@ -63,9 +63,11 @@ fit_model <- function(df, model_type, link = NULL) {
     model_data <- df
     model_data$Group <- factor(model_data$Group)
     if (requireNamespace("lme4", quietly = TRUE)) {
-      return(lme4::lmer(Z ~ X + Y + (1 | Group), data = model_data))
+      lmer_fn <- getExportedValue("lme4", "lmer")
+      return(lmer_fn(Z ~ X + Y + (1 | Group), data = model_data))
     } else if (requireNamespace("nlme", quietly = TRUE)) {
-      return(nlme::lme(Z ~ X + Y, random = ~ 1 | Group, data = model_data))
+      lme_fn <- getExportedValue("nlme", "lme")
+      return(lme_fn(Z ~ X + Y, random = ~ 1 | Group, data = model_data))
     } else {
       return(stats::lm(Z ~ X + Y + Group, data = model_data))
     }
