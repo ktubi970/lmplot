@@ -106,7 +106,9 @@ def find_rscript():
         return rscript_win
     return "Rscript"
 
-def run_r_analysis(payload):
+@st.cache_data(show_spinner=False)
+def _cached_run_r_analysis(payload_str: str):
+    payload = json.loads(payload_str)
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="w") as req_file:
         json.dump(payload, req_file)
         req_path = req_file.name
@@ -123,8 +125,7 @@ def run_r_analysis(payload):
             timeout=45
         )
         if proc.returncode != 0:
-            st.error(f"R Engine Error:\n{proc.stderr}")
-            return None
+            return {"error": proc.stderr}
             
         with open(out_path, "r") as f:
             result = json.load(f)
@@ -137,6 +138,14 @@ def run_r_analysis(payload):
         if os.path.exists(out_path):
             try: os.remove(out_path)
             except Exception: pass
+
+def run_r_analysis(payload):
+    payload_str = json.dumps(payload, sort_keys=True)
+    res = _cached_run_r_analysis(payload_str)
+    if isinstance(res, dict) and "error" in res:
+        st.error(f"R Engine Error:\n{res['error']}")
+        return None
+    return res
 
 # Execute button
 if st.sidebar.button("🚀 Fit Model & Generate Visualizations", type="primary", use_container_width=True):
