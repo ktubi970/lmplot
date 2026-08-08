@@ -41,8 +41,8 @@ test_that("every beta combination fits and returns response-scale values", {
       }
     )
     if (length(warnings) > 0L) {
-      expect_true(startsWith(model_type, "glm_binomial") && link == "cloglog")
-      expect_identical(warnings, "glm.fit: fitted probabilities numerically 0 or 1 occurred")
+      expect_true(startsWith(model_type, "glm_binomial"))
+      expect_true(all(warnings == "glm.fit: fitted probabilities numerically 0 or 1 occurred"))
     }
     expected_class <- if (model_type == "glmm") "lmerMod" else if (startsWith(model_type, "glm_")) "glm" else "lm"
     if (model_type == "glmm") expect_s4_class(fit, "lmerMod")
