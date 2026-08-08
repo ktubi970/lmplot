@@ -183,12 +183,31 @@ prepare_inner_london_glmm <- function(path) {
   out
 }
 
+prepare_adelie_binomial_2d <- function(path) {
+  source <- utils::read.csv(path, check.names = FALSE, na.strings = "",
+                            stringsAsFactors = FALSE)
+  assert_source(source, 152L, c("Sample Number", "Culmen Length (mm)", "Sex"), "Adélie")
+  keep <- is.finite(source[["Culmen Length (mm)"]]) & source$Sex %in% c("FEMALE", "MALE")
+  out <- source[keep, c("Sample Number", "Culmen Length (mm)", "Sex"), drop = FALSE]
+  out <- out[order(as.numeric(out[["Sample Number"]])), , drop = FALSE]
+  out$X <- out[["Culmen Length (mm)"]]
+  out$Z <- as.integer(out$Sex == "FEMALE")
+  counts <- table(out$Z)
+  stopifnot(
+    nrow(out) == 146L,
+    identical(as.integer(counts), c(73L, 73L)),
+    identical(names(counts), c("0", "1"))
+  )
+  out
+}
+
 build_real_examples <- function(root = ".") {
   verify_real_example_sources(root)
   sources <- file.path(root, "data", "real", "sources")
   builders <- list(
     adelie_flipper_mass = function() prepare_adelie_lm_2d(file.path(sources, "adelie.csv")),
     concrete_28d = function() prepare_concrete_28d(file.path(sources, "concrete-compressive-strength.zip")),
+    adelie_sex_2d = function() prepare_adelie_binomial_2d(file.path(sources, "adelie.csv")),
     adelie_sex = function() prepare_adelie_binomial(file.path(sources, "adelie.csv")),
     abalone_rings = function() prepare_abalone_poisson(file.path(sources, "abalone.data")),
     forest_fire_positive_area = function() prepare_forest_fire_gamma(file.path(sources, "forestfires.csv")),
