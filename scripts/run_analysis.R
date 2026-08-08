@@ -1,4 +1,13 @@
 #!/usr/bin/env Rscript
+user_lib <- file.path(Sys.getenv("HOME"), "R_library")
+if (dir.exists(user_lib)) {
+  .libPaths(c(user_lib, .libPaths()))
+}
+if (!requireNamespace("jsonlite", quietly = TRUE)) {
+  dir.create(user_lib, recursive = TRUE, showWarnings = FALSE)
+  .libPaths(c(user_lib, .libPaths()))
+  install.packages("jsonlite", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE)
+}
 suppressPackageStartupMessages({
   library(jsonlite)
 })

@@ -106,6 +106,24 @@ def find_rscript():
         return rscript_win
     return "Rscript"
 
+@st.cache_resource
+def ensure_r_packages():
+    rscript_bin = find_rscript()
+    r_code = """
+    user_lib <- file.path(Sys.getenv("HOME"), "R_library")
+    dir.create(user_lib, recursive = TRUE, showWarnings = FALSE)
+    .libPaths(c(user_lib, .libPaths()))
+    if (!requireNamespace("jsonlite", quietly = TRUE)) {
+      install.packages("jsonlite", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE)
+    }
+    """
+    try:
+        subprocess.run([rscript_bin, "-e", r_code], capture_output=True, text=True, timeout=60)
+    except Exception:
+        pass
+
+ensure_r_packages()
+
 @st.cache_data(show_spinner=False)
 def _cached_run_r_analysis(payload_str: str):
     payload = json.loads(payload_str)
