@@ -133,6 +133,7 @@ MODEL_METADATA = {
 REAL_EXAMPLES = {
     "lm_2d": {"id": "adelie_flipper_mass", "title": "Adélie penguin body mass"},
     "lm_3d": {"id": "concrete_28d", "title": "28-day concrete compressive strength"},
+    "glm_binomial_2d": {"id": "adelie_sex_2d", "title": "Adélie penguin sex from bill length"},
     "glm_binomial": {"id": "adelie_sex", "title": "Adélie penguin sex from morphology"},
     "glm_poisson": {"id": "abalone_rings", "title": "Abalone shell-ring count"},
     "glm_gamma": {"id": "forest_fire_positive_area", "title": "Positive forest-fire burned area"},
@@ -268,9 +269,10 @@ def run_r_analysis(payload):
         return None
     return res
 
-# Execute button
-if st.sidebar.button("🚀 Fit Model & Generate Visualizations", type="primary", use_container_width=True):
+# Execute button & Auto-sync payload
+if st.sidebar.button("🚀 Fit Model & Generate Visualizations", type="primary", use_container_width=True) or "analysis_payload" not in st.session_state or st.session_state.get("last_model") != model_choice:
     st.session_state["analysis_payload"] = req_payload
+    st.session_state["last_model"] = model_choice
 
 if "analysis_payload" not in st.session_state:
     st.session_state["analysis_payload"] = req_payload
