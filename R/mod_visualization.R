@@ -1,6 +1,7 @@
 prediction_grid <- function(df, fit, model_type, length_out = 30L) {
   config <- model_config(model_type)
-  x <- seq(min(df$X), max(df$X), length.out = length_out)
+  length_out_dim <- if (config$dimensions == 2L) 200L else length_out
+  x <- seq(min(df$X), max(df$X), length.out = length_out_dim)
 
   if (config$dimensions == 2L) {
     grid <- data.frame(X = x)

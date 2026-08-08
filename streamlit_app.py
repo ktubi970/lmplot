@@ -319,7 +319,7 @@ if analysis:
                 fig.add_trace(go.Scatter(
                     x=grid_sorted["X"], y=grid_sorted[".fitted"],
                     mode="lines",
-                    line=dict(color="#ef4444", width=3),
+                    line=dict(color="#ef4444", width=3, shape="spline"),
                     name="Fitted Model Curve"
                 ))
             fig.update_layout(
