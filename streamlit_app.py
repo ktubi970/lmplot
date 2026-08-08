@@ -147,7 +147,7 @@ model_choice = st.sidebar.selectbox(
     "Select Model",
     options=list(MODEL_METADATA.keys()),
     format_func=lambda k: MODEL_METADATA[k]["label"],
-    index=1
+    index=0
 )
 
 meta = MODEL_METADATA[model_choice]
@@ -219,6 +219,9 @@ def ensure_r_packages():
     .libPaths(c(user_lib, .libPaths()))
     if (!requireNamespace("jsonlite", quietly = TRUE)) {
       install.packages("jsonlite", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE)
+    }
+    if (!requireNamespace("lme4", quietly = TRUE)) {
+      install.packages("lme4", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE)
     }
     """
     try:

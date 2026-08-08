@@ -8,6 +8,11 @@ if (!requireNamespace("jsonlite", quietly = TRUE)) {
   .libPaths(c(user_lib, .libPaths()))
   install.packages("jsonlite", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE)
 }
+if (!requireNamespace("lme4", quietly = TRUE)) {
+  dir.create(user_lib, recursive = TRUE, showWarnings = FALSE)
+  .libPaths(c(user_lib, .libPaths()))
+  try(install.packages("lme4", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE), silent = TRUE)
+}
 suppressPackageStartupMessages({
   library(jsonlite)
 })
