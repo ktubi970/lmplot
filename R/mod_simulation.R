@@ -1,6 +1,10 @@
-library(shiny)
-library(shinyWidgets)
-library(shinyAce)
+if (requireNamespace("shiny", quietly = TRUE)) {
+  suppressPackageStartupMessages({
+    library(shiny)
+    library(shinyWidgets)
+    library(shinyAce)
+  })
+}
 
 simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
                           beta0 = 2, beta1 = 0.5, beta2 = -0.25,
