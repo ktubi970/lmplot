@@ -95,7 +95,12 @@ else:
         req_payload["n"] = 150
         req_payload["seed"] = 42
 
+import shutil
+
 def find_rscript():
+    rscript = shutil.which("Rscript")
+    if rscript:
+        return rscript
     rscript_win = "C:\\Program Files\\R\\R-4.6.0\\bin\\x64\\Rscript.exe"
     if os.path.exists(rscript_win):
         return rscript_win
@@ -107,22 +112,17 @@ def run_r_analysis(payload):
         req_path = req_file.name
         
     out_path = req_path.replace(".json", "_out.json")
-    
     rscript_bin = find_rscript()
-    cmd = [
-        rscript_bin,
-        "-e",
-        "source('.Rprofile'); system2('Rscript', c('scripts/run_analysis.R', commandArgs(trailingOnly=TRUE)))",
-        req_path,
-        out_path
-    ]
+    
+    r_expr = "if(file.exists('.Rprofile')) try(source('.Rprofile'), silent=TRUE); source('scripts/run_analysis.R')"
+    cmd = [rscript_bin, "-e", r_expr, req_path, out_path]
     
     try:
         proc = subprocess.run(
-            [rscript_bin, "-e", f"source('.Rprofile'); source('scripts/run_analysis.R')", req_path, out_path],
+            cmd,
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=45
         )
         if proc.returncode != 0:
             st.error(f"R Engine Error:\n{proc.stderr}")
@@ -134,9 +134,11 @@ def run_r_analysis(payload):
         return result
     finally:
         if os.path.exists(req_path):
-            os.remove(req_path)
+            try: os.remove(req_path)
+            except Exception: pass
         if os.path.exists(out_path):
-            os.remove(out_path)
+            try: os.remove(out_path)
+            except Exception: pass
 
 # Execute button
 if st.sidebar.button("🚀 Fit Model & Generate Visualizations", type="primary", use_container_width=True):
