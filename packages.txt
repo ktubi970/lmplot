@@ -1,5 +1,9 @@
 r-base
 r-base-dev
+r-cran-jsonlite
+r-cran-lme4
+r-cran-digest
+r-cran-readxl
 libcurl4-openssl-dev
 libssl-dev
 libxml2-dev

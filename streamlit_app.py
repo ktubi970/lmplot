@@ -113,9 +113,7 @@ def run_r_analysis(payload):
         
     out_path = req_path.replace(".json", "_out.json")
     rscript_bin = find_rscript()
-    
-    r_expr = "if(file.exists('.Rprofile')) try(source('.Rprofile'), silent=TRUE); source('scripts/run_analysis.R')"
-    cmd = [rscript_bin, "-e", r_expr, req_path, out_path]
+    cmd = [rscript_bin, "scripts/run_analysis.R", req_path, out_path]
     
     try:
         proc = subprocess.run(

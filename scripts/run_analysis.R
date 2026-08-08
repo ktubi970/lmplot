@@ -1,8 +1,14 @@
-if (!requireNamespace("jsonlite", quietly = TRUE)) {
-  install.packages("jsonlite", repos = "https://cloud.r-project.org/", quietly = TRUE)
-}
-if (!requireNamespace("lme4", quietly = TRUE)) {
-  try(install.packages("lme4", repos = "https://cloud.r-project.org/", quietly = TRUE), silent = TRUE)
+#!/usr/bin/env Rscript
+if (!requireNamespace("jsonlite", quietly = TRUE) || !requireNamespace("lme4", quietly = TRUE)) {
+  user_lib <- file.path(tempdir(), "R_lib")
+  dir.create(user_lib, showWarnings = FALSE, recursive = TRUE)
+  .libPaths(c(user_lib, .libPaths()))
+  if (!requireNamespace("jsonlite", quietly = TRUE)) {
+    try(install.packages("jsonlite", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE), silent = TRUE)
+  }
+  if (!requireNamespace("lme4", quietly = TRUE)) {
+    try(install.packages("lme4", lib = user_lib, repos = "https://cloud.r-project.org/", quietly = TRUE), silent = TRUE)
+  }
 }
 suppressPackageStartupMessages({
   library(jsonlite)
