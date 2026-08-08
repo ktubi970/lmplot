@@ -28,7 +28,7 @@ test_that("real-data manifest covers the seven models exactly", {
   expect_true(all(nzchar(manifest$publication_url)))
   expect_identical(
     stats::setNames(manifest$expected_rows, manifest$model_type),
-    c(lm_2d = 151L, lm_3d = 425L, glm_binomial_2d = 146L, glm_binomial = 146L,
+    c(lm_2d = 151L, lm_3d = 425L, glm_binomial = 146L, glm_binomial_2d = 146L,
       glm_poisson = 4177L, glm_gamma = 270L, glmm = 4059L)
   )
 })
@@ -54,15 +54,15 @@ test_that("real-data manifest records deterministic preprocessing summaries", {
       "28 days, and map cement, water, and compressive strength; retain",
       "425 rows with kg/m\u00b3 and MPa unchanged."
     ),
-    glm_binomial_2d = paste(
-      "From 152 Ad\u00e9lie source rows, retain finite culmen length",
-      "with Sex equal to FEMALE or MALE, sort by Sample Number, and encode",
-      "FEMALE = 1 and MALE = 0; retain 146 rows."
-    ),
     glm_binomial = paste(
       "From 152 Ad\u00e9lie source rows, retain finite culmen length and",
       "body mass with Sex equal to FEMALE or MALE, sort by Sample Number,",
       "and encode FEMALE = 1 and MALE = 0; retain 146 rows (73/73)."
+    ),
+    glm_binomial_2d = paste(
+      "From 152 Ad\u00e9lie source rows, retain finite culmen length",
+      "with Sex equal to FEMALE or MALE, sort by Sample Number, and encode",
+      "FEMALE = 1 and MALE = 0; retain 146 rows."
     ),
     glm_poisson = paste(
       "Retain all 4,177 source rows, convert normalized Length and",
