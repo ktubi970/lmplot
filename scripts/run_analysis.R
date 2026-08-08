@@ -40,11 +40,11 @@ data_source <- req$data_source %||% "simulation"
 if (data_source == "real") {
   example_id <- req$example_id %||% example_for_model(model_type, root = app_root)
   example <- load_real_example(example_id, root = app_root)
-  df <- example$data
+  df <- example$analysis
   labels <- list(
-    x = example$config$predictor_x_label %||% "X",
-    y = example$config$predictor_y_label %||% "Y",
-    z = example$config$response_label %||% "Z"
+    x = example$metadata$predictor_x_label %||% "X",
+    y = example$metadata$predictor_y_label %||% "Y",
+    z = example$metadata$response_label %||% "Z"
   )
 } else {
   n <- as.integer(req$n %||% 100L)

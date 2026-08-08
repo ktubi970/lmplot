@@ -201,27 +201,84 @@ if analysis:
     with tab_plot:
         st.subheader("Response-Scale Visualization")
         if meta["dimensions"] == 2:
-            fig = px.scatter(
-                df_data, x="X", y="Z",
-                labels={"X": labels["x"], "Z": labels["z"]},
-                title=f"{meta['label']} Response Curve",
-                opacity=0.7
-            )
-            grid_sorted = grid.sort_values("X")
+            fig = go.Figure()
+            # 1. Observed scatter points
             fig.add_trace(go.Scatter(
-                x=grid_sorted["X"], y=grid_sorted[".fitted"],
-                mode="lines", name="Fitted Model Curve",
-                line=dict(color="#2563eb", width=3)
+                x=df_data["X"], y=df_data["Z"],
+                mode="markers",
+                marker=dict(color="#2563eb", size=8, opacity=0.7),
+                text=[f"Observed Z: {z:.3f}<br>Fitted: {f:.3f}<br>Residual: {r:.3f}" for z, f, r in zip(df_data["Z"], df_data[".fitted"], df_data[".residual"])],
+                name="Observed Data"
             ))
+            # 2. Fitted model curve
+            if not grid.empty and "X" in grid.columns and ".fitted" in grid.columns:
+                grid_sorted = grid.sort_values("X")
+                fig.add_trace(go.Scatter(
+                    x=grid_sorted["X"], y=grid_sorted[".fitted"],
+                    mode="lines",
+                    line=dict(color="#ef4444", width=3),
+                    name="Fitted Model Curve"
+                ))
+            fig.update_layout(
+                title=f"{meta['label']} - Observed Data & Fitted Curve ({analysis['link']} link)",
+                xaxis_title=labels.get("x", "X"),
+                yaxis_title=labels.get("z", "Z"),
+                margin=dict(l=40, r=40, b=40, t=40),
+                height=550
+            )
             st.plotly_chart(fig, use_container_width=True)
         else:
-            fig = px.scatter_3d(
-                df_data, x="X", y="Y", z="Z",
-                color=".residual",
-                color_continuous_scale="Viridis",
-                labels={"X": labels["x"], "Y": labels["y"], "Z": labels["z"]},
-                title=f"{meta['label']} 3D Scatter & Predicted Surface",
-                opacity=0.8
+            fig = go.Figure()
+            # 1. Observed 3D scatter points
+            if "Group" in df_data.columns:
+                fig.add_trace(go.Scatter3d(
+                    x=df_data["X"], y=df_data["Y"], z=df_data["Z"],
+                    mode="markers",
+                    marker=dict(size=5, opacity=0.8),
+                    text=[f"Observed Z: {z:.3f}<br>Group: {g}" for z, g in zip(df_data["Z"], df_data["Group"])],
+                    name="Observed Data"
+                ))
+            else:
+                fig.add_trace(go.Scatter3d(
+                    x=df_data["X"], y=df_data["Y"], z=df_data["Z"],
+                    mode="markers",
+                    marker=dict(
+                        size=5,
+                        color=df_data[".residual"],
+                        colorscale="Viridis",
+                        showscale=True,
+                        colorbar=dict(title="Residual"),
+                        opacity=0.8
+                    ),
+                    text=[f"Observed Z: {z:.3f}<br>Fitted: {f:.3f}<br>Residual: {r:.3f}" for z, f, r in zip(df_data["Z"], df_data[".fitted"], df_data[".residual"])],
+                    name="Observed Data"
+                ))
+            # 2. Fitted 3D Surface Mesh
+            if not grid.empty and "X" in grid.columns and "Y" in grid.columns and ".fitted" in grid.columns:
+                x_unique = np.sort(grid["X"].unique())
+                y_unique = np.sort(grid["Y"].unique())
+                
+                z_pivot = grid.pivot(index="Y", columns="X", values=".fitted")
+                z_matrix = z_pivot.reindex(index=y_unique, columns=x_unique).values
+                
+                fig.add_trace(go.Surface(
+                    x=x_unique,
+                    y=y_unique,
+                    z=z_matrix,
+                    colorscale="Blues",
+                    opacity=0.45,
+                    showscale=False,
+                    name="Population Fit Surface"
+                ))
+            fig.update_layout(
+                title=f"{meta['label']} - Observed Data & 3D Population Surface ({analysis['link']} link)",
+                scene=dict(
+                    xaxis_title=labels.get("x", "X"),
+                    yaxis_title=labels.get("y", "Y"),
+                    zaxis_title=labels.get("z", "Z")
+                ),
+                margin=dict(l=0, r=0, b=0, t=40),
+                height=650
             )
             st.plotly_chart(fig, use_container_width=True)
             
