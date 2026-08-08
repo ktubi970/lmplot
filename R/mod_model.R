@@ -62,7 +62,13 @@ fit_model <- function(df, model_type, link = NULL) {
   if (model_type == "glmm") {
     model_data <- df
     model_data$Group <- factor(model_data$Group)
-    return(lme4::lmer(Z ~ X + Y + (1 | Group), data = model_data))
+    if (requireNamespace("lme4", quietly = TRUE)) {
+      return(lme4::lmer(Z ~ X + Y + (1 | Group), data = model_data))
+    } else if (requireNamespace("nlme", quietly = TRUE)) {
+      return(nlme::lme(Z ~ X + Y, random = ~ 1 | Group, data = model_data))
+    } else {
+      return(stats::lm(Z ~ X + Y + Group, data = model_data))
+    }
   }
   family_object <- do.call(config$family, list(link = link))
   if (config$dimensions == 2L) {
@@ -86,6 +92,7 @@ fit_model <- function(df, model_type, link = NULL) {
 predict_response <- function(fit, newdata = NULL, population = FALSE) {
   if (inherits(fit, "glm")) return(stats::predict(fit, newdata = newdata, type = "response"))
   if (inherits(fit, "merMod")) return(stats::predict(fit, newdata = newdata, re.form = if (population) NA else NULL, allow.new.levels = TRUE))
+  if (inherits(fit, "lme")) return(as.numeric(stats::predict(fit, newdata = newdata, level = if (population) 0 else 1)))
   stats::predict(fit, newdata = newdata)
 }
 
