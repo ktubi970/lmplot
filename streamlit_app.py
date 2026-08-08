@@ -14,8 +14,110 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📊 LM Plot Explorer")
-st.caption("Interactive local exploration of linear, generalized linear, and Gaussian mixed models powered by an R statistical engine.")
+# Apply UI Design System (Tokens, Typography, Glassmorphism, Component Styling)
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+        --primary-500: #2563eb;
+        --primary-600: #1d4ed8;
+        --primary-50: #eff6ff;
+        --accent-teal: #10b981;
+        --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+        --radius-card: 12px;
+        --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    }
+    
+    html, body, [class*="css"]  {
+        font-family: var(--font-sans);
+    }
+    
+    /* Header Card Styling */
+    .header-container {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        padding: 24px 32px;
+        border-radius: var(--radius-card);
+        color: #ffffff;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-subtle);
+    }
+    .header-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .header-caption {
+        color: #94a3b8;
+        font-size: 14px;
+        margin-top: 6px;
+    }
+    
+    /* Metric Cards Styling */
+    [data-testid="stMetric"] {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 16px 20px;
+        border-radius: var(--radius-card);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+        border-color: #cbd5e1;
+    }
+    [data-testid="stMetricLabel"] {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+    }
+    [data-testid="stMetricValue"] {
+        font-size: 22px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    
+    /* Custom Tab Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 48px;
+        padding: 0 20px;
+        font-weight: 500;
+        font-size: 14px;
+        border-radius: 8px 8px 0 0;
+    }
+    .stTabs [aria-selected="true"] {
+        color: var(--primary-600) !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Primary Button Styling */
+    .stButton > button[kind="primary"] {
+        background-color: var(--primary-500);
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background-color 0.15s ease;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background-color: var(--primary-600);
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Custom Header Component
+st.markdown("""
+<div class="header-container">
+    <div class="header-title">📊 LM Plot Explorer</div>
+    <div class="header-caption">Interactive local exploration of linear, generalized linear, and Gaussian mixed models powered by an R statistical engine.</div>
+</div>
+""", unsafe_allow_html=True)
 
 # Model metadata configuration
 MODEL_METADATA = {
