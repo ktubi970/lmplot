@@ -3,9 +3,9 @@ source(file.path("..", "R", "mod_simulation.R"))
 source(file.path("..", "R", "mod_visualization.R"))
 source(file.path("..", "R", "mod_examples.R"))
 
-test_that("all six examples have complete offline artifacts", {
+test_that("all examples have complete offline artifacts", {
   ids <- example_ids(root = "..")
-  expect_equal(length(ids), 6L)
+  expect_equal(length(ids), 7L)
 
   for (id in ids) {
     example <- load_real_example(id, root = "..")

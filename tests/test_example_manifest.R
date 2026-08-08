@@ -1,13 +1,13 @@
 source(file.path("..", "R", "mod_model.R"))
 
-test_that("real-data manifest covers the six beta models exactly", {
+test_that("real-data manifest covers the seven models exactly", {
   manifest <- utils::read.csv(
     file.path("..", "data", "real", "manifest.csv"),
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
-  expect_equal(nrow(manifest), 6L)
-  expect_setequal(manifest$model_type, setdiff(model_ids(), "glm_binomial_2d"))
+  expect_equal(nrow(manifest), 7L)
+  expect_setequal(manifest$model_type, model_ids())
   expect_identical(anyDuplicated(manifest$example_id), 0L)
   expect_identical(anyDuplicated(manifest$model_type), 0L)
   required <- c(
@@ -28,7 +28,7 @@ test_that("real-data manifest covers the six beta models exactly", {
   expect_true(all(nzchar(manifest$publication_url)))
   expect_identical(
     stats::setNames(manifest$expected_rows, manifest$model_type),
-    c(lm_2d = 151L, lm_3d = 425L, glm_binomial = 146L,
+    c(lm_2d = 151L, lm_3d = 425L, glm_binomial_2d = 146L, glm_binomial = 146L,
       glm_poisson = 4177L, glm_gamma = 270L, glmm = 4059L)
   )
 })
@@ -53,6 +53,11 @@ test_that("real-data manifest records deterministic preprocessing summaries", {
       "Verify and extract Concrete_Data.xls, retain rows with age exactly",
       "28 days, and map cement, water, and compressive strength; retain",
       "425 rows with kg/m\u00b3 and MPa unchanged."
+    ),
+    glm_binomial_2d = paste(
+      "From 152 Ad\u00e9lie source rows, retain finite culmen length",
+      "with Sex equal to FEMALE or MALE, sort by Sample Number, and encode",
+      "FEMALE = 1 and MALE = 0; retain 146 rows."
     ),
     glm_binomial = paste(
       "From 152 Ad\u00e9lie source rows, retain finite culmen length and",

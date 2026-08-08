@@ -4,9 +4,9 @@ source(file.path("..", "R", "mod_visualization.R"))
 examples_path <- file.path("..", "R", "mod_examples.R")
 if (file.exists(examples_path)) source(examples_path)
 
-test_that("six prepared examples load, validate, and fit", {
+test_that("prepared examples load, validate, and fit", {
   ids <- example_ids(root = "..")
-  expect_equal(length(ids), 6L)
+  expect_equal(length(ids), 7L)
   for (id in ids) {
     example <- load_real_example(id, root = "..")
     config <- example_config(id, root = "..")
