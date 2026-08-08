@@ -1,4 +1,9 @@
-#!/usr/bin/env Rscript
+if (!requireNamespace("jsonlite", quietly = TRUE)) {
+  install.packages("jsonlite", repos = "https://cloud.r-project.org/", quietly = TRUE)
+}
+if (!requireNamespace("lme4", quietly = TRUE)) {
+  try(install.packages("lme4", repos = "https://cloud.r-project.org/", quietly = TRUE), silent = TRUE)
+}
 suppressPackageStartupMessages({
   library(jsonlite)
 })
