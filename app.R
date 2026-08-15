@@ -26,8 +26,16 @@ scientific_variable_definition <- function(label, source) {
 
 ui <- bslib::page_sidebar(
   title = shiny::div(
-    "LM Plot Explorer ",
-    shiny::span(APP_VERSION, class = "version-badge")
+    class = "d-flex align-items-center justify-content-between w-100 py-1",
+    shiny::div(
+      class = "d-flex align-items-center gap-2",
+      shiny::span("🔬 LM Plot Explorer", class = "fw-bold fs-5 text-primary-emphasis"),
+      shiny::span(APP_VERSION, class = "version-badge")
+    ),
+    shiny::span(
+      "Scientific Statistical Cockpit • LM / GLM / GLMM",
+      class = "badge bg-light text-secondary border rounded-pill px-3 py-1 fw-normal d-none d-md-inline-block"
+    )
   ),
   theme = bslib::bs_theme(
     version = 5,
@@ -35,30 +43,48 @@ ui <- bslib::page_sidebar(
     primary = "#2563eb"
   ),
   sidebar = bslib::sidebar(
-    shiny::selectInput(
-      "model_type", "Model",
-      choices = model_choices,
-      selected = "lm_3d"
-    ),
-    shiny::radioButtons(
-      "data_source", "Data source",
-      choices = c("Simulation" = "simulation", "Real data" = "real"),
-      selected = "simulation", inline = TRUE
-    ),
-    shiny::uiOutput("example_info"),
-    shiny::uiOutput("link_ui"),
-    shiny::conditionalPanel(
-      "input.data_source === 'simulation'",
-      sim_ui("simulation")
-    ),
-    shiny::actionButton(
-      "generate", "Generate & Fit",
-      class = "btn-primary w-100"
-    ),
-    shiny::uiOutput("surface_ui"),
-    shiny::downloadButton(
-      "download_data", "Download enriched CSV",
-      class = "w-100"
+    width = 320,
+    bslib::accordion(
+      id = "sidebar_controls",
+      open = TRUE,
+      multiple = TRUE,
+      bslib::accordion_panel(
+        "⚙️ Model & Link Specification",
+        shiny::selectInput(
+          "model_type", "Model Family",
+          choices = model_choices,
+          selected = "lm_2d"
+        ),
+        shiny::uiOutput("link_ui")
+      ),
+      bslib::accordion_panel(
+        "📂 Data Context",
+        shiny::radioButtons(
+          "data_source", "Data Source",
+          choices = c("Simulation" = "simulation", "Real data" = "real"),
+          selected = "simulation", inline = TRUE
+        ),
+        shiny::uiOutput("example_info")
+      ),
+      bslib::accordion_panel(
+        "🎛️ Simulation Parameters",
+        shiny::conditionalPanel(
+          "input.data_source === 'simulation'",
+          sim_ui("simulation")
+        )
+      ),
+      bslib::accordion_panel(
+        "🛠️ Actions & Export",
+        shiny::actionButton(
+          "generate", "⚡ Generate & Fit Model",
+          class = "btn-primary w-100 fw-bold mb-2"
+        ),
+        shiny::uiOutput("surface_ui"),
+        shiny::downloadButton(
+          "download_data", "📥 Download Enriched CSV",
+          class = "btn-outline-secondary w-100"
+        )
+      )
     )
   ),
   shiny::tags$head(
@@ -68,30 +94,89 @@ ui <- bslib::page_sidebar(
       href = "style.css"
     )
   ),
-  bslib::layout_column_wrap(
-    width = 1,
-    bslib::card(
-      full_screen = TRUE,
-      bslib::card_header("Visualization"),
-      plotly::plotlyOutput("main_plot", height = "480px")
+  bslib::navset_card_tab(
+    id = "main_nav_tabs",
+    title = shiny::div(
+      class = "d-flex align-items-center gap-2",
+      shiny::span("📊 Explorer Cockpit", class = "fw-bold")
     ),
-    bslib::layout_column_wrap(
-      width = 1 / 2,
+    bslib::nav_panel(
+      title = shiny::div("📈 Main Plot"),
+      value = "tab_main_plot",
       bslib::card(
-        bslib::card_header("Model summary"),
-        shiny::verbatimTextOutput("model_summary")
-      ),
-      bslib::card(
-        bslib::card_header("Simulation code"),
-        shiny::verbatimTextOutput("sim_code")
-      ),
-      bslib::navset_card_tab(
-        title = "Diagnostics & data",
-        bslib::nav_panel(
-          "Diagnostics",
-          shiny::plotOutput("diag_plots", height = "380px")
+        full_screen = TRUE,
+        bslib::card_header(
+          shiny::div(
+            shiny::span("LEVEL 1", class = "level-badge"),
+            "Main Plot (Response Surface & Observed Data)"
+          )
         ),
-        bslib::nav_panel("Data", DT::DTOutput("data_table"))
+        plotly::plotlyOutput("main_plot", height = "580px")
+      )
+    ),
+    bslib::nav_panel(
+      title = shiny::div("📊 Metrics & Summary"),
+      value = "tab_metrics_summary",
+      bslib::layout_column_wrap(
+        width = 1,
+        # Status Overview (Executive Cockpit Banner)
+        shiny::uiOutput("kpi_banner"),
+
+        # Model Parameters & Coefficient Estimates
+        bslib::card(
+          bslib::card_header(
+            shiny::div(
+              shiny::span("LEVEL 2", class = "level-badge"),
+              "Model Parameters & Coefficient Estimates"
+            )
+          ),
+          shiny::uiOutput("var_mapping_legend"),
+          shiny::uiOutput("coef_table_ui"),
+          shiny::tags$details(
+            class = "mt-2 p-2 border rounded bg-light small",
+            shiny::tags$summary(shiny::tags$strong("📄 Raw R Console Summary Output")),
+            shiny::verbatimTextOutput("model_summary")
+          )
+        )
+      )
+    ),
+    bslib::nav_panel(
+      title = shiny::div("🔍 Diagnostics"),
+      value = "tab_diagnostics",
+      bslib::card(
+        full_screen = TRUE,
+        bslib::card_header(
+          shiny::div(
+            shiny::span("LEVEL 3", class = "level-badge"),
+            shiny::uiOutput("diag_header_title", inline = TRUE)
+          )
+        ),
+        shiny::plotOutput("diag_plots", height = "560px"),
+        shiny::tags$details(
+          class = "mt-2 p-2 border rounded bg-light",
+          shiny::tags$summary(shiny::tags$strong("💡 Diagnostic Plots Guide & Interpretation")),
+          shiny::tags$div(
+            class = "mt-2 small text-secondary",
+            shiny::tags$ul(
+              shiny::tags$li(shiny::tags$strong("Residuals vs Fitted:"), " Checks linearity and homoscedasticity. Look for points randomly scattered around 0 with no funnel patterns or curves."),
+              shiny::tags$li(shiny::tags$strong("Normal Q-Q:"), " Checks residual normality. Points should fall closely along the 45° dashed diagonal line."),
+              shiny::tags$li(shiny::tags$strong("Scale-Location:"), " Checks homoscedasticity using root-standardized residuals. A flat trendline indicates equal error variance."),
+              shiny::tags$li(shiny::tags$strong("Residuals vs Leverage:"), " Identifies influential outliers. Points outside Cook's distance contours exert disproportionate leverage on parameter estimates.")
+            )
+          )
+        )
+      )
+    ),
+    bslib::nav_panel(
+      title = shiny::div("📑 Data & Audit Trail"),
+      value = "Data",
+      bslib::navset_card_tab(
+        title = shiny::div(
+          shiny::span("LEVEL 4", class = "level-badge"),
+          "Raw Data & Audit Trail"
+        ),
+        bslib::nav_panel("Data Grid", DT::DTOutput("data_table")),
+        bslib::nav_panel("Simulation / Reproducible Code", shiny::verbatimTextOutput("sim_code"))
       )
     )
   )
@@ -185,7 +270,7 @@ server <- function(input, output, session) {
         )),
         shiny::tags$dt("Rows"),
         shiny::tags$dd(format(metadata$expected_rows, big.mark = ",")),
-        shiny::tags$dt("Response"),
+        shiny::tags$dt("Response (Z)"),
         shiny::tags$dd(scientific_variable_definition(
           metadata$response_label,
           metadata$response_source
@@ -347,7 +432,93 @@ server <- function(input, output, session) {
     }, error = function(error) {
       showNotification(conditionMessage(error), type = "error")
     })
-  }, ignoreInit = TRUE)
+  }, ignoreInit = FALSE)
+
+  output$kpi_banner <- shiny::renderUI({
+    result <- last_result()
+    shiny::req(result)
+    kpis <- extract_model_kpis(result$fit, result$model_type)
+
+    shiny::div(
+      class = "kpi-card-grid",
+      shiny::div(
+        class = "kpi-card",
+        shiny::div(
+          class = "kpi-card-header",
+          shiny::span(class = "kpi-card-label", kpis$r2_label),
+          shiny::span(class = paste("kpi-card-status text-white", kpis$r2_badge_class), kpis$r2_status)
+        ),
+        shiny::div(class = "kpi-card-value", kpis$r2_value),
+        shiny::div(class = "kpi-card-sub", kpis$r2_sub)
+      ),
+      shiny::div(
+        class = "kpi-card",
+        shiny::div(
+          class = "kpi-card-header",
+          shiny::span(class = "kpi-card-label", kpis$aic_label),
+          shiny::span(class = paste("kpi-card-status text-white", kpis$aic_badge_class), kpis$aic_status)
+        ),
+        shiny::div(class = "kpi-card-value", kpis$aic_value),
+        shiny::div(class = "kpi-card-sub", kpis$aic_sub)
+      ),
+      shiny::div(
+        class = "kpi-card",
+        shiny::div(
+          class = "kpi-card-header",
+          shiny::span(class = "kpi-card-label", kpis$err_label),
+          shiny::span(class = paste("kpi-card-status text-white", kpis$err_badge_class), kpis$err_status)
+        ),
+        shiny::div(class = "kpi-card-value", kpis$err_value),
+        shiny::div(class = "kpi-card-sub", kpis$err_sub)
+      ),
+      shiny::div(
+        class = "kpi-card",
+        shiny::div(
+          class = "kpi-card-header",
+          shiny::span(class = "kpi-card-label", kpis$health_label),
+          shiny::span(class = paste("kpi-card-status text-white", kpis$health_badge_class), kpis$health_status)
+        ),
+        shiny::div(class = "kpi-card-value", kpis$health_value),
+        shiny::div(class = "kpi-card-sub", kpis$health_sub)
+      )
+    )
+  })
+
+  output$coef_table_ui <- shiny::renderUI({
+    result <- last_result()
+    shiny::req(result)
+    df_coef <- extract_coefficient_table(result$fit)
+    if (nrow(df_coef) == 0) return(NULL)
+
+    rows <- lapply(seq_len(nrow(df_coef)), function(i) {
+      shiny::tags$tr(
+        shiny::tags$td(shiny::tags$strong(df_coef$Term[i])),
+        shiny::tags$td(df_coef$Estimate[i]),
+        shiny::tags$td(df_coef$StdError[i]),
+        shiny::tags$td(df_coef$Statistic[i]),
+        shiny::tags$td(df_coef$PValue[i]),
+        shiny::tags$td(df_coef$CI95[i])
+      )
+    })
+
+    shiny::div(
+      class = "coef-table-container",
+      shiny::tags$table(
+        class = "coef-table",
+        shiny::tags$thead(
+          shiny::tags$tr(
+            shiny::tags$th("Parameter Term"),
+            shiny::tags$th("Estimate (\u03b2)"),
+            shiny::tags$th("Std Error"),
+            shiny::tags$th("Statistic (t/z)"),
+            shiny::tags$th("p-value"),
+            shiny::tags$th("95% Conf. Interval")
+          )
+        ),
+        shiny::tags$tbody(rows)
+      )
+    )
+  })
 
   output$main_plot <- plotly::renderPlotly({
     result <- last_result()
@@ -367,6 +538,47 @@ server <- function(input, output, session) {
       )
     }
   })
+  output$var_mapping_legend <- shiny::renderUI({
+    result <- last_result()
+    shiny::req(result)
+    if (!is.null(result$example)) {
+      meta <- result$example$metadata
+      config <- model_config(meta$model_type)
+      items <- list(
+        shiny::tags$span(shiny::tags$strong("Z (Response): "), meta$response_label),
+        shiny::tags$span(shiny::tags$strong("X (Predictor): "), meta$predictor_x_label)
+      )
+      if (config$dimensions == 3L && nzchar(meta$predictor_y_label)) {
+        items <- c(items, list(shiny::tags$span(shiny::tags$strong("Y (Predictor): "), meta$predictor_y_label)))
+      }
+      if (config$requires_group && nzchar(meta$group_source)) {
+        items <- c(items, list(shiny::tags$span(shiny::tags$strong("Group: "), tools::toTitleCase(gsub("_", " ", meta$group_source, fixed = TRUE)))))
+      }
+      shiny::tags$div(
+        class = "mb-2 p-2 border rounded bg-light small",
+        shiny::tags$div(class = "fw-bold text-primary mb-1", "📌 Variable Mapping (Real Data)"),
+        do.call(shiny::tags$div, c(class = "d-flex flex-wrap gap-3", items))
+      )
+    } else {
+      config <- model_config(result$model_type)
+      items <- list(
+        shiny::tags$span(shiny::tags$strong("Z: "), "Response variable"),
+        shiny::tags$span(shiny::tags$strong("X: "), "Primary predictor")
+      )
+      if (config$dimensions == 3L) {
+        items <- c(items, list(shiny::tags$span(shiny::tags$strong("Y: "), "Secondary predictor")))
+      }
+      if (config$requires_group) {
+        items <- c(items, list(shiny::tags$span(shiny::tags$strong("Group: "), "Random intercept factor")))
+      }
+      shiny::tags$div(
+        class = "mb-2 p-2 border rounded bg-light small",
+        shiny::tags$div(class = "fw-bold text-primary mb-1", "📌 Variable Mapping (Simulation)"),
+        do.call(shiny::tags$div, c(class = "d-flex flex-wrap gap-3", items))
+      )
+    }
+  })
+
   output$model_summary <- shiny::renderPrint({
     result <- last_result()
     shiny::req(result)
@@ -377,6 +589,16 @@ server <- function(input, output, session) {
     shiny::req(result)
     result$code
   })
+  output$diag_header_title <- shiny::renderUI({
+    result <- last_result()
+    is_glmm <- !is.null(result) && identical(result$model_type, "glmm")
+    if (is_glmm) {
+      "Diagnostics (2-Panel Suite for GLMM)"
+    } else {
+      "Diagnostics (4-Panel Suite)"
+    }
+  })
+
   output$diag_plots <- shiny::renderPlot({
     result <- last_result()
     shiny::req(result)
@@ -394,10 +616,19 @@ server <- function(input, output, session) {
   output$data_table <- DT::renderDT({
     result <- last_result()
     shiny::req(result)
-    DT::datatable(
-      display_result(result),
-      options = list(pageLength = 8)
+    df <- display_result(result)
+    num_cols <- names(df)[vapply(df, is.numeric, logical(1))]
+    dt <- DT::datatable(
+      df,
+      options = list(
+        pageLength = 25,
+        lengthMenu = c(10, 25, 50, 100)
+      )
     )
+    if (length(num_cols) > 0) {
+      dt <- DT::formatRound(dt, columns = num_cols, digits = 4)
+    }
+    dt
   })
   output$download_data <- shiny::downloadHandler(
     filename = function() paste0("lmplot-", Sys.Date(), ".csv"),
@@ -411,6 +642,11 @@ server <- function(input, output, session) {
       )
     }
   )
+
+  shiny::outputOptions(output, "main_plot", suspendWhenHidden = FALSE)
+  shiny::outputOptions(output, "diag_plots", suspendWhenHidden = FALSE)
+  shiny::outputOptions(output, "model_summary", suspendWhenHidden = FALSE)
+  shiny::outputOptions(output, "data_table", suspendWhenHidden = FALSE)
 }
 
 shiny::shinyApp(ui, server)
