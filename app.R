@@ -446,7 +446,7 @@ server <- function(input, output, session) {
         shiny::div(
           class = "kpi-card-header",
           shiny::span(class = "kpi-card-label", kpis$r2_label),
-          shiny::span(class = paste("kpi-card-status text-white", kpis$r2_badge_class), kpis$r2_status)
+          shiny::span(class = paste("kpi-card-status", kpis$r2_badge_class), kpis$r2_status)
         ),
         shiny::div(class = "kpi-card-value", kpis$r2_value),
         shiny::div(class = "kpi-card-sub", kpis$r2_sub)
@@ -456,7 +456,7 @@ server <- function(input, output, session) {
         shiny::div(
           class = "kpi-card-header",
           shiny::span(class = "kpi-card-label", kpis$aic_label),
-          shiny::span(class = paste("kpi-card-status text-white", kpis$aic_badge_class), kpis$aic_status)
+          shiny::span(class = paste("kpi-card-status", kpis$aic_badge_class), kpis$aic_status)
         ),
         shiny::div(class = "kpi-card-value", kpis$aic_value),
         shiny::div(class = "kpi-card-sub", kpis$aic_sub)
@@ -466,7 +466,7 @@ server <- function(input, output, session) {
         shiny::div(
           class = "kpi-card-header",
           shiny::span(class = "kpi-card-label", kpis$err_label),
-          shiny::span(class = paste("kpi-card-status text-white", kpis$err_badge_class), kpis$err_status)
+          shiny::span(class = paste("kpi-card-status", kpis$err_badge_class), kpis$err_status)
         ),
         shiny::div(class = "kpi-card-value", kpis$err_value),
         shiny::div(class = "kpi-card-sub", kpis$err_sub)
@@ -476,7 +476,7 @@ server <- function(input, output, session) {
         shiny::div(
           class = "kpi-card-header",
           shiny::span(class = "kpi-card-label", kpis$health_label),
-          shiny::span(class = paste("kpi-card-status text-white", kpis$health_badge_class), kpis$health_status)
+          shiny::span(class = paste("kpi-card-status", kpis$health_badge_class), kpis$health_status)
         ),
         shiny::div(class = "kpi-card-value", kpis$health_value),
         shiny::div(class = "kpi-card-sub", kpis$health_sub)
@@ -490,32 +490,63 @@ server <- function(input, output, session) {
     df_coef <- extract_coefficient_table(result$fit)
     if (nrow(df_coef) == 0) return(NULL)
 
+    formula_latex <- model_latex_formula(result$model_type, result$link)
+    formula_box <- shiny::div(
+      class = "model-formula-card mb-3 p-3 border rounded bg-light",
+      shiny::div(
+        class = "d-flex align-items-center justify-content-between mb-1",
+        shiny::span(class = "fw-bold text-secondary small text-uppercase tracking-wide", "📐 Model Specification Formula"),
+        shiny::span(class = "badge bg-secondary-subtle text-secondary font-mono small", sprintf("%s (%s link)", result$model_type, result$link))
+      ),
+      shiny::div(
+        class = "formula-math-display text-center py-2 fs-5 font-mono",
+        shiny::withMathJax(sprintf("$$\\displaystyle %s$$", formula_latex))
+      )
+    )
+
     rows <- lapply(seq_len(nrow(df_coef)), function(i) {
+      sig_class <- if (!is.null(df_coef$PValueClass)) {
+        df_coef$PValueClass[i]
+      } else {
+        p_str <- df_coef$PValue[i]
+        if (grepl("***", p_str, fixed = TRUE)) "sig-high"
+        else if (grepl("**", p_str, fixed = TRUE)) "sig-med"
+        else if (grepl("*", p_str, fixed = TRUE)) "sig-low"
+        else "sig-ns"
+      }
+
       shiny::tags$tr(
         shiny::tags$td(shiny::tags$strong(df_coef$Term[i])),
         shiny::tags$td(df_coef$Estimate[i]),
         shiny::tags$td(df_coef$StdError[i]),
         shiny::tags$td(df_coef$Statistic[i]),
-        shiny::tags$td(df_coef$PValue[i]),
-        shiny::tags$td(df_coef$CI95[i])
+        shiny::tags$td(
+          shiny::tags$span(class = paste("p-sig-badge", sig_class), df_coef$PValue[i])
+        ),
+        shiny::tags$td(
+          shiny::tags$span(class = "coef-ci", df_coef$CI95[i])
+        )
       )
     })
 
-    shiny::div(
-      class = "coef-table-container",
-      shiny::tags$table(
-        class = "coef-table",
-        shiny::tags$thead(
-          shiny::tags$tr(
-            shiny::tags$th("Parameter Term"),
-            shiny::tags$th("Estimate (\u03b2)"),
-            shiny::tags$th("Std Error"),
-            shiny::tags$th("Statistic (t/z)"),
-            shiny::tags$th("p-value"),
-            shiny::tags$th("95% Conf. Interval")
-          )
-        ),
-        shiny::tags$tbody(rows)
+    shiny::tagList(
+      formula_box,
+      shiny::div(
+        class = "coef-table-container",
+        shiny::tags$table(
+          class = "coef-table",
+          shiny::tags$thead(
+            shiny::tags$tr(
+              shiny::tags$th("Parameter Term"),
+              shiny::tags$th("Estimate (\u03b2)"),
+              shiny::tags$th("Std Error"),
+              shiny::tags$th("Statistic (t/z)"),
+              shiny::tags$th("p-value"),
+              shiny::tags$th("95% Conf. Interval")
+            )
+          ),
+          shiny::tags$tbody(rows)
+        )
       )
     )
   })

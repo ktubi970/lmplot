@@ -116,3 +116,77 @@ test_that("fit_model validates GLMM groups without relying on simulation", {
     fixed = TRUE
   )
 })
+
+test_that("extract_model_kpis and extract_coefficient_table return structured metrics", {
+  df <- simulate_data("lm_2d", "identity", n = 100L, seed = 42L)
+  fit <- fit_model(df, "lm_2d", "identity")
+
+  kpis <- extract_model_kpis(fit, "lm_2d")
+  expect_type(kpis, "list")
+  expect_named(kpis, c(
+    "r2_label", "r2_value", "r2_sub", "r2_status", "r2_badge_class",
+    "aic_label", "aic_value", "aic_sub", "aic_status", "aic_badge_class",
+    "err_label", "err_value", "err_sub", "err_status", "err_badge_class",
+    "health_label", "health_value", "health_sub", "health_status", "health_badge_class"
+  ))
+  expect_match(kpis$r2_label, "R²")
+  valid_classes <- c("status-optimal", "status-warning", "status-alert")
+  expect_true(kpis$r2_badge_class %in% valid_classes)
+  expect_true(kpis$aic_badge_class %in% valid_classes)
+  expect_true(kpis$err_badge_class %in% valid_classes)
+  expect_true(kpis$health_badge_class %in% valid_classes)
+
+  coef_df <- extract_coefficient_table(fit)
+  expect_s3_class(coef_df, "data.frame")
+  expect_true(nrow(coef_df) >= 2L)
+  expect_true(all(c("Term", "Estimate", "StdError", "Statistic", "PValue", "CI95") %in% names(coef_df)))
+})
+
+test_that("model_latex_formula returns LaTeX formula for all 15 model/link combinations", {
+  matrix <- do.call(rbind, lapply(model_ids(), function(id) {
+    data.frame(model_type = id, link = valid_links(id), stringsAsFactors = FALSE)
+  }))
+  expect_equal(nrow(matrix), 15L)
+
+  expected_formulas <- c(
+    "lm_2d:identity" = "Z = \\beta_0 + \\beta_1 X + \\epsilon",
+    "lm_3d:identity" = "Z = \\beta_0 + \\beta_1 X + \\beta_2 Y + \\epsilon",
+    "glm_binomial_2d:logit" = "\\text{logit}(P(Z=1)) = \\beta_0 + \\beta_1 X",
+    "glm_binomial_2d:probit" = "\\Phi^{-1}(P(Z=1)) = \\beta_0 + \\beta_1 X",
+    "glm_binomial_2d:cloglog" = "\\ln(-\\ln(1 - P(Z=1))) = \\beta_0 + \\beta_1 X",
+    "glm_binomial:logit" = "\\text{logit}(P(Z=1)) = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_binomial:probit" = "\\Phi^{-1}(P(Z=1)) = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_binomial:cloglog" = "\\ln(-\\ln(1 - P(Z=1))) = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_poisson:log" = "\\ln(\\lambda) = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_poisson:identity" = "\\lambda = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_poisson:sqrt" = "\\sqrt{\\lambda} = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_gamma:inverse" = "\\frac{1}{\\mu} = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_gamma:log" = "\\ln(\\mu) = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glm_gamma:identity" = "\\mu = \\beta_0 + \\beta_1 X + \\beta_2 Y",
+    "glmm:identity" = "Z_{ij} = \\beta_0 + \\beta_1 X_{ij} + \\beta_2 Y_{ij} + u_{j} + \\epsilon_{ij}, \\quad u_j \\sim \\mathcal{N}(0, \\sigma_u^2)"
+  )
+
+  for (row in seq_len(nrow(matrix))) {
+    m_type <- matrix$model_type[[row]]
+    lnk <- matrix$link[[row]]
+    key <- paste(m_type, lnk, sep = ":")
+    formula <- model_latex_formula(m_type, lnk)
+    expect_equal(formula, expected_formulas[[key]], info = key)
+  }
+
+  expect_equal(model_latex_formula("lm_2d"), "Z = \\beta_0 + \\beta_1 X + \\epsilon")
+  expect_equal(model_latex_formula("glm_binomial"), "\\text{logit}(P(Z=1)) = \\beta_0 + \\beta_1 X + \\beta_2 Y")
+
+  expect_error(model_latex_formula("unknown"), "Unknown model type")
+  expect_error(model_latex_formula("lm_2d", "log"), "Invalid link")
+})
+
+test_that("format_pval and get_pval_sig_class return significance tiers", {
+  expect_equal(get_pval_sig_class(0.0001), "sig-high")
+  expect_equal(get_pval_sig_class(0.005), "sig-med")
+  expect_equal(get_pval_sig_class(0.03), "sig-low")
+  expect_equal(get_pval_sig_class(0.15), "sig-ns")
+  expect_equal(get_pval_sig_class(NA), "sig-ns")
+})
+
+
