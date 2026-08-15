@@ -83,6 +83,35 @@ generate_eli5_explanation <- function(fit, model_type, link = "identity",
   )
 }
 
+try_ollama_llm_explanation <- function(prompt_payload, model_name = "stat-eli5", ollama_url = "http://localhost:11434") {
+  tryCatch({
+    endpoint <- paste0(ollama_url, "/api/generate")
+    body_data <- jsonlite::toJSON(list(
+      model = model_name,
+      prompt = paste("Explique ce modèle statistique en français simple (ELI5) :", jsonlite::toJSON(prompt_payload, auto_unbox = TRUE)),
+      stream = FALSE
+    ), auto_unbox = TRUE)
+
+    con <- url(endpoint, headers = c("Content-Type" = "application/json"))
+    on.exit(close(con), add = TRUE)
+
+    # Court timeout pour ne jamais bloquer l'interface
+    opts <- options(timeout = 2)
+    on.exit(options(opts), add = TRUE)
+
+    response_text <- suppressWarnings(readLines(con, warn = FALSE))
+    if (length(response_text) > 0) {
+      json_res <- jsonlite::fromJSON(paste(response_text, collapse = ""))
+      if (!is.null(json_res$response) && nzchar(json_res$response)) {
+        return(json_res$response)
+      }
+    }
+    return(NULL)
+  }, error = function(e) {
+    return(NULL)
+  })
+}
+
 eli5_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::div(
