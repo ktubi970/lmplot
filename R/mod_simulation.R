@@ -83,8 +83,100 @@ evaluate_expert_simulation <- function(code, parameters, model_type, link = NULL
 }
 
 simulation_code <- function(model_type, link, parameters) {
-  call <- as.call(c(quote(simulate_data), list(model_type = model_type, link = link), parameters))
-  paste(deparse(call, width.cutoff = 100L), collapse = "\n")
+  config <- model_config(model_type)
+  link <- validate_model_link(model_type, link)
+
+  n <- parameters$n %||% 200L
+  seed <- parameters$seed %||% 123L
+  beta0 <- parameters$beta0 %||% 2
+  beta1 <- parameters$beta1 %||% 0.5
+  beta2 <- parameters$beta2 %||% -0.25
+  sigma <- parameters$sigma %||% 1
+  shape <- parameters$shape %||% 2
+  group_sd <- parameters$group_sd %||% 1
+  groups <- parameters$groups %||% 5L
+
+  lines <- c(
+    paste0("set.seed(", seed, "L)"),
+    paste0("n <- ", n, "L"),
+    "X <- runif(n, -1, 1)"
+  )
+
+  if (config$dimensions == 3L) {
+    lines <- c(lines, "Y <- runif(n, -1, 1)")
+  }
+
+  if (model_type == "lm_2d") {
+    lines <- c(
+      lines,
+      paste0("Z <- ", beta0, " + ", beta1, " * X + rnorm(n, 0, ", sigma, ")"),
+      "data.frame(X = X, Z = Z)"
+    )
+  } else if (model_type == "lm_3d") {
+    lines <- c(
+      lines,
+      paste0("Z <- ", beta0, " + ", beta1, " * X + ", beta2, " * Y + rnorm(n, 0, ", sigma, ")"),
+      "data.frame(X = X, Y = Y, Z = Z)"
+    )
+  } else if (model_type == "glmm") {
+    lines <- c(
+      lines,
+      paste0("groups <- ", groups, "L"),
+      "Group <- factor(rep(seq_len(groups), length.out = n))",
+      paste0("offsets <- rnorm(groups, 0, ", group_sd, ")"),
+      paste0("eta <- ", beta0, " + ", beta1, " * X + ", beta2, " * Y + offsets[as.integer(Group)]"),
+      paste0("Z <- eta + rnorm(n, 0, ", sigma, ")"),
+      "data.frame(X = X, Y = Y, Z = Z, Group = Group)"
+    )
+  } else {
+    linear_pred <- if (config$dimensions == 2L) {
+      paste0(beta0, " + ", beta1, " * X")
+    } else {
+      paste0(beta0, " + ", beta1, " * X + ", beta2, " * Y")
+    }
+    lines <- c(lines, paste0("eta <- ", linear_pred))
+
+    if (config$family == "binomial") {
+      if (link == "logit") {
+        lines <- c(lines, "mu <- 1 / (1 + exp(-eta))")
+      } else if (link == "probit") {
+        lines <- c(lines, "mu <- pnorm(eta)")
+      } else if (link == "cloglog") {
+        lines <- c(lines, "mu <- 1 - exp(-exp(eta))")
+      }
+      lines <- c(lines, "Z <- rbinom(n, 1, mu)")
+    } else if (config$family == "poisson") {
+      if (link == "log") {
+        lines <- c(lines, "mu <- exp(eta)")
+      } else if (link == "identity") {
+        lines <- c(lines, "mu <- eta")
+      } else if (link == "sqrt") {
+        lines <- c(lines, "mu <- eta^2")
+      }
+      lines <- c(lines, "Z <- rpois(n, mu)")
+    } else if (config$family == "Gamma") {
+      if (link == "inverse") {
+        lines <- c(lines, "mu <- 1 / eta")
+      } else if (link == "log") {
+        lines <- c(lines, "mu <- exp(eta)")
+      } else if (link == "identity") {
+        lines <- c(lines, "mu <- eta")
+      }
+      lines <- c(
+        lines,
+        paste0("shape <- ", shape),
+        "Z <- rgamma(n, shape = shape, rate = shape / mu)"
+      )
+    }
+
+    if (config$dimensions == 2L) {
+      lines <- c(lines, "data.frame(X = X, Z = Z)")
+    } else {
+      lines <- c(lines, "data.frame(X = X, Y = Y, Z = Z)")
+    }
+  }
+
+  paste(lines, collapse = "\n")
 }
 
 sim_ui <- function(id) {

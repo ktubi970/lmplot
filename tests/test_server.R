@@ -182,28 +182,28 @@ test_that("server generates plot summary diagnostics and table for all six modes
     glmm = "identity"
   )
 
-  for (model_type in names(cases)) {
-    link <- cases[[model_type]]
-    shiny::testServer(server, {
+  shiny::testServer(server, {
+    for (model_type in names(cases)) {
+      link <- cases[[model_type]]
       session$setInputs(model_type = model_type)
       session$flushReact()
       if (length(valid_links(model_type)) > 1L) {
         set_link_choice(session, model_type, link)
       }
-      set_standard_inputs(session)
+      set_standard_inputs(session, n = 40L)
       session$setInputs(generate = 1L, show_surface = TRUE)
       session$flushReact()
 
       result <- last_result()
       expect_identical(result$model_type, model_type, info = model_type)
       expect_identical(result$link, link, info = model_type)
-      expect_equal(nrow(result$data), 80L, info = model_type)
+      expect_equal(nrow(result$data), 40L, info = model_type)
       expect_false(is.null(output$main_plot), info = model_type)
       expect_true(length(output$model_summary) > 0L, info = model_type)
       expect_false(is.null(output$diag_plots), info = model_type)
       expect_false(is.null(output$data_table), info = model_type)
-    })
-  }
+    }
+  })
 })
 
 test_that("server fits every real-data example without evaluating simulation", {

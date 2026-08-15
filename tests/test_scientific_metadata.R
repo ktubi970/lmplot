@@ -45,14 +45,20 @@ scientific_plot_specs <- list(
   )
 )
 
+.real_plot_cache <- new.env(parent = emptyenv())
 built_real_plot <- function(example_id) {
+  if (exists(example_id, envir = .real_plot_cache, inherits = FALSE)) {
+    return(get(example_id, envir = .real_plot_cache))
+  }
   example <- load_real_example(example_id, root = "..")
   fit <- fit_model(
     example$analysis,
     example$metadata$model_type,
     example$metadata$default_link
   )
-  plotly::plotly_build(example_plot(example, fit))
+  res <- plotly::plotly_build(example_plot(example, fit))
+  assign(example_id, res, envir = .real_plot_cache)
+  res
 }
 
 trace_hover_content <- function(trace) {

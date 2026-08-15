@@ -292,18 +292,20 @@ if analysis:
     grid = pd.DataFrame(analysis["prediction_grid"])
     labels = analysis["labels"]
     
-    # Top KPI Metrics
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Observations (n)", len(df_data))
-    m2.metric("Model Family", meta["label"])
-    m3.metric("Link Function", analysis["link"])
-    m4.metric("Dimensions", "2D Curve" if meta["dimensions"] == 2 else "3D Surface")
+    # Extract variable mapping labels
+    z_lbl = labels.get("z", "Response Z")
+    x_lbl = labels.get("x", "Predictor X")
+    y_lbl = labels.get("y", None)
     
-    st.markdown("---")
-    
-    # Main Tabs
-    tab_plot, tab_diag, tab_coef, tab_data = st.tabs([
-        "📈 Main Plot", "🔍 Residual Diagnostics", "📋 Model Summary", "📑 Data Preview"
+    mapping_items = [f"**Z (Response):** {z_lbl}", f"**X (Predictor):** {x_lbl}"]
+    if y_lbl:
+        mapping_items.append(f"**Y (Predictor):** {y_lbl}")
+    if "Group" in df_data.columns:
+        mapping_items.append("**Group:** Random Intercept Group")
+
+    # Main Navigation Tabs Hierarchy (Main Plot -> Metrics & Summary -> Diagnostics -> Data & Audit Trail)
+    tab_plot, tab_metrics_summary, tab_diag, tab_data = st.tabs([
+        "📈 Main Plot", "📊 Metrics & Summary", "🔍 Residual Diagnostics", "📑 Data & Audit Trail"
     ])
     
     with tab_plot:
@@ -332,7 +334,7 @@ if analysis:
                 xaxis_title=labels.get("x", "X"),
                 yaxis_title=labels.get("z", "Z"),
                 margin=dict(l=40, r=40, b=40, t=40),
-                height=550
+                height=580
             )
             st.plotly_chart(fig, use_container_width=True)
         else:
@@ -383,13 +385,36 @@ if analysis:
                 scene=dict(
                     xaxis_title=labels.get("x", "X"),
                     yaxis_title=labels.get("y", "Y"),
-                    zaxis_title=labels.get("z", "Z")
+                    zaxis_title=labels.get("z", "Z"),
+                    camera=dict(
+                        eye=dict(x=1.8, y=1.8, z=1.5)
+                    )
                 ),
                 margin=dict(l=0, r=0, b=0, t=40),
                 height=650
             )
             st.plotly_chart(fig, use_container_width=True)
-            
+        
+    with tab_metrics_summary:
+        st.subheader("Model Overview & Metrics")
+        
+        # Top KPI Metrics Cards
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Observations (n)", len(df_data))
+        m2.metric("Model Family", meta["label"])
+        m3.metric("Link Function", analysis["link"])
+        m4.metric("Dimensions", "2D Curve" if meta["dimensions"] == 2 else "3D Surface")
+        
+        # Variable Mapping Callout Box
+        st.info(f"📌 **Variable Mapping:** &nbsp;|&nbsp; ".join(mapping_items))
+        
+        st.markdown("### Estimated R Coefficients")
+        st.caption(f"📌 **Variable Legend:** Z = {z_lbl} | X = {x_lbl}" + (f" | Y = {y_lbl}" if y_lbl else ""))
+        df_coef = pd.DataFrame(analysis["coefficients"])
+        if "term" in df_coef.columns:
+            df_coef = df_coef.set_index("term")
+        st.dataframe(df_coef, use_container_width=True)
+
     with tab_diag:
         st.subheader("Residual Diagnostics")
         diag_fig = px.scatter(
@@ -399,17 +424,20 @@ if analysis:
             opacity=0.7
         )
         diag_fig.add_hline(y=0, line_dash="dash", line_color="red")
+        diag_fig.update_layout(height=520, margin=dict(l=40, r=40, b=40, t=40))
         st.plotly_chart(diag_fig, use_container_width=True)
         
-    with tab_coef:
-        st.subheader("Estimated R Coefficients")
-        df_coef = pd.DataFrame(analysis["coefficients"])
-        if "term" in df_coef.columns:
-            df_coef = df_coef.set_index("term")
-        st.dataframe(df_coef, use_container_width=True)
+        with st.expander("💡 Diagnostic Plots Guide & Interpretation"):
+            st.markdown("""
+            - **Residuals vs Fitted:** Checks linearity and homoscedasticity. Points should be randomly scattered around the zero line without clear patterns or funneling.
+            - **Normal Q-Q:** Checks normality of errors. Residual quantiles should lie along the 45-degree line.
+            - **Scale-Location:** Checks constant variance across fitted values using square-root standardized residuals.
+            - **Residuals vs Leverage:** Highlights influential observations exceeding Cook's distance boundaries.
+            """)
         
     with tab_data:
-        st.subheader("Analysis Data Table")
+        st.subheader("Analysis Data Table & Export")
+        st.caption(f"📌 **Variable Legend:** Z = {z_lbl} | X = {x_lbl}" + (f" | Y = {y_lbl}" if y_lbl else ""))
         st.dataframe(df_data, use_container_width=True)
         
         csv_data = df_data.to_csv(index=False).encode('utf-8')

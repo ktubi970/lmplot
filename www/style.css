@@ -436,3 +436,23 @@ textarea:focus-visible,
   word-break: break-all;
 }
 
+/* ==========================================================================
+   KPI Benchmark Guide & Educational Card Styling
+   ========================================================================== */
+.kpi-benchmark-guide {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.kpi-benchmark-guide:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-slate-300) !important;
+}
+
+.kpi-benchmark-guide summary:hover {
+  color: var(--color-blue-700) !important;
+}
+
+

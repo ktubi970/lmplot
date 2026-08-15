@@ -3,10 +3,17 @@ source(file.path("..", "R", "mod_simulation.R"))
 visualization_path <- file.path("..", "R", "mod_visualization.R")
 if (file.exists(visualization_path)) source(visualization_path)
 
+.beta_model_cache <- new.env(parent = emptyenv())
 fit_beta_model <- function(model_type, seed = 10L) {
+  key <- paste(model_type, seed, sep = "_")
+  if (exists(key, envir = .beta_model_cache, inherits = FALSE)) {
+    return(get(key, envir = .beta_model_cache))
+  }
   link <- model_config(model_type)$default_link
   df <- simulate_data(model_type, link, seed = seed)
-  list(df = df, fit = fit_model(df, model_type, link))
+  res <- list(df = df, fit = fit_model(df, model_type, link))
+  assign(key, res, envir = .beta_model_cache)
+  res
 }
 
 test_that("prediction grids contain finite response-scale fits", {
@@ -187,3 +194,29 @@ test_that("diagnostic warning filtering preserves non-lifecycle warnings", {
   )
   expect_identical(result, "result")
 })
+
+test_that("prediction_grid expands bounds according to pad parameter", {
+  model <- fit_beta_model("lm_2d")
+  df <- model$df
+  grid_default <- prediction_grid(df, model$fit, "lm_2d", pad = 0.15)
+  grid_zero <- prediction_grid(df, model$fit, "lm_2d", pad = 0)
+
+  rx <- range(df$X, na.rm = TRUE)
+  dx <- diff(rx)
+
+  expect_equal(min(grid_zero$X), min(rx))
+  expect_equal(max(grid_zero$X), max(rx))
+  expect_equal(min(grid_default$X), min(rx) - 0.15 * dx)
+  expect_equal(max(grid_default$X), max(rx) + 0.15 * dx)
+})
+
+test_that("3D plots include initial camera eye position", {
+  model <- fit_beta_model("lm_3d")
+  plot <- build_main_plot(model$df, model$fit, "lm_3d")
+  built <- plotly::plotly_build(plot)
+
+  expect_equal(built$x$layout$scene$camera$eye$x, 1.8)
+  expect_equal(built$x$layout$scene$camera$eye$y, 1.8)
+  expect_equal(built$x$layout$scene$camera$eye$z, 1.5)
+})
+

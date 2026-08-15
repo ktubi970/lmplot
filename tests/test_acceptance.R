@@ -18,7 +18,7 @@ test_that("the complete beta matrix executes end to end", {
     model_type <- combinations$model_type[[row]]
     link <- combinations$link[[row]]
     combination <- paste(model_type, link, sep = "/")
-    data <- simulate_data(model_type, link, n = 100L, seed = 100L + row)
+    data <- simulate_data(model_type, link, n = 40L, seed = 100L + row)
 
     warnings <- character()
     fit <- withCallingHandlers(

@@ -122,6 +122,62 @@ ui <- bslib::page_sidebar(
         # Status Overview (Executive Cockpit Banner)
         shiny::uiOutput("kpi_banner"),
 
+        # Educational Metric Guide & Scientific Benchmarks Card
+        shiny::tags$details(
+          class = "mb-3 p-3 border rounded bg-white shadow-sm kpi-benchmark-guide",
+          shiny::tags$summary(
+            class = "fw-bold text-dark cursor-pointer d-flex align-items-center justify-content-between",
+            shiny::span("💡 Guide d'Interprétation des Métriques & Seuils de Référence (Attendu vs Réel)", class = "fs-6 text-primary"),
+            shiny::span(class = "badge bg-primary-subtle text-primary small", "Documentation Scientifique")
+          ),
+          shiny::div(
+            class = "mt-3",
+            shiny::div(
+              class = "row g-3",
+              shiny::div(
+                class = "col-md-6 col-lg-3",
+                shiny::div(
+                  class = "p-3 border rounded bg-light h-100",
+                  shiny::div(class = "fw-bold text-slate-800 mb-1", "📊 R² (Variance Expliquée)"),
+                  shiny::div(class = "small text-secondary mb-2", shiny::tags$strong("Rôle : "), "Proportion de la variance de Z expliquée par le modèle."),
+                  shiny::div(class = "small text-dark mb-1", shiny::tags$strong("Valeur attendue :"), " >70% (Fort), 50-70% (Bon), 20-50% (Modéré), <20% (Faible)."),
+                  shiny::div(class = "small text-muted", shiny::tags$strong("Interprétation : "), "Un R² faible (ex. <15%) indique un effet réel mais une grande variabilité inexpliquée.")
+                )
+              ),
+              shiny::div(
+                class = "col-md-6 col-lg-3",
+                shiny::div(
+                  class = "p-3 border rounded bg-light h-100",
+                  shiny::div(class = "fw-bold text-slate-800 mb-1", "⚖️ Critères AIC / BIC"),
+                  shiny::div(class = "small text-secondary mb-2", shiny::tags$strong("Rôle : "), "Arbitrage entre qualité d'ajustement (LogLik) et parcimonie."),
+                  shiny::div(class = "small text-dark mb-1", shiny::tags$strong("Valeur attendue :"), " Pas de seuil absolu. Plus le score est BAS, meilleur est le modèle."),
+                  shiny::div(class = "small text-muted", shiny::tags$strong("Interprétation : "), "Sert à comparer des modèles concurrents (ex. 2D vs 3D) sur les mêmes données.")
+                )
+              ),
+              shiny::div(
+                class = "col-md-6 col-lg-3",
+                shiny::div(
+                  class = "p-3 border rounded bg-light h-100",
+                  shiny::div(class = "fw-bold text-slate-800 mb-1", "🎯 Erreur Résiduelle (RSE)"),
+                  shiny::div(class = "small text-secondary mb-2", shiny::tags$strong("Rôle : "), "Écart-type moyen des erreurs autour de la régression."),
+                  shiny::div(class = "small text-dark mb-1", shiny::tags$strong("Valeur attendue :"), " Proche du bruit théorique (ex. ~1.000) ; ratio GLM ~1.0."),
+                  shiny::div(class = "small text-muted", shiny::tags$strong("Interprétation : "), "Valide l'homogénéité de la variance et donne la marge d'erreur en unités de Z.")
+                )
+              ),
+              shiny::div(
+                class = "col-md-6 col-lg-3",
+                shiny::div(
+                  class = "p-3 border rounded bg-light h-100",
+                  shiny::div(class = "fw-bold text-slate-800 mb-1", "🩺 Santé & Échantillon (N)"),
+                  shiny::div(class = "small text-secondary mb-2", shiny::tags$strong("Rôle : "), "Taille d'échantillon N et stabilité de l'estimation."),
+                  shiny::div(class = "small text-dark mb-1", shiny::tags$strong("Valeur attendue :"), " N ≥ 30 et statut CONVERGED (OK) impératif."),
+                  shiny::div(class = "small text-muted", shiny::tags$strong("Interprétation : "), "Garantit la précision des p-values et l'absence de matrice singulière.")
+                )
+              )
+            )
+          )
+        ),
+
         # Model Parameters & Coefficient Estimates
         bslib::card(
           bslib::card_header(

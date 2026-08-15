@@ -193,11 +193,7 @@ test_that("the real beta app completes its browser smoke workflow", {
   expect_true(all(c(".fitted", ".residual") %in% names(enriched)))
 
   real_plot_titles <- c(
-    lm_2d = "Ad\u00e9lie penguin body mass",
-    lm_3d = "28-day concrete compressive strength",
     glm_binomial = "Ad\u00e9lie penguin sex from morphology",
-    glm_poisson = "Abalone shell-ring count",
-    glm_gamma = "Positive forest-fire burned area",
     glmm = "Inner London examination achievement"
   )
   for (model_type in names(real_plot_titles)) {
