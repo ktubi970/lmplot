@@ -153,15 +153,72 @@ ui <- bslib::page_sidebar(
         ),
         shiny::plotOutput("diag_plots", height = "560px"),
         shiny::tags$details(
-          class = "mt-2 p-2 border rounded bg-light",
-          shiny::tags$summary(shiny::tags$strong("💡 Diagnostic Plots Guide & Interpretation")),
-          shiny::tags$div(
-            class = "mt-2 small text-secondary",
-            shiny::tags$ul(
-              shiny::tags$li(shiny::tags$strong("Residuals vs Fitted:"), " Checks linearity and homoscedasticity. Look for points randomly scattered around 0 with no funnel patterns or curves."),
-              shiny::tags$li(shiny::tags$strong("Normal Q-Q:"), " Checks residual normality. Points should fall closely along the 45° dashed diagonal line."),
-              shiny::tags$li(shiny::tags$strong("Scale-Location:"), " Checks homoscedasticity using root-standardized residuals. A flat trendline indicates equal error variance."),
-              shiny::tags$li(shiny::tags$strong("Residuals vs Leverage:"), " Identifies influential outliers. Points outside Cook's distance contours exert disproportionate leverage on parameter estimates.")
+          class = "mt-2 p-3 border rounded bg-light shadow-sm",
+          shiny::tags$summary(
+            class = "fw-bold text-dark cursor-pointer",
+            shiny::span("💡 Diagnostic Plots Guide & Interpretation", class = "fs-6")
+          ),
+          shiny::div(
+            class = "mt-3 row g-3",
+            shiny::div(
+              class = "col-md-6",
+              shiny::div(
+                class = "p-3 border-start border-4 border-primary bg-white rounded shadow-sm h-100",
+                shiny::div(
+                  class = "d-flex align-items-center gap-2 mb-1",
+                  shiny::span("📈", class = "badge bg-primary-subtle text-primary p-2 fs-6 rounded"),
+                  shiny::tags$strong("Residuals vs Fitted", class = "text-dark")
+                ),
+                shiny::p(
+                  "Checks linearity and homoscedasticity. Look for points randomly scattered around 0 with no funnel patterns or systematic curves.",
+                  class = "small text-muted mb-0"
+                )
+              )
+            ),
+            shiny::div(
+              class = "col-md-6",
+              shiny::div(
+                class = "p-3 border-start border-4 border-info bg-white rounded shadow-sm h-100",
+                shiny::div(
+                  class = "d-flex align-items-center gap-2 mb-1",
+                  shiny::span("🎯", class = "badge bg-info-subtle text-info p-2 fs-6 rounded"),
+                  shiny::tags$strong("Normal Q-Q", class = "text-dark")
+                ),
+                shiny::p(
+                  "Checks residual normality. Points should fall closely along the 45° dashed diagonal line to satisfy regression assumptions.",
+                  class = "small text-muted mb-0"
+                )
+              )
+            ),
+            shiny::div(
+              class = "col-md-6",
+              shiny::div(
+                class = "p-3 border-start border-4 border-warning bg-white rounded shadow-sm h-100",
+                shiny::div(
+                  class = "d-flex align-items-center gap-2 mb-1",
+                  shiny::span("📊", class = "badge bg-warning-subtle text-warning p-2 fs-6 rounded"),
+                  shiny::tags$strong("Scale-Location", class = "text-dark")
+                ),
+                shiny::p(
+                  "Checks homoscedasticity using root-standardized residuals. A flat horizontal trendline indicates equal error variance.",
+                  class = "small text-muted mb-0"
+                )
+              )
+            ),
+            shiny::div(
+              class = "col-md-6",
+              shiny::div(
+                class = "p-3 border-start border-4 border-danger bg-white rounded shadow-sm h-100",
+                shiny::div(
+                  class = "d-flex align-items-center gap-2 mb-1",
+                  shiny::span("⚠️", class = "badge bg-danger-subtle text-danger p-2 fs-6 rounded"),
+                  shiny::tags$strong("Residuals vs Leverage", class = "text-dark")
+                ),
+                shiny::p(
+                  "Identifies influential outliers. Points outside Cook's distance contours exert disproportionate leverage on parameter estimates.",
+                  class = "small text-muted mb-0"
+                )
+              )
             )
           )
         )

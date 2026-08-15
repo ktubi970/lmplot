@@ -1,12 +1,19 @@
 prediction_grid <- function(df, fit, model_type,
-                            length_out = if (model_config(model_type)$dimensions == 2L) 200L else 30L) {
+                            length_out = if (model_config(model_type)$dimensions == 2L) 200L else 30L,
+                            pad = 0.15) {
   config <- model_config(model_type)
-  x <- seq(min(df$X), max(df$X), length.out = length_out)
+  rx <- range(df$X, na.rm = TRUE)
+  dx <- diff(rx)
+  if (dx == 0) dx <- 1
+  x <- seq(rx[1L] - pad * dx, rx[2L] + pad * dx, length.out = length_out)
 
   if (config$dimensions == 2L) {
     grid <- data.frame(X = x)
   } else {
-    y <- seq(min(df$Y), max(df$Y), length.out = length_out)
+    ry <- range(df$Y, na.rm = TRUE)
+    dy <- diff(ry)
+    if (dy == 0) dy <- 1
+    y <- seq(ry[1L] - pad * dy, ry[2L] + pad * dy, length.out = length_out)
     grid <- expand.grid(X = x, Y = y)
     if (config$requires_group) {
       fitted_group <- stats::model.frame(fit)[["Group"]]
@@ -101,12 +108,18 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE,
           text = ~.fitted_hover,
           hoverinfo = "text",
           name = "Fitted",
-          line = list(color = "#ef4444"),
+          line = list(color = "#e11d48", width = 2.5),
           inherit = FALSE
         ) |>
         plotly::layout(
-          xaxis = list(title = labels$x),
-          yaxis = list(title = labels$z)
+          font = list(family = "Inter, -apple-system, sans-serif", color = "#1e293b"),
+          hoverlabel = list(
+            bgcolor = "#0f172a",
+            font = list(family = "Inter, sans-serif", color = "#ffffff", size = 12)
+          ),
+          legend = list(orientation = "h", y = -0.1, x = 0.5, xanchor = "center"),
+          xaxis = list(title = labels$x, gridcolor = "#f1f5f9", zerolinecolor = "#cbd5e1"),
+          yaxis = list(title = labels$z, gridcolor = "#f1f5f9", zerolinecolor = "#cbd5e1")
         )
     )
   }
@@ -152,6 +165,7 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE,
       x = x,
       y = y,
       z = z,
+      colorscale = "Viridis",
       opacity = 0.45,
       showscale = FALSE,
       name = "Population fit",
@@ -166,10 +180,19 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE,
 
   plotly::layout(
     markers,
+    font = list(family = "Inter, -apple-system, sans-serif", color = "#1e293b"),
+    hoverlabel = list(
+      bgcolor = "#0f172a",
+      font = list(family = "Inter, sans-serif", color = "#ffffff", size = 12)
+    ),
+    legend = list(orientation = "h", y = -0.1, x = 0.5, xanchor = "center"),
     scene = list(
-      xaxis = list(title = labels$x),
-      yaxis = list(title = labels$y),
-      zaxis = list(title = labels$z)
+      xaxis = list(title = labels$x, gridcolor = "#f1f5f9", zerolinecolor = "#cbd5e1"),
+      yaxis = list(title = labels$y, gridcolor = "#f1f5f9", zerolinecolor = "#cbd5e1"),
+      zaxis = list(title = labels$z, gridcolor = "#f1f5f9", zerolinecolor = "#cbd5e1"),
+      camera = list(
+        eye = list(x = 1.8, y = 1.8, z = 1.5)
+      )
     )
   )
 }
@@ -184,18 +207,31 @@ with_lifecycle_warnings_muffled <- function(expr) {
 }
 
 build_diagnostic_plot <- function(fit) {
+  custom_theme <- ggplot2::theme_minimal() +
+    ggplot2::theme(
+      text = ggplot2::element_text(color = "#1e293b"),
+      panel.grid.minor = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(face = "bold", color = "#0f172a")
+    )
+
   if (!inherits(fit, "merMod")) {
     if (!requireNamespace("ggfortify", quietly = TRUE)) {
       stop("Package 'ggfortify' is required for LM and GLM diagnostics", call. = FALSE)
     }
-    return(with_lifecycle_warnings_muffled(
+    res <- with_lifecycle_warnings_muffled(
       ggplot2::autoplot(
         fit,
         which = 1:4,
         ncol = 2,
-        colour = "#2563eb"
+        colour = "#2563eb",
+        smooth.colour = "#e11d48",
+        ad.colour = "#e11d48"
       )
-    ))
+    )
+    if (inherits(res, "ggmultiplot")) {
+      res@plots <- lapply(res@plots, function(p) p + custom_theme)
+    }
+    return(res)
   }
 
   fitted <- fitted_response(fit)
@@ -208,6 +244,19 @@ build_diagnostic_plot <- function(fit) {
 
   ggplot2::ggplot(diagnostics, ggplot2::aes(x, y)) +
     ggplot2::geom_point(alpha = 0.65, colour = "#2563eb") +
+    ggplot2::geom_smooth(
+      data = function(d) d[d$panel == "Residuals vs fitted", ],
+      method = "loess", formula = y ~ x, se = FALSE, colour = "#e11d48", linewidth = 0.8
+    ) +
+    ggplot2::geom_line(
+      data = function(d) {
+        sub <- d[d$panel == "Normal Q-Q", ]
+        if (nrow(sub) == 0) return(sub)
+        rng <- range(c(sub$x, sub$y), na.rm = TRUE)
+        data.frame(panel = "Normal Q-Q", x = rng, y = rng)
+      },
+      linetype = "dashed", colour = "#e11d48", linewidth = 0.8
+    ) +
     ggplot2::facet_wrap(~panel, scales = "free") +
-    ggplot2::theme_minimal()
+    custom_theme
 }
