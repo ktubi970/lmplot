@@ -30,6 +30,7 @@
   --color-emerald-50:  #ecfdf5;
 
   /* Amber Warning Palette */
+  --color-amber-700: #b45309;
   --color-amber-500: #f59e0b;
   --color-amber-100: #fef3c7;
   --color-amber-50:  #fffbeb;
@@ -215,7 +216,7 @@ code, pre, .font-mono, kbd, samp {
 
 .kpi-card-status.status-warning {
   background: var(--color-amber-50);
-  color: var(--color-amber-500);
+  color: var(--color-amber-700);
   border: 1px solid var(--color-amber-100);
 }
 
@@ -330,7 +331,7 @@ code, pre, .font-mono, kbd, samp {
 
 .p-sig-badge.sig-low {
   background: var(--color-amber-50);
-  color: var(--color-amber-500);
+  color: var(--color-amber-700);
   border: 1px solid var(--color-amber-100);
 }
 
