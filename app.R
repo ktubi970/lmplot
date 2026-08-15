@@ -9,6 +9,7 @@ source(file.path(app_root, "R", "mod_model.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_simulation.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_visualization.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_examples.R"), local = TRUE)
+source(file.path(app_root, "R", "mod_eli5.R"), local = TRUE)
 
 model_choices <- stats::setNames(
   model_ids(),
@@ -119,6 +120,9 @@ ui <- bslib::page_sidebar(
       value = "tab_metrics_summary",
       bslib::layout_column_wrap(
         width = 1,
+        # ELI5 Natural Language Assistant Card
+        eli5_ui("eli5_explainer"),
+
         # Status Overview (Executive Cockpit Banner)
         shiny::uiOutput("kpi_banner"),
 
@@ -494,6 +498,8 @@ server <- function(input, output, session) {
     shiny::reactive(input$generate)
   )
   last_result <- shiny::reactiveVal(NULL)
+
+  eli5_server("eli5_explainer", last_result)
 
   shiny::observeEvent(input$generate, {
     tryCatch({

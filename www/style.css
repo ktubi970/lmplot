@@ -455,4 +455,23 @@ textarea:focus-visible,
   color: var(--color-blue-700) !important;
 }
 
+/* ==========================================================================
+   ELI5 Natural Language AI Assistant Card Styling
+   ========================================================================== */
+.bg-gradient-slate {
+  background: linear-gradient(135deg, var(--color-slate-900) 0%, var(--color-slate-800) 100%) !important;
+}
+
+.eli5-card-container .card {
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: var(--shadow-card) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.eli5-card-container .card:hover {
+  box-shadow: var(--shadow-card-hover) !important;
+  border-color: var(--color-slate-300) !important;
+}
+
+
 
