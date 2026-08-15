@@ -233,7 +233,20 @@ ui <- bslib::page_sidebar(
           "Raw Data & Audit Trail"
         ),
         bslib::nav_panel("Data Grid", DT::DTOutput("data_table")),
-        bslib::nav_panel("Simulation / Reproducible Code", shiny::verbatimTextOutput("sim_code"))
+        bslib::nav_panel(
+          "Simulation / Reproducible Code",
+          shiny::div(
+            class = "repro-code-card",
+            shiny::div(
+              class = "repro-code-header d-flex align-items-center justify-content-between",
+              shiny::span("💻 Reproducible R Script & Audit Trail", class = "fw-bold fs-6")
+            ),
+            shiny::div(
+              class = "repro-code-body",
+              shiny::verbatimTextOutput("sim_code")
+            )
+          )
+        )
       )
     )
   )
@@ -708,9 +721,12 @@ server <- function(input, output, session) {
     num_cols <- names(df)[vapply(df, is.numeric, logical(1))]
     dt <- DT::datatable(
       df,
+      class = "stripe hover compact cell-border",
       options = list(
         pageLength = 25,
-        lengthMenu = c(10, 25, 50, 100)
+        lengthMenu = c(10, 25, 50, 100),
+        scrollX = TRUE,
+        autoWidth = FALSE
       )
     )
     if (length(num_cols) > 0) {
