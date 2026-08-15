@@ -1,6 +1,6 @@
 # LM Model Brain — Spécification de conception
 
-**Statut :** conception validée, relecture écrite requise
+**Statut :** conception et spécification écrite approuvées pour planification
 
 **Date :** 2026-08-15
 

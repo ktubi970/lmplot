@@ -1,6 +1,6 @@
 # LLM Audit — Spécification de conception
 
-**Statut :** conception validée section par section, relecture écrite requise
+**Statut :** conception et spécification écrite approuvées pour planification
 
 **Date :** 2026-08-15
 
