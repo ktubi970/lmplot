@@ -1,21 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   Scientific Design System Tokens & Variable Architecture
+   ========================================================================== */
+:root {
+  /* Slate Neutral Scale */
+  --color-slate-900: #0f172a;
+  --color-slate-800: #1e293b;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-400: #94a3b8;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f1f5f9;
+  --color-slate-50:  #f8fafc;
+
+  /* Primary Blue Accent Palette */
+  --color-blue-700: #1d4ed8;
+  --color-blue-600: #2563eb;
+  --color-blue-500: #3b82f6;
+  --color-blue-100: #dbeafe;
+  --color-blue-50:  #eff6ff;
+
+  /* Emerald Success Palette */
+  --color-emerald-700: #047857;
+  --color-emerald-600: #10b981;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-50:  #ecfdf5;
+
+  /* Amber Warning Palette */
+  --color-amber-500: #f59e0b;
+  --color-amber-100: #fef3c7;
+  --color-amber-50:  #fffbeb;
+
+  /* Rose Alert & Error Palette */
+  --color-rose-600: #e11d48;
+  --color-rose-100: #ffe4e6;
+  --color-rose-50:  #fff1f2;
+
+  /* Structural & Layout Tokens */
+  --border-subtle: #e2e8f0;
+  --border-default: #cbd5e1;
+  --shadow-card: 0 4px 12px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+  /* Typography Font Stacks */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ==========================================================================
+   Global Resets & Base Typography
+   ========================================================================== */
+body {
+  font-family: var(--font-sans);
+  color: var(--color-slate-800);
+  background-color: var(--color-slate-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.01em;
+  color: var(--color-slate-900);
+  font-weight: 600;
+}
+
+code, pre, .font-mono, kbd, samp {
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   Header Badges & Sidebar Layout
+   ========================================================================== */
 .version-badge {
   display: inline-block;
-  margin-left: .5rem;
-  padding: .15rem .5rem;
-  border-radius: 999px;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-size: .75rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-blue-100);
+  color: var(--color-blue-700);
+  font-size: 0.75rem;
   font-weight: 700;
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
 }
 
 .bslib-sidebar-layout > .sidebar {
-  border-right: 1px solid #dbe3ee;
+  border-right: 1px solid var(--border-subtle);
+  background-color: #ffffff;
 }
 
 .card {
-  border: 0;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  background-color: #ffffff;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
 }
 
 #main_plot {
@@ -23,17 +110,291 @@
 }
 
 .shiny-output-error-validation {
-  color: #b91c1c;
-  padding: 1rem;
+  color: var(--color-rose-600);
+  background-color: var(--color-rose-50);
+  border: 1px solid var(--color-rose-100);
+  border-radius: 6px;
+  padding: 0.85rem 1.1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
 }
 
-.example-provenance { font-size: .9rem; }
-.example-provenance dl { display: grid; grid-template-columns: 5.5rem 1fr; gap: .2rem .6rem; }
-.example-provenance dt { color: #475569; }
-.example-provenance dd { margin: 0; overflow-wrap: anywhere; }
+.example-provenance {
+  font-size: 0.85rem;
+  color: var(--color-slate-700);
+  background: var(--color-slate-50);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.example-provenance dl {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.3rem 0.5rem;
+  word-break: break-word;
+  margin: 0;
+}
+
+.example-provenance dt {
+  color: var(--color-slate-600);
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.example-provenance dd {
+  margin: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  color: var(--color-slate-800);
+}
 
 @media (max-width: 768px) {
   #main_plot {
     min-height: 360px;
   }
+}
+
+/* ==========================================================================
+   Level 1: Status Overview KPI Cards
+   ========================================================================== */
+.kpi-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-slate-300);
+}
+
+.kpi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.kpi-card-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-slate-600);
+}
+
+.kpi-card-status {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: var(--color-slate-100);
+  color: var(--color-slate-700);
+}
+
+.kpi-card-status.status-optimal {
+  background: var(--color-emerald-50);
+  color: var(--color-emerald-700);
+  border: 1px solid var(--color-emerald-100);
+}
+
+.kpi-card-status.status-warning {
+  background: var(--color-amber-50);
+  color: var(--color-amber-500);
+  border: 1px solid var(--color-amber-100);
+}
+
+.kpi-card-status.status-alert {
+  background: var(--color-rose-50);
+  color: var(--color-rose-600);
+  border: 1px solid var(--color-rose-100);
+}
+
+.kpi-card-value {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--color-slate-900);
+  line-height: 1.1;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.kpi-card-sub {
+  font-size: 0.75rem;
+  color: var(--color-slate-500);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Level 2: Parameter & Coefficient Table Styling
+   ========================================================================== */
+.coef-table-container {
+  overflow-x: auto;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+}
+
+.coef-table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.coef-table th {
+  background-color: var(--color-slate-50);
+  color: var(--color-slate-700);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--border-subtle);
+  text-align: left;
+}
+
+.coef-table td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--color-slate-100);
+  color: var(--color-slate-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.coef-table tr:nth-child(even) {
+  background-color: var(--color-slate-50);
+}
+
+.coef-table tr:hover {
+  background-color: var(--color-slate-100);
+}
+
+.level-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  background: var(--color-slate-100);
+  color: var(--color-slate-700);
+  margin-right: 0.4rem;
+  vertical-align: middle;
+  border: 1px solid var(--border-subtle);
+}
+
+/* p-value significance indicators & CI column styling */
+.p-sig-star {
+  font-weight: 700;
+  color: var(--color-blue-700);
+  margin-left: 0.25rem;
+}
+
+.p-sig-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+
+.p-sig-badge.sig-high {
+  background: var(--color-emerald-50);
+  color: var(--color-emerald-700);
+  border: 1px solid var(--color-emerald-100);
+}
+
+.p-sig-badge.sig-med {
+  background: var(--color-blue-50);
+  color: var(--color-blue-700);
+  border: 1px solid var(--color-blue-100);
+}
+
+.p-sig-badge.sig-low {
+  background: var(--color-amber-50);
+  color: var(--color-amber-500);
+  border: 1px solid var(--color-amber-100);
+}
+
+.p-sig-badge.sig-ns {
+  background: var(--color-slate-100);
+  color: var(--color-slate-500);
+  border: 1px solid var(--border-subtle);
+}
+
+.coef-ci {
+  font-family: var(--font-mono);
+  color: var(--color-slate-600);
+  font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   Diagnostic Plot Cards & Collapsible Sections
+   ========================================================================== */
+.diagnostic-card {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.diagnostic-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+details.diagnostic-details {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--color-slate-50);
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.75rem;
+}
+
+details.diagnostic-details summary {
+  font-weight: 600;
+  color: var(--color-slate-700);
+  cursor: pointer;
+  font-size: 0.875rem;
+  user-select: none;
+}
+
+details.diagnostic-details summary:hover {
+  color: var(--color-blue-600);
+}
+
+/* ==========================================================================
+   Accessibility Focus States - WCAG 2.2 AA Compliant
+   ========================================================================== */
+details > summary:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-blue-600) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
 }
