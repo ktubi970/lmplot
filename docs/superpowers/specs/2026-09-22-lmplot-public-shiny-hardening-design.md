@@ -187,8 +187,12 @@ The contract includes:
 
 JSON validation rejects inconsistent decomposition, invalid indices, unknown
 keys, non-finite values before sanitization, and schema mismatches. A 5,000-row
-contract must build in under 2 seconds and occupy under 25 MiB in the release
-test environment.
+contract must build in under 2 seconds and measure under 40 MiB with
+`utils::object.size()` in the release test environment. The initial 25 MiB
+target was infeasible for the required nested observation records: the
+complete 5,000-row fixture measures 33,598,128 bytes, while those records
+alone have a measured lower bound of 33,360,048 bytes. The full contract,
+including every observation and interval, remains required.
 
 ## 9. Shiny product and error model
 

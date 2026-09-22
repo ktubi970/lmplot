@@ -442,7 +442,7 @@ select_model_brain_observation changes the selection without incrementing it.
 - [ ] **Step 3: Add the performance budget test**
 
 Build a deterministic 5,000-row LM contract, measure elapsed time and
-object.size, and assert less than 2 seconds and 25 * 1024^2 bytes. Skip only on
+object.size, and assert less than 2 seconds and 40 * 1024^2 bytes. Skip only on
 CRAN-like constrained environments, not in repository CI.
 
 - [ ] **Step 4: Run tests and capture RED**
