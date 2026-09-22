@@ -2,6 +2,7 @@ source(file.path("..", "R", "config.R"))
 source(file.path("..", "R", "model_registry.R"))
 source(file.path("..", "R", "mod_model.R"))
 source(file.path("..", "R", "mod_simulation.R"))
+source(file.path("..", "R", "model_metrics.R"))
 source(file.path("..", "R", "mod_model_brain.R"))
 source("helper-model-brain.R")
 
@@ -56,17 +57,10 @@ test_that("all 15 model/link cases reproduce R predictions", {
     expect_true(all(abs(eta - expected_eta) <= eta_tolerance),
       info = paste(fixture$model_type, fixture$link)
     )
-    complete <- all(vapply(
-      conditional, `[[`, logical(1), "decomposition_complete"
-    ))
-    if (complete) {
-      expect_true(all(abs(eta - reconstructed_eta) <= tolerance),
-        info = paste(fixture$model_type, fixture$link)
-      )
-    } else {
-      expect_identical(fixture$model_type, "glmm")
-      expect_false(brain$random_effect_available)
-    }
+    expect_true(all(abs(eta - reconstructed_eta) <= tolerance),
+      info = paste(fixture$model_type, fixture$link)
+    )
+    expect_identical(validate_model_brain(brain), brain)
   }
 })
 
@@ -177,8 +171,7 @@ test_that("lme4 GLMM modes use the fitted random intercept exactly", {
   expected_random <- unname(fitted_intercepts[as.character(fixture$data$Group)])
 
   expect_identical(brain$prediction_modes, c("conditional", "population"))
-  expect_true(brain$random_effect_available)
-  expect_true(brain$decomposition_complete)
+  expect_identical(validate_model_brain(brain), brain)
   expect_equal(
     vapply(conditional, function(x) x$random_effect$value, numeric(1)),
     expected_random,
@@ -199,76 +192,13 @@ test_that("lme4 GLMM modes use the fitted random intercept exactly", {
   expect_true(all(vapply(population, function(x) x$random_effect$value == 0, logical(1))))
 })
 
-test_that("nlme GLMM modes use the fitted random intercept exactly", {
-  skip_if_not_installed("nlme")
+test_that("legacy nlme and fixed-factor GLMM fits are rejected", {
   data <- simulate_data("glmm", "identity", n = 80L, seed = 77L, groups = 5L)
   data$Group <- factor(data$Group)
-  fit <- nlme::lme(Z ~ X + Y, random = ~ 1 | Group, data = data)
-  brain <- build_model_brain(fit, data, "glmm", "identity")
-  conditional <- Filter(
-    function(observation) observation$prediction_mode == "conditional",
-    brain$observations
-  )
-  population <- Filter(
-    function(observation) observation$prediction_mode == "population",
-    brain$observations
-  )
-  fitted_intercepts <- nlme::ranef(fit)[, "(Intercept)"]
-  names(fitted_intercepts) <- rownames(nlme::ranef(fit))
-  expected_random <- unname(fitted_intercepts[as.character(data$Group)])
-
-  expect_identical(brain$prediction_modes, c("conditional", "population"))
-  expect_true(brain$random_effect_available)
-  expect_true(brain$decomposition_complete)
-  expect_equal(
-    vapply(conditional, function(x) x$random_effect$value, numeric(1)),
-    expected_random,
-    tolerance = 1e-12
-  )
-  expect_equal(
-    vapply(conditional, `[[`, numeric(1), "prediction"),
-    as.numeric(predict_response(fit, data, population = FALSE)),
-    tolerance = 1e-10
-  )
-  expect_equal(
-    vapply(population, `[[`, numeric(1), "prediction"),
-    as.numeric(predict_response(fit, data, population = TRUE)),
-    tolerance = 1e-10
-  )
-  expect_true(all(vapply(population, function(x) !x$random_effect$active, logical(1))))
-  expect_true(all(vapply(population, function(x) x$random_effect$value == 0, logical(1))))
-})
-
-test_that("fixed-factor GLMM fallback exposes only an incomplete conditional mode", {
-  data <- simulate_data("glmm", "identity", n = 80L, seed = 91L, groups = 5L)
-  data$Group <- factor(data$Group)
   fit <- stats::lm(Z ~ X + Y + Group, data = data)
-  brain <- build_model_brain(fit, data, "glmm", "identity")
-  conditional <- brain$observations
-  expected_warning <- list(
-    code = "glmm_random_effect_unavailable",
-    scope = "model",
-    message = paste(
-      "The stats::lm GLMM fallback has no exact random-intercept branch;",
-      "only conditional predictions are available and the decomposition is incomplete."
-    )
-  )
-
-  expect_identical(brain$prediction_modes, "conditional")
-  expect_false(brain$random_effect_available)
-  expect_false(brain$decomposition_complete)
-  expect_identical(brain$warnings, list(expected_warning))
-  expect_true(all(vapply(conditional, function(x) !x$random_effect$available, logical(1))))
-  expect_true(all(vapply(conditional, function(x) !x$random_effect$active, logical(1))))
-  expect_true(all(vapply(conditional, function(x) is.na(x$random_effect$value), logical(1))))
-  expect_true(all(!vapply(conditional, `[[`, logical(1), "decomposition_complete")))
-  contribution_terms <- unique(unlist(lapply(conditional, function(observation) {
-    vapply(observation$contributions, `[[`, character(1), "term")
-  })))
-  expect_identical(contribution_terms, c("(Intercept)", "X", "Y"))
-  expect_equal(
-    vapply(conditional, `[[`, numeric(1), "prediction"),
-    as.numeric(stats::predict(fit, newdata = data)),
-    tolerance = 1e-10
-  )
+  expect_error(build_model_brain(fit, data, "glmm", "identity"), "merMod")
+  if (requireNamespace("nlme", quietly = TRUE)) {
+    fit <- nlme::lme(Z ~ X + Y, random = ~ 1 | Group, data = data)
+    expect_error(build_model_brain(fit, data, "glmm", "identity"), "merMod")
+  }
 })

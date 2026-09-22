@@ -49,6 +49,7 @@ fit_model_brain_case <- function(case, n = 80L, seed = 42L) {
   }
 
   model_type <- as.character(case$model_type[[1L]])
+  if (model_type == "glmm") testthat::skip_if_not_installed("lme4")
   link <- as.character(case$link[[1L]])
   data <- simulate_data(
     model_type = model_type,

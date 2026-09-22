@@ -99,14 +99,16 @@ create_analysis_services <- function(load_example = load_real_example, simulate 
     evaluate_expert = evaluate_expert_simulation, fit = fit_model, metrics = extract_model_metrics,
     coefficients = extract_coefficient_table, diagnostics = diagnose_model,
     prediction_grid = prediction_grid, build_model_brain = build_model_brain,
-    resolve_example = example_for_model) {
+    resolve_example = example_for_model, validate_model_brain = validate_model_brain) {
   # Resolve same-name defaults in the factory's enclosing environment, not its promise frame.
   if (missing(prediction_grid)) prediction_grid <- tryCatch(
     get("prediction_grid", envir = environment(create_analysis_services)), error = function(e) NULL)
   if (missing(build_model_brain)) build_model_brain <- tryCatch(
     get("build_model_brain", envir = environment(create_analysis_services)), error = function(e) NULL)
+  if (missing(validate_model_brain)) validate_model_brain <- tryCatch(
+    get("validate_model_brain", envir = environment(create_analysis_services)), error = function(e) NULL)
   keys <- c("load_example", "simulate", "evaluate_expert", "fit", "metrics", "coefficients",
-    "diagnostics", "prediction_grid", "build_model_brain", "resolve_example")
+    "diagnostics", "prediction_grid", "build_model_brain", "resolve_example", "validate_model_brain")
   frame <- environment()
   services <- lapply(keys, function(key) {
     dependency <- tryCatch(get(key, envir = frame), error = function(e) NULL)
@@ -181,10 +183,13 @@ run_analysis_usecase <- function(request, services, root = ".") {
     diagnostics <- services$diagnostics(fit, data, model_type)
     collect(diagnostics$warnings %||% character())
     grid <- services$prediction_grid(data, fit, model_type, length_out = request$grid_length_out)
+    brain <- services$build_model_brain(fit = fit, data = data, model_type = model_type,
+      link = link, labels = labels, warnings = warnings)
+    brain <- services$validate_model_brain(brain)
     structure(list(data = data, display = display, example = example, fit = fit,
       model_type = model_type, link = link, code = code, labels = labels,
       metrics = metrics, coefficients = coefficients, diagnostics = diagnostics,
-      prediction_grid = grid, warnings = warnings), class = "analysis_result")
+      prediction_grid = grid, warnings = warnings, model_brain = brain), class = "analysis_result")
   }, warning = function(warning) {
     collect(conditionMessage(warning))
     if (!is.null(findRestart("muffleWarning"))) invokeRestart("muffleWarning")

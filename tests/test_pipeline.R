@@ -16,7 +16,7 @@ test_that("service factory validates every injected dependency", {
   services <- create_analysis_services()
   expect_s3_class(services, "analysis_services")
   expect_named(services, c("load_example", "simulate", "evaluate_expert", "fit",
-    "metrics", "coefficients", "diagnostics", "prediction_grid", "build_model_brain", "resolve_example"))
+    "metrics", "coefficients", "diagnostics", "prediction_grid", "build_model_brain", "resolve_example", "validate_model_brain"))
   for (name in names(services)) {
     for (bad in list(NULL, 1, "function")) {
       error <- tryCatch(do.call(create_analysis_services, setNames(list(bad), name)), error = identity)
@@ -32,7 +32,7 @@ test_that("validated simulation returns canonical assessment and grid", {
   result <- run_analysis_usecase(request, create_analysis_services(), app_root)
   expect_s3_class(result, "analysis_result")
   expect_named(result, c("data", "display", "example", "fit", "model_type", "link", "code",
-    "labels", "metrics", "coefficients", "diagnostics", "prediction_grid", "warnings"))
+    "labels", "metrics", "coefficients", "diagnostics", "prediction_grid", "warnings", "model_brain"))
   expect_null(result$example)
   expect_equal(nrow(result$data), 50L)
   expect_equal(nrow(result$prediction_grid), 30L)
@@ -107,8 +107,7 @@ test_that("service outputs warnings and errors are faithfully propagated", {
     diagnostics = function(...) {
       warning("diagnostic warning", call. = FALSE)
       list(status = "warning", warnings = c("stored warning", "diagnostic warning", "assessment warning"))
-    },
-    build_model_brain = function(...) stop("Task 3 must not build a brain"))
+    })
   request <- new_analysis_request(valid_simulation_payload())
   expect_silent(result <- run_analysis_usecase(request, services, app_root))
   expect_identical(result$metrics, list(r_squared = .123))
