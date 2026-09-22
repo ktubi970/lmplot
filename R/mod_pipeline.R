@@ -98,14 +98,15 @@ abort_analysis_service <- function(name) {
 create_analysis_services <- function(load_example = load_real_example, simulate = simulate_data,
     evaluate_expert = evaluate_expert_simulation, fit = fit_model, metrics = extract_model_metrics,
     coefficients = extract_coefficient_table, diagnostics = diagnose_model,
-    prediction_grid = prediction_grid, build_model_brain = build_model_brain) {
+    prediction_grid = prediction_grid, build_model_brain = build_model_brain,
+    resolve_example = example_for_model) {
   # Resolve same-name defaults in the factory's enclosing environment, not its promise frame.
   if (missing(prediction_grid)) prediction_grid <- tryCatch(
     get("prediction_grid", envir = environment(create_analysis_services)), error = function(e) NULL)
   if (missing(build_model_brain)) build_model_brain <- tryCatch(
     get("build_model_brain", envir = environment(create_analysis_services)), error = function(e) NULL)
   keys <- c("load_example", "simulate", "evaluate_expert", "fit", "metrics", "coefficients",
-    "diagnostics", "prediction_grid", "build_model_brain")
+    "diagnostics", "prediction_grid", "build_model_brain", "resolve_example")
   frame <- environment()
   services <- lapply(keys, function(key) {
     dependency <- tryCatch(get(key, envir = frame), error = function(e) NULL)
@@ -149,7 +150,7 @@ run_analysis_usecase <- function(request, services, root = ".") {
     example <- NULL
     labels <- list(x = "X", y = "Y", z = "Z")
     if (request$data_source == "real") {
-      id <- request$example_id %||% example_for_model(model_type, root)
+      id <- request$example_id %||% services$resolve_example(model_type, root)
       example <- services$load_example(id, root)
       if (!is.list(example) || !is.data.frame(example$analysis) || !is.data.frame(example$display) ||
           !is.list(example$metadata) || !identical(example$metadata$model_type, model_type) ||

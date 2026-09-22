@@ -16,7 +16,7 @@ test_that("service factory validates every injected dependency", {
   services <- create_analysis_services()
   expect_s3_class(services, "analysis_services")
   expect_named(services, c("load_example", "simulate", "evaluate_expert", "fit",
-    "metrics", "coefficients", "diagnostics", "prediction_grid", "build_model_brain"))
+    "metrics", "coefficients", "diagnostics", "prediction_grid", "build_model_brain", "resolve_example"))
   for (name in names(services)) {
     for (bad in list(NULL, 1, "function")) {
       error <- tryCatch(do.call(create_analysis_services, setNames(list(bad), name)), error = identity)
@@ -69,6 +69,30 @@ test_that("real examples resolve lazily and match the requested model", {
   expect_error(run_analysis_usecase(request, services, app_root), class = "analysis_request_error")
   services$load_example <- function(...) list(analysis = 1, metadata = list(model_type = "lm_2d"))
   expect_error(run_analysis_usecase(request, services, app_root), class = "analysis_request_error")
+})
+
+test_that("default real requests use injected resolution without a local manifest", {
+  root <- tempfile("missing-analysis-root-")
+  expect_false(dir.exists(root))
+  data <- data.frame(X = seq_len(20), Z = seq_len(20) + rep(c(-1, 1), 10))
+  resolver_call <- loader_call <- NULL
+  services <- create_analysis_services(
+    resolve_example = function(model_type, root) {
+      resolver_call <<- list(model_type, root)
+      "injected-example"
+    },
+    load_example = function(id, root) {
+      loader_call <<- list(id, root)
+      list(id = id, analysis = data, display = data, metadata = list(model_type = "lm_2d"))
+    })
+  request <- new_analysis_request(list(schema_version = "lmplot-analysis-request/1.0",
+    data_source = "real", model_type = "lm_2d"))
+  result <- run_analysis_usecase(request, services, root)
+  expect_identical(resolver_call, list("lm_2d", root))
+  expect_identical(loader_call, list("injected-example", root))
+  expect_identical(result$data, data)
+  expect_identical(result$example$id, "injected-example")
+  expect_s3_class(result$fit, "lm")
 })
 
 test_that("service outputs warnings and errors are faithfully propagated", {
