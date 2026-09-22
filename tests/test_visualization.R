@@ -221,3 +221,20 @@ test_that("3D plots include initial camera eye position", {
   expect_equal(built$x$layout$scene$camera$eye$z, 1.5)
 })
 
+test_that('committed chart alternatives retain exact prediction and interval values', {
+  app <- new.env(); source(file.path('..', 'app.R'), local = app)
+  value <- app$run_analysis_usecase(app$new_analysis_request(list(
+    schema_version = 'lmplot-analysis-request/1.0', data_source = 'simulation',
+    model_type = 'glm_binomial_2d', link = 'probit', simulation = list(n = 40L, seed = 12L))),
+    app$create_analysis_services(), root = '..')
+  table <- app$analysis_chart_observations(value)
+  expect_equal(table$fitted, vapply(value$model_brain$observations, `[[`, numeric(1), 'prediction'))
+  expect_equal(table$interval_lower, vapply(value$model_brain$observations, function(x) x$response_interval$lower, numeric(1)))
+  expect_true(all(table$prediction_mode == 'conditional'))
+  expect_true(all(table$response_unit == 'unit not specified'))
+  grid <- app$analysis_chart_grid(value)
+  expect_equal(grid$.fitted, value$prediction_grid$.fitted)
+  expect_false(any(grid$interval_available))
+  expect_true(all(nzchar(grid$interval_reason)))
+})
+

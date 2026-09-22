@@ -1,5 +1,18 @@
 .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 2000; background: white; padding: .5rem; }
 .skip-link:focus { top: 0; }
+.brain-navigation { display: flex; gap: .75rem; }
+.brain-navigation button { min-width: 44px; min-height: 44px; }
+.chart-section { margin-block: 1.5rem; padding: 1rem; background: #fff; border: 1px solid #64748b; border-radius: 4px; }
+.chart-section > .shiny-text-output { margin-bottom: .75rem; }
+.scientific-table-scroll { max-height: 26rem; overflow: auto; }
+.scientific-table { font-variant-numeric: tabular-nums; }
+.scientific-table .numeric { text-align: right; }
+.scientific-table caption { caption-side: top; color: #475569; }
+.scientific-table th { position: sticky; top: 0; background: #fff; color: #1e293b; }
+[id$='index_error'] { color: #991b1b; }
+input, select, textarea { border-color: #64748b !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+@media (forced-colors: active) { :focus-visible { outline-color: Highlight !important; } }
 
 /* ==========================================================================
    Scientific Design System Tokens & Variable Architecture
@@ -473,5 +486,4 @@ textarea:focus-visible,
   box-shadow: var(--shadow-card-hover) !important;
   border-color: var(--color-slate-300) !important;
 }
-
 

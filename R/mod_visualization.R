@@ -1,4 +1,31 @@
 # Shiny facades below consume the committed scientific snapshot only.
+analysis_chart_observations <- function(result) {
+  records <- analysis_observations(result)
+  table <- result$data
+  table$observation_id <- vapply(records, `[[`, character(1), 'observation_id')
+  table$source_index <- vapply(records, `[[`, integer(1), 'index')
+  table$prediction_mode <- 'conditional'
+  table$fitted <- vapply(records, `[[`, numeric(1), 'prediction')
+  table$response_residual <- vapply(records, `[[`, numeric(1), 'residual')
+  table$response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  table$interval_available <- vapply(records, function(x) x$response_interval$available, logical(1))
+  table$interval_lower <- vapply(records, function(x) x$response_interval$lower %||% NA_real_, numeric(1))
+  table$interval_upper <- vapply(records, function(x) x$response_interval$upper %||% NA_real_, numeric(1))
+  table$interval_level <- vapply(records, function(x) x$response_interval$level, numeric(1))
+  table$interval_method <- vapply(records, function(x) x$response_interval$method %||% NA_character_, character(1))
+  table$interval_reason <- vapply(records, function(x) x$response_interval$reason %||% NA_character_, character(1))
+  table
+}
+
+analysis_chart_grid <- function(result) {
+  table <- result$prediction_grid
+  table$prediction_mode <- if (result$model_type == 'glmm') 'population' else 'conditional'
+  table$response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  table$interval_available <- FALSE
+  table$interval_reason <- 'This stored prediction grid provides point estimates only.'
+  table
+}
+
 render_analysis_main_plot <- function(result, show_surface = TRUE, source = "overview", generation = 0L) {
   data <- result$data
   records <- analysis_observations(result)
@@ -11,21 +38,25 @@ render_analysis_main_plot <- function(result, show_surface = TRUE, source = "ove
   data$.hover <- observed_hover_text(data, labels, config$dimensions == 3L, config$requires_group)
   if (config$dimensions == 2L) {
     plot <- plotly::plot_ly(data, x = ~X, y = ~Z, type = "scatter", mode = "markers",
-      source = source, customdata = ~.selection, text = ~.hover, hoverinfo = "text", name = "Observed")
+      source = source, customdata = ~.selection, text = ~.hover, hoverinfo = "text", name = "Observed",
+      marker = list(color = '#1d4ed8', opacity = 1))
     grid <- result$prediction_grid
-    plot <- plotly::add_lines(plot, x = grid$X, y = grid$.fitted, name = "Mean response", inherit = FALSE)
+    plot <- plotly::add_lines(plot, x = grid$X, y = grid$.fitted, name = "Mean response",
+      line = list(color = '#92400e', dash = 'dash'), inherit = FALSE)
     plot <- plotly::layout(plot, xaxis = list(title = labels$x), yaxis = list(title = labels$z))
   } else {
     plot <- plotly::plot_ly(data, x = ~X, y = ~Y, z = ~Z, type = "scatter3d", mode = "markers",
       source = source, customdata = ~.selection, text = ~.hover, hoverinfo = "text", name = "Observed",
-      marker = list(size = 4, color = "#2563eb"))
+      marker = list(size = 4, color = "#1d4ed8", line = list(color = '#ffffff', width = 2)))
     if (isTRUE(show_surface)) {
       grid <- result$prediction_grid
       x <- sort(unique(grid$X)); y <- sort(unique(grid$Y))
       z <- matrix(NA_real_, nrow = length(y), ncol = length(x))
       z[cbind(match(grid$Y, y), match(grid$X, x))] <- grid$.fitted
       plot <- plotly::add_surface(plot, x = x, y = y, z = z, inherit = FALSE,
-        name = "Population mean response", opacity = .45, showscale = FALSE, colorscale = "Viridis")
+        name = if (result$model_type == 'glmm') "Population mean response" else "Mean response",
+        opacity = 1, showscale = FALSE, colorscale = list(list(0, '#0f766e'), list(1, '#0f766e')),
+        lighting = list(ambient = .8, diffuse = .2, specular = 0, roughness = 1))
     }
     plot <- plotly::layout(plot, scene = list(xaxis = list(title = labels$x),
       yaxis = list(title = labels$y), zaxis = list(title = labels$z)))
@@ -33,18 +64,21 @@ render_analysis_main_plot <- function(result, show_surface = TRUE, source = "ove
   plot <- plotly::layout(plot,
     title = list(text = result$example$metadata$title %||% model_config(result$model_type)$label),
     font = list(family = "system-ui, sans-serif"))
-  plotly::event_register(plot, "plotly_click")
+  plotly::config(plotly::event_register(plot, "plotly_click"), displayModeBar = FALSE,
+    scrollZoom = FALSE, doubleClick = FALSE, showTips = FALSE)
 }
 
 render_analysis_diagnostics <- function(result) {
   records <- analysis_observations(result)
   data <- data.frame(fitted = vapply(records, `[[`, numeric(1), "prediction"),
     residual = vapply(records, `[[`, numeric(1), "residual"))
-  plotly::plot_ly(data, x = ~fitted, y = ~residual, type = "scatter", mode = "markers", name = "Response residual") |>
+  plot <- plotly::plot_ly(data, x = ~fitted, y = ~residual, type = "scatter", mode = "markers", name = "Response residual",
+      marker = list(color = '#1d4ed8', opacity = 1)) |>
     plotly::layout(xaxis = list(title = paste("Fitted", result$labels$z)),
       yaxis = list(title = paste("Response residual:", result$labels$z)),
       shapes = list(list(type = "line", xref = "paper", x0 = 0, x1 = 1, y0 = 0, y1 = 0,
         line = list(dash = "dash"))), font = list(family = "system-ui, sans-serif"))
+  plotly::config(plot, displayModeBar = FALSE, staticPlot = TRUE)
 }
 
 prediction_grid <- function(df, fit, model_type,

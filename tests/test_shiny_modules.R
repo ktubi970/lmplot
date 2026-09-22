@@ -99,17 +99,29 @@ test_that("Overview selection uses stable identities and rejects stale result ev
     token(list(value = 1L, failed = TRUE)); session$flushReact()
     expect_identical(session$returned$selection(), list(observation_id = "12", generation = 1L))
     token(list(value = 2L, failed = FALSE)); session$flushReact()
-    expect_null(session$returned$selection())
+    seeded <- list(observation_id = fixture$model_brain$default_observation_id, generation = 2L)
+    expect_identical(session$returned$selection(), seeded)
     session$setInputs(observation_selection = list(observation_id = "12", generation = 1))
-    expect_null(session$returned$selection())
+    expect_identical(session$returned$selection(), seeded)
     session$setInputs(observation_selection = list(observation_id = "not-a-row", generation = 2))
-    expect_null(session$returned$selection())
+    expect_identical(session$returned$selection(), seeded)
   })
   built <- plotly::plotly_build(render_analysis_main_plot(fixture, generation = 1L))
   points <- Filter(function(trace) identical(trace$mode, "markers"), built$x$data)[[1]]
   metadata <- jsonlite::fromJSON(points$customdata[[12]])
   expect_identical(metadata$observation_id, "12")
   expect_equal(metadata$generation, 1)
+})
+
+test_that('diagnostic guidance exposes known advice without raw optimizer details', {
+  fixture <- run_analysis_usecase(new_analysis_request(list(schema_version = 'lmplot-analysis-request/1.0',
+    model_type = 'lm_2d', data_source = 'simulation', simulation = list(n = 40L))), create_analysis_services(), '..')
+  fixture$diagnostics$warnings <- c('Residual spread varies with fitted values; inspect variance assumptions.',
+    'SECRET optimizer exception /private/path')
+  shiny::testServer(diagnostics_server, args = list(result = shiny::reactive(fixture)), {
+    expect_match(output$guidance$html, 'Residual spread varies')
+    expect_false(grepl('SECRET|/private/path', output$guidance$html))
+  })
 })
 
 test_that("configuration instances keep disjoint draft state", {
