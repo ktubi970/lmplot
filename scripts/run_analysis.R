@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-if (identical(environment(), globalenv()) && length(commandArgs(trailingOnly = TRUE)) != 2L) {
+if (identical(environment(), globalenv()) && length(commandArgs(trailingOnly = TRUE)) < 2L) {
   cat("The analysis request is invalid.\n", file = stderr())
   quit(status = 2L)
 }
@@ -79,11 +79,12 @@ classify_cli_error <- function(error) {
 }
 
 run_analysis_cli <- function(args, dependencies = default_cli_dependencies()) {
-  if (length(args) != 2L) {
+  if (length(args) < 2L) {
     cat(CLI_ERROR_MESSAGES[["invalid_request"]], "\n", sep = "", file = stderr())
     return(2L)
   }
   tryCatch({
+    if (length(args) != 2L) abort_cli("cli_usage_error", "Exactly two CLI arguments are required.")
     payload <- dependencies$decode_json(args[[1]])
     request <- dependencies$new_request(payload, trusted_local = FALSE)
     services <- dependencies$create_services()

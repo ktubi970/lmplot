@@ -87,13 +87,25 @@ test_that("CLI classifies malformed and forbidden public requests", {
 })
 
 test_that("CLI requires exactly two arguments and keeps stdout empty", {
-  for (n in c(0L, 1L, 3L)) {
+  for (n in c(0L, 1L)) {
     result <- cli_process(args_count = n)
     expect_identical(result$status, 2L, info = result$stderr)
     expect_length(result$stdout, 0L)
     expect_null(result$text)
     expect_identical(result$stderr, "The analysis request is invalid.")
   }
+})
+
+test_that("extra CLI arguments write an error to the identifiable second path", {
+  expect_cli_error(cli_process(args_count = 3L), 2,
+    "invalid_request", "The analysis request is invalid.")
+  expect_cli_error(cli_process(args_count = 3L, injection =
+    'dependencies$decode_json <- function(...) stop("Request must not be read for invalid usage")'),
+    2, "invalid_request", "The analysis request is invalid.")
+  result <- cli_process(args_count = 3L, invalid_output = TRUE)
+  expect_identical(result$status, 4L, info = result$stderr)
+  expect_null(result$text)
+  expect_length(result$stdout, 0L)
 })
 
 test_that("sourced CLI classifies dependency and analysis failures without leaking details", {
@@ -139,12 +151,24 @@ test_that("CLI leaves absent output parents absent and reports exit 4", {
 })
 
 test_that("CLI handles dependency errors during module loading", {
-  before <- 'adapter$library <- function(...) stop(structure(list(message = "SECRET package missing", call = quote(library(privatePackage))), class = c("packageNotFoundError", "error", "condition")))'
+  before <- 'adapter$sys.source <- function(file, envir, ...) { if (basename(file) == "mod_simulation.R") stop(structure(list(message = "SECRET package missing", call = quote(library(privatePackage))), class = c("packageNotFoundError", "error", "condition"))); base::sys.source(file, envir, ...) }'
   expect_cli_error(cli_process(before_source = before), 3,
     "dependency_unavailable", "A required analysis dependency is unavailable.")
   broken_source <- 'adapter$sys.source <- function(file, envir, ...) { if (basename(file) == "mod_pipeline.R") stop("SECRET source failure"); base::sys.source(file, envir, ...) }'
   expect_cli_error(cli_process(before_source = broken_source), 3,
     "analysis_failed", "The analysis could not be completed.")
+})
+
+test_that("headless CLI works with Shiny present and optional UI addons unavailable", {
+  before <- c(
+    'stopifnot(base::requireNamespace("shiny", quietly = TRUE))',
+    'adapter$requireNamespace <- function(package, ...) if (package %in% c("shinyWidgets", "shinyAce")) FALSE else base::requireNamespace(package, ...)',
+    'adapter$library <- function(package, ...) { name <- as.character(substitute(package)); if (name %in% c("shinyWidgets", "shinyAce")) stop(structure(list(message = paste("Missing optional UI package", name)), class = c("packageNotFoundError", "error", "condition"))); base::library(name, character.only = TRUE, ...) }')
+  result <- cli_process(before_source = before)
+  expect_identical(result$status, 0L, info = result$stderr)
+  expect_identical(result$json$schema_version, "lmplot-analysis-result/1.0")
+  expect_length(result$json$data, 30L)
+  expect_length(result$stdout, 0L)
 })
 
 test_that("CLI handles request I/O and keeps original serialization diagnostics", {
@@ -214,7 +238,7 @@ test_that("JSON sanitizer preserves row and array positions with explicit nulls"
   }
 })
 
-test_that("atomic writer replaces complete documents and preserves prior content on failure", {
+test_that("atomic writer uses one replacement and never moves the old output aside", {
   env <- new.env(parent = globalenv())
   if (!file.exists(file.path(cli_root, "R", "json_contract.R"))) {
     fail("JSON writer does not exist"); return(invisible(NULL))
@@ -226,23 +250,27 @@ test_that("atomic writer replaces complete documents and preserves prior content
   writeLines('{"previous":true}', path)
   expect_error(env$write_contract_atomically(list(value = new.env()), path), class = "cli_serialization_error")
   expect_identical(jsonlite::read_json(path), list(previous = TRUE))
+  successful_attempts <- list()
+  env$file.rename <- function(from, to) {
+    successful_attempts[[length(successful_attempts) + 1L]] <<- list(
+      existing = file.exists(to), same_directory = identical(dirname(from), dirname(to)))
+    base::file.rename(from, to)
+  }
   env$write_contract_atomically(list(next_value = 2), path)
+  expect_identical(successful_attempts, list(list(existing = TRUE, same_directory = TRUE)))
   expect_identical(jsonlite::read_json(path), list(next_value = 2L))
   expect_identical(list.files(directory, all.files = TRUE, no.. = TRUE), "result.json")
-  env$file.rename <- local({ calls <- 0L; function(from, to) {
-    calls <<- calls + 1L
-    if (calls %in% c(1L, 3L)) return(FALSE)
+  attempts <- list()
+  env$file.rename <- function(from, to) {
+    attempts[[length(attempts) + 1L]] <<- c(from, to)
+    if (length(attempts) == 1L) return(FALSE)
     base::file.rename(from, to)
-  } })
+  }
   expect_error(env$write_contract_atomically(list(next_value = 3), path), class = "cli_output_error")
+  expect_length(attempts, 1L)
   expect_identical(jsonlite::read_json(path), list(next_value = 2L))
   expect_identical(list.files(directory, all.files = TRUE, no.. = TRUE), "result.json")
-  env$file.rename <- local({ calls <- 0L; function(from, to) {
-    calls <<- calls + 1L
-    if (calls == 1L) return(FALSE)
-    if (calls == 3L) stop("Rename I/O error")
-    base::file.rename(from, to)
-  } })
+  env$file.rename <- function(from, to) stop("Rename I/O error")
   expect_error(env$write_contract_atomically(list(next_value = 4), path),
     "Rename I/O error", class = "cli_output_error")
   expect_true(file.exists(path))

@@ -123,40 +123,18 @@ write_contract_atomically <- function(contract, output_path, encode_json = encod
     abort_cli("cli_output_error", "Output must name a file in an existing directory.")
   }
   temporary <- tempfile(".lmplot-", tmpdir = dirname(output_path), fileext = ".tmp")
-  backup <- tempfile(".lmplot-", tmpdir = dirname(output_path), fileext = ".bak")
   on.exit(if (file.exists(temporary)) unlink(temporary), add = TRUE)
-  rename_error <- NULL
-  rename <- function(from, to) {
-    tryCatch(suppressWarnings(file.rename(from, to)), error = function(e) {
-      rename_error <<- e
-      FALSE
-    })
-  }
-  abort_replacement <- function(message) {
-    if (!is.null(rename_error)) {
-      rename_error$message <- paste(message, conditionMessage(rename_error))
-      abort_cli("cli_output_error", rename_error)
-    }
-    abort_cli("cli_output_error", message)
-  }
   tryCatch({
     connection <- file(temporary, open = "wb")
     tryCatch({
       writeBin(charToRaw(enc2utf8(json)), connection)
       flush(connection)
     }, finally = close(connection))
-    if (rename(temporary, output_path)) return(invisible(output_path))
-    if (!file.exists(output_path) || !rename(output_path, backup)) {
-      abort_replacement("Could not stage output replacement.")
+    # R uses MoveFileExW(REPLACE_EXISTING) on Windows and rename() on POSIX.
+    # Siblings stay on the same filesystem. Never move the old name out of the way.
+    if (!file.rename(temporary, output_path)) {
+      abort_cli("cli_output_error", "Output replacement failed; prior result was not moved.")
     }
-    if (!rename(temporary, output_path)) {
-      if (!rename(backup, output_path)) {
-        # Preserve the recoverable backup if the filesystem also rejects restoration.
-        abort_replacement(paste("Output restoration failed; prior result retained at", backup))
-      }
-      abort_replacement("Output replacement failed; prior result restored.")
-    }
-    unlink(backup)
     invisible(output_path)
   }, error = function(e) abort_cli("cli_output_error", e))
 }

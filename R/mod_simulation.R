@@ -1,11 +1,4 @@
-if (requireNamespace("shiny", quietly = TRUE)) {
-  suppressPackageStartupMessages({
-    library(shiny)
-    library(shinyWidgets)
-    library(shinyAce)
-  })
-}
-
+# UI namespaces are loaded only when their qualified UI functions are called.
 simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
                           beta0 = 2, beta1 = 0.5, beta2 = -0.25,
                           sigma = 1, shape = 2, group_sd = 1, groups = 5L,
