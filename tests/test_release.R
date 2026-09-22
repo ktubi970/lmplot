@@ -21,7 +21,9 @@ test_that("release artifacts agree on the beta version", {
 })
 
 test_that("a fresh R process activates the project library", {
-  rscript <- file.path(R.home("bin"), "Rscript.exe")
+  rscript <- Sys.which("Rscript")
+  if (!nzchar(rscript)) rscript <- file.path(R.home("bin"),
+    if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript")
   expression <- paste(
     "cat(normalizePath(.libPaths(), winslash = '/', mustWork = FALSE),",
     "sep = '\n')"
@@ -79,7 +81,7 @@ test_that("renv lockfile covers runtime and test dependencies", {
   lock <- jsonlite::fromJSON(file.path(release_root, "renv.lock"), simplifyVector = FALSE)
   expected_packages <- c(
     "renv", "shiny", "plotly", "bslib", "DT", "ggplot2", "ggfortify",
-    "lme4", "shinyWidgets", "shinyAce", "testthat", "shinytest2"
+    "lme4", "jsonlite", "shinyWidgets", "shinyAce", "testthat", "shinytest2"
   )
 
   expect_identical(lock$R$Version, "4.6.0")
@@ -106,4 +108,11 @@ test_that("TODO records completed automated beta verification", {
     fixed = TRUE
   )
   expect_no_match(todo, "- [ ] Browser-based beta verification", fixed = TRUE)
+})
+
+test_that("runtime R sources never install dependencies", {
+  files <- c("app.R", "scripts/run_analysis.R", file.path("R", list.files(file.path(release_root, "R"),
+    pattern = "\\.R$", recursive = TRUE, full.names = FALSE)))
+  for (path in files) expect_no_match(read_release_file(path), "install\\.packages\\s*\\(")
+  expect_no_match(read_release_file("scripts/run_analysis.R"), "\\.libPaths\\s*\\(")
 })

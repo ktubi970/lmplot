@@ -82,9 +82,14 @@ fit_glm_strategy <- function(df, link) {
   stats::glm(formula, data = df, family = family_object)
 }
 
+abort_analysis_dependency <- function(message) {
+  stop(structure(list(message = message, call = NULL),
+    class = c("analysis_dependency_error", "error", "condition")))
+}
+
 fit_glmm_strategy <- function(df, link, namespace_available = function(pkg) requireNamespace(pkg, quietly = TRUE)) {
   if (!namespace_available("lme4")) {
-    stop("Gaussian GLMM requires the lme4 package", call. = FALSE)
+    abort_analysis_dependency("Gaussian GLMM requires the lme4 package")
   }
 
   model_data <- df

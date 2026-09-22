@@ -15,23 +15,29 @@ test_that("run_analysis production entry point fits an lm_2d request", {
     auto_unbox = TRUE
   )
 
-  rscript <- file.path(
+  rscript <- Sys.which("Rscript")
+  if (!nzchar(rscript)) rscript <- file.path(
     R.home("bin"),
     if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript"
   )
   expect_true(file.exists(rscript))
 
-  output <- system2(
+  stdout <- tempfile(); stderr <- tempfile()
+  on.exit(unlink(c(request_path, output_path, stdout, stderr)), add = TRUE)
+  status <- system2(
     rscript,
-    c(file.path("..", "scripts", "run_analysis.R"), shQuote(request_path), shQuote(output_path)),
-    stdout = TRUE,
-    stderr = TRUE
+    shQuote(c(file.path("..", "scripts", "run_analysis.R"), request_path, output_path)),
+    stdout = stdout,
+    stderr = stderr
   )
 
-  expect_null(attr(output, "status"), info = paste(output, collapse = "\n"))
+  expect_identical(as.integer(status), 0L, info = paste(readLines(stderr, warn = FALSE), collapse = "\n"))
+  expect_length(readLines(stdout, warn = FALSE), 0L)
   expect_true(file.exists(output_path))
   result <- jsonlite::read_json(output_path)
-  expect_identical(result$model_type, "lm_2d")
+  expect_identical(result$schema_version, "lmplot-analysis-result/1.0")
+  expect_identical(result$model$model_type, "lm_2d")
+  expect_identical(result$source$data_source, "simulation")
   expect_length(result$data, 30L)
   expect_true(all(c("metrics", "diagnostics", "warnings") %in% names(result)))
 })
