@@ -1,5 +1,10 @@
 # LM Model Brain — Spécification de conception
 
+> **Partially superseded on 2026-09-22.** The deterministic R contract remains
+> authoritative, but Streamlit/Python rendering, `nlme`/`lm` GLMM fallbacks,
+> and dual-interface requirements are replaced by the Shiny-only design in
+> `2026-09-22-lmplot-public-shiny-hardening-design.md`.
+
 **Statut :** conception et spécification écrite approuvées pour planification
 
 **Date :** 2026-08-15

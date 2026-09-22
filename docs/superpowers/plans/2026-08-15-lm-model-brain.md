@@ -1,5 +1,9 @@
 # LM Model Brain Implementation Plan
 
+> **Partially superseded on 2026-09-22.** Do not execute the Streamlit/Python,
+> dual-interface, or GLMM-fallback portions of this plan. Continue Model Brain
+> work from `2026-09-22-lmplot-public-shiny-hardening.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ajouter aux interfaces Shiny et Streamlit un graphe de calcul interactif, scientifiquement exact et accessible pour les 15 combinaisons LM/GLM/GLMM existantes, avec exploration locale observation par observation et vues globales.

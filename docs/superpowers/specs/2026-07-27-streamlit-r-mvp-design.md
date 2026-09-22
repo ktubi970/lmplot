@@ -1,5 +1,10 @@
 # Streamlit + R public MVP design
 
+> **Superseded on 2026-09-22.** The public product is now the Shiny-only
+> application defined in `2026-09-22-lmplot-public-shiny-hardening-design.md`.
+> This document remains as historical context; its Streamlit, Python runtime,
+> and deployment decisions are no longer requirements.
+
 Date: 2026-07-27
 Status: approved for specification
 
