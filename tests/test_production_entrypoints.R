@@ -15,8 +15,14 @@ test_that("run_analysis production entry point fits an lm_2d request", {
     auto_unbox = TRUE
   )
 
+  rscript <- file.path(
+    R.home("bin"),
+    if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript"
+  )
+  expect_true(file.exists(rscript))
+
   output <- system2(
-    file.path(R.home("bin"), "Rscript.exe"),
+    rscript,
     c(file.path("..", "scripts", "run_analysis.R"), shQuote(request_path), shQuote(output_path)),
     stdout = TRUE,
     stderr = TRUE
