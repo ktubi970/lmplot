@@ -6,6 +6,24 @@ acceptance_matrix <- do.call(rbind, lapply(model_ids(), function(id) {
   data.frame(model_type = id, link = valid_links(id), stringsAsFactors = FALSE)
 }))
 
+test_that("simulation collector returns parameters and code without executing them", {
+  for (trusted in c(FALSE, TRUE)) {
+    shiny::testServer(sim_server, args = list(model_type = function() "lm_2d",
+      link = function() "identity", trusted_local = trusted), {
+      session$setInputs(n = 45L, expert_mode = TRUE, code = "stop('must not evaluate')")
+      collected <- session$returned()
+      expect_equal(collected$parameters$n, 45L)
+      expect_null(collected$data)
+      expect_identical(collected$expert$enabled, trusted)
+      expect_identical(collected$expert$code, if (trusted) "stop('must not evaluate')" else NULL)
+    })
+  }
+  for (bad in list(NULL, NA, 1, "TRUE", c(TRUE, FALSE))) {
+    expect_error(sim_ui("test", trusted_local = bad), "logical scalar")
+    expect_error(sim_server("test", function() "lm_2d", function() "identity", trusted_local = bad), "logical scalar")
+  }
+})
+
 test_that("all beta combinations simulate deterministically", {
   expect_equal(nrow(acceptance_matrix), 15L)
   for (row in seq_len(nrow(acceptance_matrix))) {

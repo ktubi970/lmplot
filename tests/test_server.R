@@ -1,4 +1,12 @@
+withr::local_envvar(LMPLOT_TRUSTED_LOCAL = NA)
 source(file.path("..", "app.R"), local = TRUE)
+
+trusted_app <- function() {
+  withr::local_envvar(LMPLOT_TRUSTED_LOCAL = "1")
+  app <- new.env(parent = environment(server))
+  source(file.path("..", "app.R"), local = app)
+  app
+}
 
 rendered_html <- function(tag) {
   rendered <- htmltools::renderTags(tag)
@@ -36,7 +44,7 @@ test_that("UI exposes beta identity and required controls", {
   expect_match(html, "0.9.0-beta.1", fixed = TRUE)
   expect_match(html, "model_type", fixed = TRUE)
   expect_match(html, "link_ui", fixed = TRUE)
-  expect_match(html, "simulation-expert_mode", fixed = TRUE)
+  expect_false(grepl("simulation-expert_mode", html, fixed = TRUE))
   expect_match(html, "generate", fixed = TRUE)
   expect_match(html, "surface_ui", fixed = TRUE)
   expect_false(grepl("show_surface", html, fixed = TRUE))
@@ -212,9 +220,9 @@ test_that("server fits every real-data example without evaluating simulation", {
     glmm = 4059L
   )
   rlang::local_bindings(
-    simulate_data = function(...) {
+    services = create_analysis_services(simulate = function(...) {
       stop("Simulation must remain lazy in real-data mode", call. = FALSE)
-    },
+    }),
     .env = environment(server)
   )
 
@@ -320,6 +328,8 @@ test_that("a failed generation leaves the last successful result visible", {
 })
 
 test_that("invalid expert GLMM data preserves the previous result and CSV", {
+  app <- trusted_app()
+  server <- app$server
   notifications <- list()
   rlang::local_bindings(
     showNotification = function(ui, type = NULL, ...) {
@@ -370,10 +380,10 @@ test_that("fit warnings notify non-fatally and are muffled narrowly", {
   notifications <- list()
   real_fit_model <- get("fit_model", envir = environment(server))
   rlang::local_bindings(
-    fit_model = function(...) {
+    services = create_analysis_services(fit = function(...) {
       warning("deliberate fit warning", call. = FALSE)
       real_fit_model(...)
-    },
+    }),
     showNotification = function(ui, type = NULL, ...) {
       notifications[[length(notifications) + 1L]] <<- list(
         message = as.character(ui),
@@ -399,6 +409,9 @@ test_that("fit warnings notify non-fatally and are muffled narrowly", {
 })
 
 test_that("trusted-local expert mode uses canonical evaluation and output paths", {
+  app <- trusted_app()
+  expect_match(rendered_html(app$ui), "simulation-expert_mode", fixed = TRUE)
+  server <- app$server
   shiny::testServer(server, {
     session$setInputs(model_type = "lm_2d")
     session$flushReact()
@@ -421,6 +434,28 @@ test_that("trusted-local expert mode uses canonical evaluation and output paths"
     expect_gt(length(output$model_summary), 0L)
     expect_false(is.null(output$data_table))
   })
+})
+
+test_that("public server cannot execute client-forged Expert controls", {
+  shiny::testServer(server, {
+    session$setInputs(model_type = "lm_2d")
+    session$flushReact()
+    set_standard_inputs(session, n = 30L)
+    session$setInputs(`simulation-expert_mode` = TRUE,
+      `simulation-code` = "stop('public expert code ran')", generate = 1L)
+    session$flushReact()
+    expect_equal(nrow(last_result()$data), 30L)
+    expect_false(grepl("simulation-code", rendered_html(output$`simulation-controls_ui`), fixed = TRUE))
+  })
+})
+
+test_that("only the literal environment value 1 enables Expert controls", {
+  for (value in c("true", "TRUE", "yes", "0", "")) {
+    withr::local_envvar(LMPLOT_TRUSTED_LOCAL = value)
+    app <- new.env(parent = environment(server))
+    source(file.path("..", "app.R"), local = app)
+    expect_false(grepl("simulation-expert_mode", rendered_html(app$ui), fixed = TRUE))
+  }
 })
 
 test_that("download data is enriched from the same last successful result", {

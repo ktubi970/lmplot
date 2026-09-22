@@ -13,7 +13,11 @@ source(file.path(app_root, "R", "mod_simulation.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_visualization.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_examples.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_eli5.R"), local = TRUE)
+source(file.path(app_root, "R", "mod_model_brain.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_pipeline.R"), local = TRUE)
+
+trusted_local <- identical(Sys.getenv("LMPLOT_TRUSTED_LOCAL"), "1")
+services <- create_analysis_services()
 
 model_choices <- stats::setNames(
   model_ids(),
@@ -75,7 +79,7 @@ ui <- bslib::page_sidebar(
         "🎛️ Simulation Parameters",
         shiny::conditionalPanel(
           "input.data_source === 'simulation'",
-          sim_ui("simulation")
+          sim_ui("simulation", trusted_local = trusted_local)
         )
       ),
       bslib::accordion_panel(
@@ -500,7 +504,7 @@ server <- function(input, output, session) {
     "simulation",
     shiny::reactive(input$model_type),
     selected_link,
-    shiny::reactive(input$generate)
+    trusted_local = trusted_local
   )
   last_result <- shiny::reactiveVal(NULL)
 
@@ -508,19 +512,20 @@ server <- function(input, output, session) {
 
   shiny::observeEvent(input$generate, {
     tryCatch({
-      result <- withCallingHandlers(
-        run_analysis_usecase(
-          data_source = input$data_source,
-          model_type = input$model_type,
-          link = selected_link(),
-          sim_result = simulation(),
-          root = app_root
-        ),
-        warning = function(warning) {
-          showNotification(conditionMessage(warning), type = "warning")
-          invokeRestart("muffleWarning")
-        }
+      payload <- list(
+        schema_version = "lmplot-analysis-request/1.0",
+        data_source = input$data_source %||% "simulation",
+        model_type = input$model_type,
+        link = selected_link()
       )
+      if (identical(payload$data_source, "simulation")) {
+        collected <- simulation()
+        payload$simulation <- collected$parameters
+        payload$expert <- collected$expert
+      }
+      request <- new_analysis_request(payload, trusted_local = trusted_local)
+      result <- run_analysis_usecase(request, services, root = app_root)
+      for (warning in result$warnings) showNotification(warning, type = "warning")
       last_result(result)
     }, error = function(error) {
       showNotification(conditionMessage(error), type = "error")
@@ -530,7 +535,8 @@ server <- function(input, output, session) {
   output$kpi_banner <- shiny::renderUI({
     result <- last_result()
     shiny::req(result)
-    kpis <- result$kpis
+    kpis <- extract_model_kpis(result$fit, result$model_type,
+      metrics = result$metrics, diagnostics = result$diagnostics)
 
     shiny::div(
       class = "kpi-card-grid",

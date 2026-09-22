@@ -198,10 +198,19 @@ simulation_code <- function(model_type, link, parameters) {
   paste(lines, collapse = "\n")
 }
 
-sim_ui <- function(id) {
+validate_simulation_trust <- function(trusted_local) {
+  if (!is.logical(trusted_local) || length(trusted_local) != 1L ||
+      is.na(trusted_local) || !is.null(attributes(trusted_local))) {
+    stop("trusted_local must be a logical scalar.", call. = FALSE)
+  }
+  invisible(trusted_local)
+}
+
+sim_ui <- function(id, trusted_local = FALSE) {
+  validate_simulation_trust(trusted_local)
   ns <- shiny::NS(id)
   shiny::tagList(
-    shinyWidgets::switchInput(
+    if (trusted_local) shinyWidgets::switchInput(
       ns("expert_mode"),
       "Simulation mode",
       onLabel = "Expert",
@@ -212,12 +221,13 @@ sim_ui <- function(id) {
   )
 }
 
-sim_server <- function(id, model_type, link, trigger) {
+sim_server <- function(id, model_type, link, trusted_local = FALSE) {
+  validate_simulation_trust(trusted_local)
   shiny::moduleServer(id, function(input, output, session) {
     output$controls_ui <- shiny::renderUI({
       config <- model_config(model_type())
 
-      if (isTRUE(input$expert_mode)) {
+      if (trusted_local && isTRUE(input$expert_mode)) {
         default_code <- simulation_code(
           model_type(),
           link(),
@@ -290,9 +300,7 @@ sim_server <- function(id, model_type, link, trigger) {
       do.call(shiny::tagList, controls)
     })
 
-    shiny::eventReactive(trigger(), {
-      model_snapshot <- model_type()
-      link_snapshot <- link()
+    shiny::reactive({
       parameters <- list(
         pattern = input$pattern %||% "linear",
         n = input$n %||% 200L,
@@ -305,38 +313,11 @@ sim_server <- function(id, model_type, link, trigger) {
         group_sd = input$group_sd %||% 1,
         groups = input$groups %||% 5L
       )
-      expert_mode <- isTRUE(input$expert_mode)
-      code <- if (expert_mode) {
-        input$code
-      } else {
-        simulation_code(model_snapshot, link_snapshot, parameters)
-      }
-      if (expert_mode && (is.null(code) || !nzchar(code))) {
-        stop("Expert simulation code is required", call. = FALSE)
-      }
-      data <- if (expert_mode) {
-        evaluate_expert_simulation(
-          code,
-          parameters,
-          model_snapshot,
-          link_snapshot
-        )
-      } else {
-        do.call(
-          simulate_data,
-          c(
-            list(model_type = model_snapshot, link = link_snapshot),
-            parameters
-          )
-        )
-      }
+      expert_mode <- trusted_local && isTRUE(input$expert_mode)
       list(
-        data = data,
-        code = code,
         parameters = parameters,
-        model_type = model_snapshot,
-        link = link_snapshot
+        expert = list(enabled = expert_mode, code = if (expert_mode) input$code else NULL)
       )
-    }, ignoreInit = FALSE)
+    })
   })
 }
