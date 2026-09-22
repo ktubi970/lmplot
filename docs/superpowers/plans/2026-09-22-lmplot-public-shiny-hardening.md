@@ -340,7 +340,7 @@ git add R/mod_pipeline.R R/mod_simulation.R app.R tests/test_pipeline.R tests/te
 git commit -m "feat: validate analysis requests and gate expert mode"
 ~~~
 
-### Task 4: Stable JSON CLI Adapter
+### Task 5: Stable JSON CLI Adapter
 
 **Files:**
 - Modify: scripts/run_analysis.R
@@ -349,7 +349,8 @@ git commit -m "feat: validate analysis requests and gate expert mode"
 - Modify: tests/test_release.R
 
 **Interfaces:**
-- Consumes: Task 3 request/services/use-case boundary.
+- Consumes: Task 3 request/services/use-case boundary and Task 4 validated
+  Model Brain contract.
 - Produces: analysis_result_to_contract(result),
   sanitize_json_values(value), error_contract(code, message), and the stable
   two-path CLI invocation.
@@ -408,7 +409,7 @@ git add scripts/run_analysis.R R/json_contract.R tests/test_cli_contract.R tests
 git commit -m "feat: stabilize versioned analysis CLI contracts"
 ~~~
 
-### Task 5: Complete and Validate Model Brain
+### Task 4: Complete and Validate Model Brain
 
 **Files:**
 - Modify: R/mod_model_brain.R
@@ -418,7 +419,8 @@ git commit -m "feat: stabilize versioned analysis CLI contracts"
 - Modify: R/mod_pipeline.R
 
 **Interfaces:**
-- Consumes: fitted model, source data, coefficient table, intervals, warnings.
+- Consumes: Task 1/2 fitted model, source data, coefficient table, intervals,
+  warnings, and Task 3 service boundary.
 - Produces: build_model_brain(fit, data, model_type, link, labels, warnings,
   prediction_mode), validate_model_brain(brain), select_model_brain_observation(
   brain, index), and model-brain/1.0.
@@ -496,7 +498,7 @@ git commit -m "feat: complete validated model brain contract"
 - Create: tests/test_shiny_modules.R
 
 **Interfaces:**
-- Consumes: Task 3 analysis request/services/use case and Task 5 model_brain.
+- Consumes: Task 3 analysis request/services/use case and Task 4 model_brain.
 - Produces: configuration_ui/server, overview_ui/server,
   diagnostics_ui/server, data_provenance_ui/server, create_app_coordinator(),
   and a thin app.R composition root.
@@ -570,7 +572,7 @@ git commit -m "refactor: compose modular public Shiny workflows"
 - Create: tests/test_model_brain_ui.R
 
 **Interfaces:**
-- Consumes: precomputed model-brain/1.0 from Task 5 and coordinator result.
+- Consumes: precomputed model-brain/1.0 from Task 4 and coordinator result.
 - Produces: exact_equation_view, contribution_waterfall,
   link_transformation_plot, coefficient_overview_plot,
   random_effect_plot, chart_accessibility_bundle, and model_brain_ui/server.
@@ -702,7 +704,9 @@ Run:
 ~~~text
 docker compose config --quiet
 docker build -t lmplot:0.10.0-beta.1 .
-docker run --rm --network none --name lmplot-health lmplot:0.10.0-beta.1
+docker run -d --network none --name lmplot-health lmplot:0.10.0-beta.1
+docker inspect --format "{{.State.Health.Status}}" lmplot-health
+docker stop lmplot-health
 ~~~
 
 Use the image HEALTHCHECK status or an internal curl executed in the container
