@@ -1,10 +1,12 @@
 # Module ELI5 (Explain Like I'm 5) - Assistant d'Explication en Langage Naturel
 
 generate_eli5_explanation <- function(fit, model_type, link = "identity",
-                                      data_source = "simulation", example_metadata = NULL) {
+                                      data_source = "simulation", example_metadata = NULL,
+                                      df = NULL) {
   config <- model_config(model_type)
   kpis <- extract_model_kpis(fit, model_type)
   coef_df <- extract_coefficient_table(fit)
+  diag <- diagnose_model_linearity(fit, df = df, model_type = model_type)
   
   resp_name <- if (!is.null(example_metadata)) example_metadata$response_label else "Z (Variable Réponse)"
   pred_x_name <- if (!is.null(example_metadata)) example_metadata$predictor_x_label else "X (Prédicteur Principal)"
@@ -24,7 +26,17 @@ generate_eli5_explanation <- function(fit, model_type, link = "identity",
     sprintf("Modèle statistique ajusté pour prédire %s à partir de vos variables.", resp_name)
   )
 
-  # 2. Explication des Coefficients (Effets observés)
+  # 2. Diagnostic de Linéarité (Modèle Linéaire vs Non-Linéaire / Mal Spécifié)
+  linearity_eval <- if (diag$status == "LINEAR_MATCH") {
+    "✅ **Relation Linéaire Adéquate :** Le modèle linéaire s'ajuste très bien aux données ! La tendance observée suit une droite/surface rectiligne, et les résidus sont répartis uniformément autour de 0 sans courbure ni déformation (homoscédasticité)."
+  } else {
+    sprintf(
+      "⚠️ **Détection de Modèle Non-Linéaire / Mal Spécifié :** Les résultats du modèle linéaire classique sont mauvais ou insuffisants car la vraie relation sous-jacente est **NON-LINÉAIRE** (%s). Le modèle linéaire (droite ou plan rigide) traverse la forme sans pouvoir s'y plier.<br><br>💡 **Comment apprendre cette dimension ?**<br>• Regardez le graphique principal : la droite/surface ne suit pas la courbure des points.<br>• Regardez le graphique des résidus (<em>Residuals vs Fitted</em>) : une forme en U ou courbe indique une non-linéarité ($Y^2$ ou $\\cos(Y)$), tandis qu'un entonnoir indique une variance variable.<br>• Solution : ajouter un terme $Y^2$, une transformation, ou un modèle non-linéaire.",
+      diag$pattern_desc
+    )
+  }
+
+  # 3. Explication des Coefficients (Effets observés)
   effect_bullets <- list()
   if (nrow(coef_df) > 0) {
     for (i in seq_len(nrow(coef_df))) {
@@ -56,7 +68,7 @@ generate_eli5_explanation <- function(fit, model_type, link = "identity",
     }
   }
 
-  # 3. Qualité Globale (R² et Erreur)
+  # 4. Qualité Globale (R² et Erreur)
   r2_val <- kpis$r2_value
   r2_eval <- switch(
     kpis$r2_status,
@@ -67,15 +79,18 @@ generate_eli5_explanation <- function(fit, model_type, link = "identity",
     "Le modèle est ajusté."
   )
 
-  # 4. Bilan / Conclusion Pratique (ELI5 Synthesis)
+  # 5. Bilan / Conclusion Pratique (ELI5 Synthesis)
   conclusion <- sprintf(
-    "En résumé : votre modèle a réussi à calculer l'effet de vos variables avec un échantillon de %s observations. %s",
+    "En résumé : votre modèle a calculé l'effet de vos variables sur %s observations (%s). %s",
     kpis$health_value,
+    diag$status_label,
     r2_eval
   )
 
   list(
     concept = concept,
+    linearity_eval = linearity_eval,
+    linearity_diag = diag,
     effects = effect_bullets,
     r2_eval = r2_eval,
     r2_val = r2_val,
@@ -169,12 +184,19 @@ eli5_server <- function(id, last_result) {
         result$model_type,
         result$link,
         data_source = if (!is.null(result$example)) "real" else "simulation",
-        example_metadata = meta
+        example_metadata = meta,
+        df = result$data
       )
 
       effect_items <- lapply(eli5$effects, function(eff) {
         shiny::tags$li(class = "mb-2", shiny::HTML(eff))
       })
+
+      diag_alert_class <- if (identical(eli5$linearity_diag$status, "LINEAR_MATCH")) {
+        "alert alert-success border-0 bg-success-subtle text-success-emphasis rounded-3 mb-3 p-3"
+      } else {
+        "alert alert-warning border-0 bg-warning-subtle text-warning-emphasis rounded-3 mb-3 p-3"
+      }
 
       shiny::div(
         class = "card-body bg-white p-4",
@@ -182,6 +204,11 @@ eli5_server <- function(id, last_result) {
           class = "alert alert-primary border-0 bg-primary-subtle text-primary-emphasis rounded-3 mb-3 p-3",
           shiny::div(class = "fw-bold mb-1", "💡 Concept Clé (ELI5) :"),
           shiny::div(shiny::HTML(eli5$concept))
+        ),
+        shiny::div(
+          class = diag_alert_class,
+          shiny::div(class = "fw-bold mb-1", "📏 Diagnostic Linéarité (Vrai Linéaire vs Non-Linéaire) :"),
+          shiny::div(shiny::HTML(eli5$linearity_eval))
         ),
         shiny::div(
           class = "mb-3",

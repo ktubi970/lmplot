@@ -1,0 +1,8 @@
+.agents/
+graphify-out/
+docs/
+.superpowers/
+.worktrees/
+.git/
+artifacts/
+.positai/

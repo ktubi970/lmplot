@@ -83,3 +83,21 @@ test_that("expert evaluation rejects invalid output", {
     fixed = TRUE
   )
 })
+
+test_that("simulate_data supports non-linear patterns (quadratic, cosine, heteroscedastic)", {
+  lin <- simulate_data("lm_2d", "identity", n = 100L, seed = 42L, pattern = "linear")
+  quad <- simulate_data("lm_2d", "identity", n = 100L, seed = 42L, pattern = "quadratic")
+  cos_pat <- simulate_data("lm_2d", "identity", n = 100L, seed = 42L, pattern = "cosine")
+  het <- simulate_data("lm_2d", "identity", n = 100L, seed = 42L, pattern = "heteroscedastic")
+
+  expect_equal(nrow(quad), 100L)
+  expect_false(identical(lin$Z, quad$Z))
+  expect_false(identical(lin$Z, cos_pat$Z))
+  expect_false(identical(lin$Z, het$Z))
+
+  expect_error(
+    simulate_data("lm_2d", "identity", pattern = "invalid_pattern"),
+    "Invalid simulation pattern",
+    fixed = TRUE
+  )
+})

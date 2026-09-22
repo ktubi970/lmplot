@@ -11,3 +11,6 @@ tests/testthat/_snaps/_new/
 tests/shinytest2/_screenshots/
 *.tmp.png
 .positai
+graphify-out/
+Rplots.pdf
+.agents/

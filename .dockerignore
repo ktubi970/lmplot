@@ -1,0 +1,13 @@
+.git
+.gitignore
+.Rproj.user
+.RData
+.Rhistory
+.superpowers
+.worktrees
+__pycache__
+*.pyc
+*.pyo
+renv
+artifacts
+tests/_problems

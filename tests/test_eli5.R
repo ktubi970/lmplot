@@ -10,10 +10,11 @@ test_that("generate_eli5_explanation returns structured explanation list for lm_
   df <- data.frame(X = 1:50, Z = 2 * (1:50) + rnorm(50))
   fit <- fit_model(df, "lm_2d", "identity")
   
-  eli5 <- generate_eli5_explanation(fit, "lm_2d", "identity")
+  eli5 <- generate_eli5_explanation(fit, "lm_2d", "identity", df = df)
   expect_type(eli5, "list")
-  expect_named(eli5, c("concept", "effects", "r2_eval", "r2_val", "conclusion"))
+  expect_named(eli5, c("concept", "linearity_eval", "linearity_diag", "effects", "r2_eval", "r2_val", "conclusion"))
   expect_true(nzchar(eli5$concept))
+  expect_true(nzchar(eli5$linearity_eval))
   expect_gt(length(eli5$effects), 0)
   expect_true(nzchar(eli5$r2_eval))
   expect_true(nzchar(eli5$conclusion))

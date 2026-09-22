@@ -189,4 +189,20 @@ test_that("format_pval and get_pval_sig_class return significance tiers", {
   expect_equal(get_pval_sig_class(NA), "sig-ns")
 })
 
+test_that("diagnose_model_linearity correctly distinguishes linear vs non-linear data", {
+  df_lin <- simulate_data("lm_2d", "identity", n = 150L, seed = 42L, pattern = "linear")
+  fit_lin <- fit_model(df_lin, "lm_2d", "identity")
+  diag_lin <- diagnose_model_linearity(fit_lin, df_lin, "lm_2d")
+
+  expect_equal(diag_lin$status, "LINEAR_MATCH")
+  expect_false(diag_lin$is_nonlinear)
+
+  df_quad <- simulate_data("lm_2d", "identity", n = 150L, seed = 42L, pattern = "quadratic")
+  fit_quad <- fit_model(df_quad, "lm_2d", "identity")
+  diag_quad <- diagnose_model_linearity(fit_quad, df_quad, "lm_2d")
+
+  expect_equal(diag_quad$status, "NONLINEAR_MISSPECIFIED")
+  expect_true(diag_quad$is_nonlinear)
+})
+
 

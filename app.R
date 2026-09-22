@@ -10,6 +10,7 @@ source(file.path(app_root, "R", "mod_simulation.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_visualization.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_examples.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_eli5.R"), local = TRUE)
+source(file.path(app_root, "R", "mod_pipeline.R"), local = TRUE)
 
 model_choices <- stats::setNames(
   model_ids(),
@@ -211,6 +212,7 @@ ui <- bslib::page_sidebar(
             shiny::uiOutput("diag_header_title", inline = TRUE)
           )
         ),
+        shiny::uiOutput("linearity_diag_banner"),
         shiny::plotOutput("diag_plots", height = "560px"),
         shiny::tags$details(
           class = "mt-2 p-3 border rounded bg-light shadow-sm",
@@ -503,64 +505,20 @@ server <- function(input, output, session) {
 
   shiny::observeEvent(input$generate, {
     tryCatch({
-      if (identical(input$data_source, "real")) {
-        model_type <- input$model_type
-        link <- selected_link()
-        example <- load_real_example(
-          example_for_model(
-            model_type,
-            root = app_root
-          ),
+      result <- withCallingHandlers(
+        run_analysis_usecase(
+          data_source = input$data_source,
+          model_type = input$model_type,
+          link = selected_link(),
+          sim_result = simulation(),
           root = app_root
-        )
-        generated <- list(
-          data = example$analysis,
-          display = example$display,
-          example = example,
-          model_type = model_type,
-          link = link,
-          code = paste0(
-            "example <- load_real_example(\"",
-            example$id,
-            "\")\n",
-            "fit <- fit_model(example$analysis, \"",
-            model_type,
-            "\", \"",
-            link,
-            "\")"
-          )
-        )
-      } else {
-        simulated <- simulation()
-        generated <- list(
-          data = simulated$data,
-          display = simulated$data,
-          example = NULL,
-          model_type = simulated$model_type,
-          link = simulated$link,
-          code = simulated$code
-        )
-      }
-      fit <- withCallingHandlers(
-        fit_model(
-          generated$data,
-          generated$model_type,
-          generated$link
         ),
         warning = function(warning) {
           showNotification(conditionMessage(warning), type = "warning")
           invokeRestart("muffleWarning")
         }
       )
-      last_result(list(
-        data = generated$data,
-        display = generated$display,
-        example = generated$example,
-        fit = fit,
-        model_type = generated$model_type,
-        link = generated$link,
-        code = generated$code
-      ))
+      last_result(result)
     }, error = function(error) {
       showNotification(conditionMessage(error), type = "error")
     })
@@ -759,6 +717,31 @@ server <- function(input, output, session) {
       "Diagnostics (2-Panel Suite for GLMM)"
     } else {
       "Diagnostics (4-Panel Suite)"
+    }
+  })
+
+  output$linearity_diag_banner <- shiny::renderUI({
+    result <- last_result()
+    shiny::req(result)
+    diag <- diagnose_model_linearity(result$fit, df = result$data, model_type = result$model_type)
+    if (diag$status == "NONLINEAR_MISSPECIFIED") {
+      shiny::div(
+        class = "alert alert-warning border-0 bg-warning-subtle text-warning-emphasis mb-3 p-3 rounded-3 shadow-sm",
+        shiny::div(class = "fw-bold fs-6 mb-1", diag$status_label),
+        shiny::div(
+          class = "small",
+          shiny::HTML(sprintf(
+            "<strong>Motif de résidus détecté :</strong> %s.<br>Un modèle linéaire classique produit de mauvais résultats de prédiction car la vraie relation sous-jacente est non-linéaire ou hétéroscédastique. Remarquez la courbure ou la déformation dans le graphique ci-dessous.",
+            diag$pattern_desc
+          ))
+        )
+      )
+    } else {
+      shiny::div(
+        class = "alert alert-success border-0 bg-success-subtle text-success-emphasis mb-3 p-3 rounded-3 shadow-sm",
+        shiny::div(class = "fw-bold fs-6 mb-1", diag$status_label),
+        shiny::div(class = "small", "La relation linéaire est bien respectée. Les résidus sont homogènes autour de zéro sans motif systématique.")
+      )
     }
   })
 

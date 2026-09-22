@@ -304,3 +304,99 @@ extract_coefficient_table <- function(fit) {
   )
 }
 
+diagnose_model_linearity <- function(fit, df = NULL, model_type = "lm_2d") {
+  fitted <- fitted_response(fit)
+  residuals <- response_residuals(fit)
+
+  if (length(fitted) < 10L || anyNA(fitted) || anyNA(residuals)) {
+    return(list(
+      status = "LINEAR_MATCH",
+      status_label = "Modèle Linéaire Adéquat",
+      badge_class = "status-optimal",
+      is_nonlinear = FALSE,
+      is_heteroscedastic = FALSE,
+      pattern_desc = "relation linéaire adéquate"
+    ))
+  }
+
+  aux_quad <- tryCatch(stats::lm(residuals ~ fitted + I(fitted^2)), error = function(e) NULL)
+  quad_p <- 1
+  quad_r2 <- 0
+  if (!is.null(aux_quad)) {
+    coefs <- summary(aux_quad)$coefficients
+    if ("I(fitted^2)" %in% rownames(coefs)) {
+      quad_p <- coefs["I(fitted^2)", "Pr(>|t|)"]
+      quad_r2 <- summary(aux_quad)$r.squared
+    }
+  }
+
+  x_quad_p <- 1
+  x_quad_r2 <- 0
+  if (!is.null(df) && "X" %in% names(df) && length(df$X) == length(residuals)) {
+    aux_x <- tryCatch(stats::lm(residuals ~ df$X + I(df$X^2)), error = function(e) NULL)
+    if (!is.null(aux_x)) {
+      c_x <- summary(aux_x)$coefficients
+      if ("I(df$X^2)" %in% rownames(c_x)) {
+        x_quad_p <- c_x["I(df$X^2)", "Pr(>|t|)"]
+        x_quad_r2 <- summary(aux_x)$r.squared
+      }
+    }
+  }
+
+  y_quad_p <- 1
+  y_quad_r2 <- 0
+  if (!is.null(df) && "Y" %in% names(df) && length(df$Y) == length(residuals)) {
+    aux_y <- tryCatch(stats::lm(residuals ~ df$Y + I(df$Y^2)), error = function(e) NULL)
+    if (!is.null(aux_y)) {
+      c_y <- summary(aux_y)$coefficients
+      if ("I(df$Y^2)" %in% rownames(c_y)) {
+        y_quad_p <- c_y["I(df$Y^2)", "Pr(>|t|)"]
+        y_quad_r2 <- summary(aux_y)$r.squared
+      }
+    }
+  }
+
+  is_nonlinear <- (quad_p < 0.005 && quad_r2 >= 0.06) || (x_quad_p < 0.005 && x_quad_r2 >= 0.06) || (y_quad_p < 0.005 && y_quad_r2 >= 0.06)
+
+  aux_het <- tryCatch(stats::lm(abs(residuals) ~ fitted), error = function(e) NULL)
+  het_p <- 1
+  if (!is.null(aux_het)) {
+    c_het <- summary(aux_het)$coefficients
+    if ("fitted" %in% rownames(c_het)) {
+      het_p <- c_het["fitted", "Pr(>|t|)"]
+    }
+  }
+  het_cor <- tryCatch(suppressWarnings(stats::cor(abs(residuals), fitted, method = "spearman")), error = function(e) 0)
+
+  is_heteroscedastic <- (het_p < 0.01 && abs(het_cor) >= 0.22)
+
+  if (is_nonlinear || is_heteroscedastic) {
+    status <- "NONLINEAR_MISSPECIFIED"
+    status_label <- "⚠️ Modèle Non-Linéaire / Mal Spécifié Détecté"
+    badge_class <- "status-alert"
+    pattern_desc <- if (is_nonlinear && is_heteroscedastic) {
+      "courbure non-linéaire (Y² ou cos(Y)) et variance instable (hétéroscédasticité)"
+    } else if (is_nonlinear) {
+      "courbure non-linéaire (ex: Y² ou cos(Y))"
+    } else {
+      "forte variance dépendante du prédicteur (hétéroscédasticité)"
+    }
+  } else {
+    status <- "LINEAR_MATCH"
+    status_label <- "✅ Modèle Linéaire Adéquat"
+    badge_class <- "status-optimal"
+    pattern_desc <- "relation linéaire rectiligne avec résidus homogènes"
+  }
+
+  list(
+    status = status,
+    status_label = status_label,
+    badge_class = badge_class,
+    is_nonlinear = is_nonlinear,
+    is_heteroscedastic = is_heteroscedastic,
+    quad_p = quad_p,
+    het_p = het_p,
+    pattern_desc = pattern_desc
+  )
+}
+

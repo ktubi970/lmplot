@@ -51,8 +51,9 @@ test_that("UI exposes simulation and real-data sources", {
   expect_match(html, "example_info", fixed = TRUE)
 })
 
-test_that("surface control is shown only where a fitted surface is meaningful", {
+test_that("UI controls, dynamic links, and link transitions react correctly", {
   shiny::testServer(server, {
+    # Surface control visibility
     session$setInputs(model_type = "lm_2d")
     session$flushReact()
     expect_false(grepl(
@@ -72,11 +73,8 @@ test_that("surface control is shown only where a fitted surface is meaningful", 
     controls_html <- rendered_html(output$`simulation-controls_ui`)
     expect_match(controls_html, 'id="simulation-groups"', fixed = TRUE)
     expect_match(controls_html, 'min="5"', fixed = TRUE)
-  })
-})
 
-test_that("dynamic link UI exposes only links valid for the selected model", {
-  shiny::testServer(server, {
+    # Dynamic link UI
     session$setInputs(model_type = "glm_binomial")
     session$flushReact()
     link_html <- rendered_html(output$link_ui)
@@ -92,28 +90,21 @@ test_that("dynamic link UI exposes only links valid for the selected model", {
     expect_match(fixed_html, "identity", fixed = TRUE)
     expect_match(fixed_html, "link_sel", fixed = TRUE)
     expect_match(fixed_html, 'type="hidden"', fixed = TRUE)
-  })
-})
 
-test_that("real-data links identify literature-backed and exploratory choices", {
-  shiny::testServer(server, {
+    # Real-data links
     session$setInputs(model_type = "glm_gamma", data_source = "real")
     session$flushReact()
-
     link_html <- rendered_html(output$link_ui)
     expect_match(link_html, "log (literature-backed)", fixed = TRUE)
     expect_match(link_html, "inverse (exploratory)", fixed = TRUE)
     expect_match(link_html, "identity (exploratory)", fixed = TRUE)
     expect_match(link_html, 'value="log" selected', fixed = TRUE)
-  })
-})
 
-test_that("model transitions reset a shared valid link to the new default", {
-  shiny::testServer(server, {
-    session$setInputs(model_type = "glm_poisson")
+    # Model transitions reset shared valid link
+    session$setInputs(data_source = "simulation", model_type = "glm_poisson")
     session$flushReact()
     set_link_choice(session, "glm_poisson", "identity")
-    set_standard_inputs(session)
+    set_standard_inputs(session, n = 40L)
     session$flushReact()
 
     session$setInputs(model_type = "glm_gamma", generate = 1L)
@@ -123,11 +114,8 @@ test_that("model transitions reset a shared valid link to the new default", {
     expect_identical(last_result()$link, "inverse")
     gamma_html <- rendered_html(output$link_ui)
     expect_match(gamma_html, 'value="inverse" selected', fixed = TRUE)
-  })
-})
 
-test_that("delayed old link events wait for the new default acknowledgement", {
-  shiny::testServer(server, {
+    # Delayed link events
     session$setInputs(model_type = "glm_poisson")
     session$flushReact()
     set_link_choice(session, "glm_poisson", "identity")
@@ -147,25 +135,21 @@ test_that("delayed old link events wait for the new default acknowledgement", {
     session$flushReact()
     expect_identical(selected_link(), "log")
 
-    set_standard_inputs(session)
-    session$setInputs(generate = 1L)
+    set_standard_inputs(session, n = 40L)
+    session$setInputs(generate = 2L)
     session$flushReact()
     expect_identical(last_result()$model_type, "glm_gamma")
     expect_identical(last_result()$link, "log")
-  })
-})
 
-test_that("fixed-link models generate through a Shiny-bound link input", {
-  shiny::testServer(server, {
+    # Fixed-link models generate
     session$setInputs(model_type = "lm_2d")
     session$flushReact()
-
     fixed_html <- rendered_html(output$link_ui)
     expect_match(fixed_html, 'type="hidden"', fixed = TRUE)
     expect_match(fixed_html, "identity", fixed = TRUE)
 
-    set_standard_inputs(session)
-    session$setInputs(generate = 1L)
+    set_standard_inputs(session, n = 40L)
+    session$setInputs(generate = 3L)
     session$flushReact()
     expect_identical(last_result()$model_type, "lm_2d")
     expect_identical(last_result()$link, "identity")

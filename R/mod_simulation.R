@@ -8,9 +8,14 @@ if (requireNamespace("shiny", quietly = TRUE)) {
 
 simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
                           beta0 = 2, beta1 = 0.5, beta2 = -0.25,
-                          sigma = 1, shape = 2, group_sd = 1, groups = 5L) {
+                          sigma = 1, shape = 2, group_sd = 1, groups = 5L,
+                          pattern = "linear") {
   config <- model_config(model_type)
   link <- validate_model_link(model_type, link)
+  valid_patterns <- c("linear", "quadratic", "cosine", "heteroscedastic")
+  if (!pattern %in% valid_patterns) {
+    stop("Invalid simulation pattern: ", pattern, call. = FALSE)
+  }
   if (model_type == "glmm") {
     valid_groups <- length(groups) == 1L && is.numeric(groups) &&
       !is.na(groups) && is.finite(groups) && groups == floor(groups) &&
@@ -29,20 +34,34 @@ simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
   set.seed(as.integer(seed))
   X <- stats::runif(n, -1, 1)
   Y <- stats::runif(n, -1, 1)
+
+  nonlin_effect <- switch(pattern,
+    "linear" = 0,
+    "quadratic" = if (config$dimensions == 2L) 1.5 * X^2 else 1.5 * Y^2,
+    "cosine" = if (config$dimensions == 2L) 2.5 * cos(3 * X) else 2.5 * cos(3 * Y),
+    "heteroscedastic" = 0
+  )
+
+  noise_scale <- if (pattern == "heteroscedastic") {
+    if (config$dimensions == 2L) sigma * (1 + 3 * abs(X)) else sigma * (1 + 3 * abs(Y))
+  } else {
+    sigma
+  }
+
   eta <- if (config$dimensions == 2L) beta0 + beta1 * X else beta0 + beta1 * X + beta2 * Y
 
   if (model_type == "lm_2d") {
-    result <- data.frame(X = X, Z = beta0 + beta1 * X + stats::rnorm(n, 0, sigma))
+    result <- data.frame(X = X, Z = beta0 + beta1 * X + nonlin_effect + stats::rnorm(n, 0, noise_scale))
   } else if (model_type == "lm_3d") {
-    result <- data.frame(X = X, Y = Y, Z = eta + stats::rnorm(n, 0, sigma))
+    result <- data.frame(X = X, Y = Y, Z = eta + nonlin_effect + stats::rnorm(n, 0, noise_scale))
   } else if (model_type == "glmm") {
     Group <- factor(rep(seq_len(groups), length.out = n))
     offsets <- stats::rnorm(groups, 0, group_sd)
-    Z <- eta + offsets[as.integer(Group)] + stats::rnorm(n, 0, sigma)
+    Z <- eta + nonlin_effect + offsets[as.integer(Group)] + stats::rnorm(n, 0, noise_scale)
     result <- data.frame(X = X, Y = Y, Z = Z, Group = Group)
   } else {
     family_object <- do.call(config$family, list(link = link))
-    mu <- family_object$linkinv(eta)
+    mu <- family_object$linkinv(eta + nonlin_effect)
     if (any(!is.finite(mu))) stop("Selected coefficients produce non-finite means", call. = FALSE)
     if (config$family == "binomial") {
       mu <- pmin(pmax(mu, .Machine$double.eps), 1 - .Machine$double.eps)
@@ -214,6 +233,16 @@ sim_server <- function(id, model_type, link, trigger) {
       }
 
       controls <- list(
+        shiny::selectInput(
+          session$ns("pattern"), "Modèle Générateur / Relation",
+          choices = c(
+            "📏 Vrai modèle linéaire" = "linear",
+            "🔄 Non-linéaire : Quadratique (Y² / X²)" = "quadratic",
+            "🌊 Non-linéaire : Périodique (cos(Y) / cos(X))" = "cosine",
+            "💥 Non-linéaire : Variance importante (Hétéroscédasticité)" = "heteroscedastic"
+          ),
+          selected = "linear"
+        ),
         shiny::numericInput(
           session$ns("n"), "Sample size", 200L,
           min = 10L, max = 2000L
@@ -265,6 +294,7 @@ sim_server <- function(id, model_type, link, trigger) {
       model_snapshot <- model_type()
       link_snapshot <- link()
       parameters <- list(
+        pattern = input$pattern %||% "linear",
         n = input$n %||% 200L,
         seed = input$seed %||% 123L,
         beta0 = input$beta0 %||% 2,

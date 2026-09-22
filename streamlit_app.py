@@ -173,6 +173,17 @@ req_payload = {
 
 if data_source == "simulation":
     st.sidebar.subheader("Simulation Parameters")
+    req_payload["pattern"] = st.sidebar.selectbox(
+        "DGP / Relation Pattern",
+        options=["linear", "quadratic", "cosine", "heteroscedastic"],
+        format_func=lambda p: {
+            "linear": "📏 True Linear Model",
+            "quadratic": "🔄 Non-Linear: Quadratic (Z ~ Y² / X²)",
+            "cosine": "🌊 Non-Linear: Cosine (Z ~ cos(Y) / cos(X))",
+            "heteroscedastic": "💥 Non-Linear: Heteroscedastic Variance"
+        }[p],
+        index=0
+    )
     req_payload["n"] = st.sidebar.slider("Sample Size (n)", min_value=20, max_value=2000, value=150, step=10)
     req_payload["seed"] = st.sidebar.number_input("Deterministic Seed", value=42, step=1)
     
@@ -303,6 +314,11 @@ if analysis:
     if "Group" in df_data.columns:
         mapping_items.append("**Group:** Random Intercept Group")
 
+    lin_diag = analysis.get("linearity_diag", {})
+    diag_status = lin_diag.get("status", "LINEAR_MATCH")
+    diag_label = lin_diag.get("status_label", "✅ Modèle Linéaire Adéquat")
+    diag_desc = lin_diag.get("pattern_desc", "relation linéaire adéquate")
+
     # Main Navigation Tabs Hierarchy (Main Plot -> Metrics & Summary -> Diagnostics -> Data & Audit Trail)
     tab_plot, tab_metrics_summary, tab_diag, tab_data = st.tabs([
         "📈 Main Plot", "📊 Metrics & Summary", "🔍 Residual Diagnostics", "📑 Data & Audit Trail"
@@ -310,6 +326,11 @@ if analysis:
     
     with tab_plot:
         st.subheader("Response-Scale Visualization")
+        if diag_status == "NONLINEAR_MISSPECIFIED":
+            st.warning(f"**{diag_label}**\n\n**Motif détecté :** {diag_desc}. La vraie relation sous-jacente est non-linéaire ou hétéroscédastique. Remarquez comme le modèle linéaire (droite/surface) peine à suivre la courbure des points.")
+        else:
+            st.success(f"**{diag_label}** — La relation linéaire est bien respectée et le modèle s'ajuste de façon homogène aux données.")
+
         if meta["dimensions"] == 2:
             fig = go.Figure()
             # 1. Observed scatter points
@@ -334,9 +355,9 @@ if analysis:
                 xaxis_title=labels.get("x", "X"),
                 yaxis_title=labels.get("z", "Z"),
                 margin=dict(l=40, r=40, b=40, t=40),
-                height=580
+                height=520
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         else:
             fig = go.Figure()
             # 1. Observed 3D scatter points
@@ -391,11 +412,17 @@ if analysis:
                     )
                 ),
                 margin=dict(l=0, r=0, b=0, t=40),
-                height=650
+                height=580
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
     with tab_metrics_summary:
+        st.subheader("🤖 ELI5 Assistant (Explain Like I'm 5)")
+        if diag_status == "NONLINEAR_MISSPECIFIED":
+            st.warning(f"**📏 Diagnostic de Linéarité : {diag_label}**\n\nLes résultats du modèle linéaire classique sont décevants car la vraie relation est **NON-LINÉAIRE** ({diag_desc}). Une droite ou surface plate ne peut pas capturer une courbure ou une oscillation.\n\n💡 **Comment apprendre cette dimension ?** Examinez l'onglet *Residual Diagnostics* : la présence d'une forme en U (courbure Y²) ou d'un entonnoir (hétéroscédasticité) signale qu'il faut ajouter des termes non-linéaires ($Y^2, \\cos$) ou transformer vos variables.")
+        else:
+            st.success(f"**📏 Diagnostic de Linéarité : {diag_label}**\n\nLe modèle linéaire s'ajuste très bien aux données ! La tendance observée est rectiligne et les résidus sont répartis uniformément autour de 0.")
+
         st.subheader("Model Overview & Metrics")
         
         # Top KPI Metrics Cards
@@ -413,7 +440,7 @@ if analysis:
         df_coef = pd.DataFrame(analysis["coefficients"])
         if "term" in df_coef.columns:
             df_coef = df_coef.set_index("term")
-        st.dataframe(df_coef, use_container_width=True)
+        st.dataframe(df_coef, width='stretch')
 
     with tab_diag:
         st.subheader("Residual Diagnostics")
@@ -425,7 +452,7 @@ if analysis:
         )
         diag_fig.add_hline(y=0, line_dash="dash", line_color="red")
         diag_fig.update_layout(height=520, margin=dict(l=40, r=40, b=40, t=40))
-        st.plotly_chart(diag_fig, use_container_width=True)
+        st.plotly_chart(diag_fig, width='stretch')
         
         with st.expander("💡 Diagnostic Plots Guide & Interpretation"):
             st.markdown("""
@@ -438,7 +465,7 @@ if analysis:
     with tab_data:
         st.subheader("Analysis Data Table & Export")
         st.caption(f"📌 **Variable Legend:** Z = {z_lbl} | X = {x_lbl}" + (f" | Y = {y_lbl}" if y_lbl else ""))
-        st.dataframe(df_data, use_container_width=True)
+        st.dataframe(df_data, width='stretch')
         
         csv_data = df_data.to_csv(index=False).encode('utf-8')
         st.download_button(
@@ -447,3 +474,4 @@ if analysis:
             file_name=f"{model_choice}_enriched.csv",
             mime="text/csv"
         )
+
