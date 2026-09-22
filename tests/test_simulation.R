@@ -1,6 +1,7 @@
 source(file.path("..", "R", "model_registry.R"))
 source(file.path("..", "R", "mod_model.R"))
 source(file.path("..", "R", "mod_simulation.R"))
+source(file.path("..", "R", "mod_pipeline.R"))
 
 acceptance_matrix <- do.call(rbind, lapply(model_ids(), function(id) {
   data.frame(model_type = id, link = valid_links(id), stringsAsFactors = FALSE)
@@ -11,6 +12,10 @@ test_that("simulation collector returns parameters and code without executing th
     shiny::testServer(sim_server, args = list(model_type = function() "lm_2d",
       link = function() "identity", trusted_local = trusted), {
       session$setInputs(n = 45L, expert_mode = TRUE, code = "stop('must not evaluate')")
+      if (!trusted) {
+        expect_error(session$returned(), class = "analysis_security_error")
+        session$setInputs(expert_mode = FALSE)
+      }
       collected <- session$returned()
       expect_equal(collected$parameters$n, 45L)
       expect_null(collected$data)
@@ -21,6 +26,20 @@ test_that("simulation collector returns parameters and code without executing th
   for (bad in list(NULL, NA, 1, "TRUE", c(TRUE, FALSE))) {
     expect_error(sim_ui("test", trusted_local = bad), "logical scalar")
     expect_error(sim_server("test", function() "lm_2d", function() "identity", trusted_local = bad), "logical scalar")
+  }
+})
+
+test_that("generated reproducible code preserves patterns and random draw order", {
+  for (id in c("lm_2d", "glm_binomial", "glmm")) {
+    link <- model_config(id)$default_link
+    for (pattern in c("linear", "quadratic", "cosine", "heteroscedastic")) {
+      parameters <- list(n = 40L, seed = 19L, beta0 = 1, beta1 = .2, beta2 = -.3,
+        sigma = .7, shape = 2, group_sd = 1, groups = 5L, pattern = pattern)
+      code <- simulation_code(id, link, parameters)
+      actual <- eval(parse(text = code), envir = new.env(parent = environment(simulate_data)))
+      expected <- do.call(simulate_data, c(list(model_type = id, link = link), parameters))
+      expect_identical(actual, expected, info = paste(id, pattern))
+    }
   }
 })
 

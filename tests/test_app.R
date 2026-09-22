@@ -105,143 +105,86 @@ test_that("browser log classification uses strict levels and warning pairs", {
   }
 })
 
-test_that("the real beta app completes its browser smoke workflow", {
-  withr::local_envvar(NOT_CRAN = "true")
-  chromote_browser <- chromote::default_chromote_object()
-  previous_chromote_timeout <- chromote_browser$default_timeout
-  chromote_browser$default_timeout <- 100
-  withr::defer(chromote_browser$default_timeout <- previous_chromote_timeout)
-  expect_true(
-    requireNamespace("shinytest2", quietly = TRUE),
-    info = "Restore the locked shinytest2 dependency before running beta acceptance tests."
-  )
-
-  app <- shinytest2::AppDriver$new(
-    "..",
-    name = "beta-smoke",
-    seed = 123,
-    load_timeout = 1e5,
-    timeout = 1e5
-  )
+test_that("the public modular app completes its browser smoke workflow", {
+  withr::local_envvar(c(NOT_CRAN = "true", LMPLOT_TRUSTED_LOCAL = NA))
+  app <- shinytest2::AppDriver$new("..", name = "public-smoke", seed = 123,
+    load_timeout = 1e5, timeout = 1e5)
   on.exit(app$stop(), add = TRUE)
-
-  app$set_inputs(model_type = "glm_binomial")
+  app$set_inputs(`configuration-model_type` = "glm_binomial")
   app$wait_for_idle()
-  app$wait_for_js(
-    "document.querySelector('#link_sel') !== null",
-    timeout = 2e4
-  )
-  app$set_inputs(link_sel = "probit")
-  app$wait_for_idle()
-  app$wait_for_js(
-    "document.querySelector('#simulation-n') !== null && document.querySelector('#simulation-seed') !== null",
-    timeout = 2e4
-  )
-  app$set_inputs(`simulation-n` = 80, `simulation-seed` = 12)
-  app$wait_for_idle()
-  expect_equal(app$get_value(input = "link_sel"), "probit")
-  expect_equal(app$get_value(input = "simulation-n"), 80)
-  expect_equal(app$get_value(input = "simulation-seed"), 12)
-  app$click("generate")
-  app$wait_for_idle()
-
-  app$wait_for_js(
-    "document.querySelector('#main_plot .plot-container') !== null",
-    timeout = 2e4
-  )
-  surface_count_js <- paste0(
-    "(() => {",
-    "const plot = document.querySelector('#main_plot');",
-    "const traces = Array.isArray(plot?.data) ? plot.data : [];",
-    "return traces.filter(trace => trace.type === 'surface').length;",
-    "})()"
-  )
-  app$wait_for_js(
-    paste0(surface_count_js, " === 1"),
-    timeout = 2e4
-  )
-  expect_equal(app$get_js(surface_count_js), 1)
-  expect_false(is.null(app$get_value(output = "model_summary")))
-  app$run_js(
-    "document.querySelector('a[data-value=\"Data\"]')?.click()"
-  )
-  app$wait_for_js(
-    "document.querySelector('#data_table table') !== null",
-    timeout = 2e4
-  )
-  expect_match(app$get_html("#data_table"), "<table", fixed = TRUE)
-
-  app$set_inputs(show_surface = FALSE)
-  app$wait_for_idle()
-  expect_false(app$get_value(input = "show_surface"))
-  app$wait_for_js(
-    paste0(
-      "(() => {",
-      "const plot = document.querySelector('#main_plot');",
-      "return Array.isArray(plot?.data) && plot.data.length > 0 && ",
-      "plot.data.every(trace => trace.type !== 'surface');",
-      "})()"
-    ),
-    timeout = 2e4
-  )
-  expect_equal(app$get_js(surface_count_js), 0)
-
-  downloaded <- app$get_download("download_data")
-  expect_true(file.exists(downloaded))
-  enriched <- utils::read.csv(downloaded, check.names = FALSE)
-  expect_equal(nrow(enriched), 80L)
+  app$set_inputs(`configuration-link_sel` = "probit", `configuration-simulation-n` = 80,
+    `configuration-simulation-seed` = 12)
+  app$click("configuration-generate"); app$wait_for_idle()
+  app$wait_for_js("Array.isArray(document.querySelector('#overview-main_plot')?.data)")
+  expect_match(app$get_html("#overview-metrics"), "80")
+  traces <- "document.querySelector('#overview-main_plot').data.filter(x => x.type === 'surface').length"
+  expect_equal(app$get_js(traces), 1)
+  app$set_inputs(`overview-show_surface` = FALSE); app$wait_for_idle()
+  expect_equal(app$get_js(traces), 0)
+  app$set_inputs(main_nav_tabs = "diagnostics")
+  app$wait_for_js("document.querySelector('#diagnostics-checks table') !== null")
+  expect_match(app$get_html("#diagnostics-heading"), "Binomial")
+  app$set_inputs(main_nav_tabs = "data_provenance")
+  app$wait_for_js("document.querySelector('#data_provenance-table table') !== null")
+  enriched <- read.csv(app$get_download("data_provenance-download"), check.names = FALSE)
+  expect_equal(nrow(enriched), 80)
   expect_true(all(c(".fitted", ".residual") %in% names(enriched)))
-
-  real_plot_titles <- c(
-    glm_binomial = "Ad\u00e9lie penguin sex from morphology",
-    glmm = "Inner London examination achievement"
-  )
-  for (model_type in names(real_plot_titles)) {
-    app$set_inputs(data_source = "real", model_type = model_type)
+  app$set_inputs(`configuration-simulation-n` = 90)
+  expect_identical(read.csv(app$get_download("data_provenance-download"), check.names = FALSE), enriched)
+  for (id in c("glm_binomial", "glmm")) {
+    app$set_inputs(`configuration-data_source` = "real", `configuration-model_type` = id)
     app$wait_for_idle()
-    app$wait_for_js(
-      "document.querySelector('#example_info .example-provenance') !== null",
-      timeout = 2e4
-    )
-    app$click("generate")
-    app$wait_for_idle()
-    app$wait_for_js(
-      paste0(
-        "document.querySelector('#main_plot .gtitle') !== null && ",
-        "document.querySelector('#model_summary')?.textContent.trim().length > 0 && ",
-        "document.querySelector('#data_table table') !== null"
-      ),
-      timeout = 2e4
-    )
-    rendered_plot_title <- app$get_js(
-      "document.querySelector('#main_plot .gtitle')?.textContent ?? ''"
-    )
-    expect_match(
-      rendered_plot_title, real_plot_titles[[model_type]], fixed = TRUE,
-      info = model_type
-    )
-    expect_false(
-      is.null(app$get_value(output = "main_plot")),
-      info = model_type
-    )
-    expect_false(
-      is.null(app$get_value(output = "model_summary")),
-      info = model_type
-    )
-    expect_false(
-      is.null(app$get_value(output = "data_table")),
-      info = model_type
-    )
+    app$click("configuration-generate"); app$wait_for_idle()
+    app$wait_for_js("document.querySelector('#data_provenance-provenance .example-provenance') !== null")
+    html <- app$get_html("#data_provenance-provenance")
+    expect_match(html, "License")
+    expect_match(html, "Source SHA-256 checksum")
+    expect_match(html, if (id == "glmm") "Inner London" else "penguin sex")
+    data <- read.csv(app$get_download("data_provenance-download"))
+    expect_equal(nrow(data), if (id == "glmm") 4059 else 146)
+    app$set_inputs(main_nav_tabs = "overview"); app$wait_for_idle()
+    expect_false(is.null(app$get_value(output = "overview-main_plot")))
+    app$set_inputs(main_nav_tabs = "data_provenance")
   }
-
   unexpected_logs <- unexpected_app_logs(app$get_logs())
-  expect_equal(
-    nrow(unexpected_logs),
-    0L,
-    info = paste(
-      "Unexpected browser or Shiny warning/error logs:",
-      paste(capture.output(print(unexpected_logs, row.names = FALSE)), collapse = "\n"),
-      sep = "\n"
-    )
-  )
+  expect_equal(nrow(unexpected_logs), 0L,
+    info = paste(capture.output(print(unexpected_logs, row.names = FALSE)), collapse = "\n"))
+})
+
+test_that("browser service failure retains plot and download then recovers", {
+  withr::local_envvar(c(NOT_CRAN = "true", LMPLOT_TRUSTED_LOCAL = NA))
+  fixture <- tempfile("lmplot-recovery-"); dir.create(fixture)
+  on.exit(unlink(fixture, recursive = TRUE), add = TRUE)
+  root <- normalizePath("..", winslash = "/")
+  file.copy(file.path(root, c("R", "data", "www")), fixture, recursive = TRUE)
+  writeLines(c(readLines(file.path(root, "app.R")),
+    "original_fit <- fit_model; fit_calls <- 0L",
+    "services <- create_analysis_services(fit = function(...) {",
+    "  fit_calls <<- fit_calls + 1L",
+    "  if (fit_calls == 2L) stop('SECRET_BROWSER_FAILURE /private/path')",
+    "  original_fit(...)",
+    "})",
+    "shiny::shinyApp(ui, server)"), file.path(fixture, "app.R"))
+  app <- shinytest2::AppDriver$new(fixture, name = "recovery", load_timeout = 1e5, timeout = 1e5)
+  on.exit(app$stop(), add = TRUE)
+  app$click("configuration-generate"); app$wait_for_idle()
+  app$wait_for_js("Array.isArray(document.querySelector('#overview-main_plot')?.data)")
+  plot <- app$get_value(output = "overview-main_plot")
+  app$set_inputs(main_nav_tabs = "data_provenance")
+  app$wait_for_js("document.querySelector('#data_provenance-table table') !== null")
+  csv <- read.csv(app$get_download("data_provenance-download"))
+  app$set_inputs(main_nav_tabs = "overview", `configuration-simulation-n` = 90)
+  app$click("configuration-generate"); app$wait_for_idle()
+  expect_match(app$get_html("#analysis_status-error"), "Analysis failed. Review the settings and try again.", fixed = TRUE)
+  expect_match(app$get_html("#analysis_status-status"), "Showing the last successful analysis.")
+  expect_false(grepl("SECRET_BROWSER_FAILURE|/private/path", app$get_html("body")))
+  expect_identical(app$get_value(output = "overview-main_plot"), plot)
+  app$set_inputs(main_nav_tabs = "data_provenance")
+  app$wait_for_idle()
+  expect_identical(read.csv(app$get_download("data_provenance-download")), csv)
+  app$click("configuration-generate"); app$wait_for_idle()
+  expect_equal(nrow(read.csv(app$get_download("data_provenance-download"))), 90)
+  expect_false(grepl("Analysis failed", app$get_html("#analysis_status-error")))
+  logs <- app$get_logs()
+  expect_true(any(grepl("SECRET_BROWSER_FAILURE", logs$message, fixed = TRUE)))
 })

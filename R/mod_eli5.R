@@ -26,9 +26,10 @@ explain_coefficient <- function(estimate, p_value = NA_real_, link = "identity",
 }
 
 guided_interpretation <- function(result) {
-  coefficients <- result$coefficients %||% extract_coefficient_table(result$fit, result$model_type, result$link)
-  diagnostics <- result$diagnostics %||% result$linearity_diag %||% diagnose_model(result$fit, result$data, result$model_type)
-  metrics <- result$metrics %||% extract_model_metrics(result$fit, result$model_type, result$data)
+  coefficients <- result$coefficients
+  diagnostics <- result$diagnostics
+  metrics <- result$metrics
+  stopifnot(is.data.frame(coefficients), is.list(diagnostics), is.list(metrics))
   effects <- lapply(seq_len(nrow(coefficients)), function(i) {
     explain_coefficient(coefficients$estimate[i], coefficients$p_value[i], result$link,
       coefficients$term[i], mixed = result$model_type == "glmm")
@@ -47,25 +48,28 @@ guided_interpretation_ui <- function(id) {
   shiny::div(class = "card mb-3",
     shiny::div(class = "card-header", shiny::h3("Guided interpretation", class = "h6"),
       shiny::p("Deterministic explanations of estimates, uncertainty and diagnostic limitations."),
-      shiny::actionButton(ns("explain_btn"), "Show interpretation", class = "btn btn-sm btn-secondary")),
+      shiny::actionButton(ns("show"), "Show interpretation", class = "btn btn-sm btn-secondary")),
     shiny::uiOutput(ns("content")))
 }
 
-guided_interpretation_server <- function(id, last_result) {
+guided_interpretation_server <- function(id, last_result, interpret = guided_interpretation) {
   shiny::moduleServer(id, function(input, output, session) {
     show <- shiny::reactiveVal(FALSE)
-    shiny::observeEvent(last_result(), show(FALSE))
-    shiny::observeEvent(input$explain_btn, show(TRUE))
+    previous <- NULL
+    shiny::observeEvent(last_result(), {
+      if (!identical(previous, last_result())) show(FALSE)
+      previous <<- last_result()
+    })
+    shiny::observeEvent(input$show, show(TRUE))
     output$content <- shiny::renderUI({
       result <- last_result()
-      shiny::req(result)
+      if (is.null(result)) return(shiny::p("No analysis yet. Generate a model to see its interpretation."))
       if (!show()) return(shiny::p(class = "p-3", "Select Show interpretation to inspect this model."))
-      explanation <- guided_interpretation(result)
+      explanation <- interpret(result)
       shiny::div(class = "card-body",
         shiny::p(explanation$concept),
         shiny::tags$ul(lapply(explanation$effects, shiny::tags$li)),
         shiny::p(explanation$diagnostics$summary),
-        shiny::tags$ul(lapply(explanation$diagnostics$warnings, shiny::tags$li)),
         shiny::p(explanation$comparison), shiny::p(explanation$caution))
     })
   })

@@ -298,10 +298,14 @@ rendered_scientific_html <- function(tag) {
 
 test_that("every real provenance card defines variables and preprocessing", {
   shiny::testServer(server, {
+    session$flushReact()
+    generation <- 0L
     for (model_type in names(scientific_provenance_specs)) {
-      session$setInputs(model_type = model_type, data_source = "real")
+      session$setInputs(`configuration-model_type` = model_type, `configuration-data_source` = "real")
       session$flushReact()
-      info <- rendered_scientific_html(output$example_info)
+      generation <- generation + 1L
+      session$setInputs(`configuration-generate` = generation)
+      info <- rendered_scientific_html(output$`data_provenance-provenance`)
       expected <- scientific_provenance_specs[[model_type]]
 
       expect_match(info, "Model family", fixed = TRUE, info = model_type)
@@ -328,7 +332,7 @@ test_that("every real provenance card defines variables and preprocessing", {
       for (text in variable_text) {
         expect_match(info, text, fixed = TRUE, info = model_type)
       }
-      expect_match(info, "Preprocessing", fixed = TRUE, info = model_type)
+      expect_match(info, "Preparation", fixed = TRUE, info = model_type)
       expect_match(
         info,
         expected$preprocessing,
@@ -337,7 +341,7 @@ test_that("every real provenance card defines variables and preprocessing", {
       )
       expect_match(
         info,
-        "Interpretation / pedagogical adaptation",
+        "Adaptation and limitations",
         fixed = TRUE,
         info = model_type
       )

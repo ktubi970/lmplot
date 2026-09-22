@@ -32,7 +32,9 @@ test_that("Guided interpretation is deterministic for all 15 combinations", {
     count <- count + 1L
     data <- simulate_data(id, link, n = 120L, seed = count)
     fit <- suppressWarnings(fit_model(data, id, link))
-    result <- list(fit = fit, data = data, model_type = id, link = link)
+    result <- list(data = data, model_type = id, link = link,
+      coefficients = extract_coefficient_table(fit, id, link),
+      metrics = extract_model_metrics(fit, id, data), diagnostics = diagnose_model(fit, data, id))
     explanation <- guided_interpretation(result)
     expect_identical(explanation, guided_interpretation(result))
     expect_true(length(explanation$effects) >= 2)

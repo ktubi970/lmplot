@@ -1,3 +1,52 @@
+# Shiny facades below consume the committed scientific snapshot only.
+render_analysis_main_plot <- function(result, show_surface = TRUE, source = "overview", generation = 0L) {
+  data <- result$data
+  records <- analysis_observations(result)
+  data$.fitted <- vapply(records, `[[`, numeric(1), "prediction")
+  data$.residual <- vapply(records, `[[`, numeric(1), "residual")
+  data$.selection <- vapply(records, function(row) as.character(jsonlite::toJSON(
+    list(observation_id = row$observation_id, generation = generation), auto_unbox = TRUE)), character(1))
+  config <- model_config(result$model_type)
+  labels <- normalize_plot_labels(result$model_brain$labels)
+  data$.hover <- observed_hover_text(data, labels, config$dimensions == 3L, config$requires_group)
+  if (config$dimensions == 2L) {
+    plot <- plotly::plot_ly(data, x = ~X, y = ~Z, type = "scatter", mode = "markers",
+      source = source, customdata = ~.selection, text = ~.hover, hoverinfo = "text", name = "Observed")
+    grid <- result$prediction_grid
+    plot <- plotly::add_lines(plot, x = grid$X, y = grid$.fitted, name = "Mean response", inherit = FALSE)
+    plot <- plotly::layout(plot, xaxis = list(title = labels$x), yaxis = list(title = labels$z))
+  } else {
+    plot <- plotly::plot_ly(data, x = ~X, y = ~Y, z = ~Z, type = "scatter3d", mode = "markers",
+      source = source, customdata = ~.selection, text = ~.hover, hoverinfo = "text", name = "Observed",
+      marker = list(size = 4, color = "#2563eb"))
+    if (isTRUE(show_surface)) {
+      grid <- result$prediction_grid
+      x <- sort(unique(grid$X)); y <- sort(unique(grid$Y))
+      z <- matrix(NA_real_, nrow = length(y), ncol = length(x))
+      z[cbind(match(grid$Y, y), match(grid$X, x))] <- grid$.fitted
+      plot <- plotly::add_surface(plot, x = x, y = y, z = z, inherit = FALSE,
+        name = "Population mean response", opacity = .45, showscale = FALSE, colorscale = "Viridis")
+    }
+    plot <- plotly::layout(plot, scene = list(xaxis = list(title = labels$x),
+      yaxis = list(title = labels$y), zaxis = list(title = labels$z)))
+  }
+  plot <- plotly::layout(plot,
+    title = list(text = result$example$metadata$title %||% model_config(result$model_type)$label),
+    font = list(family = "system-ui, sans-serif"))
+  plotly::event_register(plot, "plotly_click")
+}
+
+render_analysis_diagnostics <- function(result) {
+  records <- analysis_observations(result)
+  data <- data.frame(fitted = vapply(records, `[[`, numeric(1), "prediction"),
+    residual = vapply(records, `[[`, numeric(1), "residual"))
+  plotly::plot_ly(data, x = ~fitted, y = ~residual, type = "scatter", mode = "markers", name = "Response residual") |>
+    plotly::layout(xaxis = list(title = paste("Fitted", result$labels$z)),
+      yaxis = list(title = paste("Response residual:", result$labels$z)),
+      shapes = list(list(type = "line", xref = "paper", x0 = 0, x1 = 1, y0 = 0, y1 = 0,
+        line = list(dash = "dash"))), font = list(family = "system-ui, sans-serif"))
+}
+
 prediction_grid <- function(df, fit, model_type,
                             length_out = if (model_config(model_type)$dimensions == 2L) 200L else 30L,
                             pad = 0.15) {
