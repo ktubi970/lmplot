@@ -2,6 +2,7 @@ library(testthat)
 
 app_root <- if (file.exists(file.path("..", "R", "config.R"))) ".." else "."
 source(file.path(app_root, "R", "config.R"), local = TRUE)
+source(file.path(app_root, "R", "model_registry.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_model.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_simulation.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_visualization.R"), local = TRUE)
@@ -148,4 +149,3 @@ test_that("run_analysis_usecase respects grid_length_out and print.analysis_resu
   expect_true(any(grepl("<AnalysisResult: lm_3d", printed)))
   expect_true(any(grepl("simulation", printed)))
 })
-

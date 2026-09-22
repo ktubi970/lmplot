@@ -27,8 +27,7 @@
   source(file.path(.model_brain_root, "R", path), local = parent.frame())
 }
 
-if (!exists("MODEL_REGISTRY", inherits = TRUE)) .model_brain_source("config.R")
-if (!exists("MODEL_REGISTRY", inherits = TRUE)) .model_brain_source("mod_model.R")
+if (!exists("MODEL_REGISTRY", inherits = TRUE)) .model_brain_source("model_registry.R")
 if (!exists("simulate_data", inherits = TRUE)) .model_brain_source("mod_simulation.R")
 
 .model_brain_registry_matrix <- do.call(rbind, lapply(names(MODEL_REGISTRY), function(id) {

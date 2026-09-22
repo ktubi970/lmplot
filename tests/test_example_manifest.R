@@ -1,3 +1,4 @@
+source(file.path("..", "R", "model_registry.R"))
 source(file.path("..", "R", "mod_model.R"))
 
 test_that("real-data manifest covers the seven models exactly", {

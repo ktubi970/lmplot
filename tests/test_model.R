@@ -1,4 +1,6 @@
 model_path <- file.path("..", "R", "mod_model.R")
+registry_path <- file.path("..", "R", "model_registry.R")
+if (file.exists(registry_path)) source(registry_path)
 if (file.exists(model_path)) source(model_path)
 source(file.path("..", "R", "mod_simulation.R"))
 

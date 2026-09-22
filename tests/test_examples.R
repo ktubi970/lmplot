@@ -1,3 +1,4 @@
+source(file.path("..", "R", "model_registry.R"))
 source(file.path("..", "R", "mod_model.R"))
 source(file.path("..", "R", "mod_simulation.R"))
 source(file.path("..", "R", "mod_visualization.R"))

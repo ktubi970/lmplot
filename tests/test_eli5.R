@@ -2,6 +2,7 @@ library(testthat)
 
 app_root <- if (file.exists(file.path("R", "config.R"))) "." else ".."
 source(file.path(app_root, "R", "config.R"), local = TRUE)
+source(file.path(app_root, "R", "model_registry.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_model.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_eli5.R"), local = TRUE)
 
