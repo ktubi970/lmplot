@@ -154,6 +154,32 @@ test_that('builder rejects changed fitted rows and invalid label or mode request
   expect_error(fixture_brain(f, labels = list(unknown=NULL)), 'Model Brain')
 })
 
+test_that('schema records contain only their names attribute before JSON serialization', {
+  b <- fixture_brain(warnings = 'test warning')
+  expect_true(jsonlite::validate(jsonlite::toJSON(validate_model_brain(b),
+    auto_unbox = TRUE, null = 'null')))
+  paths <- list(character(), 'labels', 'units', 'topology', c('topology','nodes','1'),
+    c('topology','edges','1'), c('coefficients','1'), c('coefficients','1','interval'),
+    c('observations','1'), c('observations','1','inputs'),
+    c('observations','1','contributions','1'), c('observations','1','random_effect'),
+    c('observations','1','response_interval'), 'link_curve', 'global_summaries',
+    c('global_summaries','coefficients'), c('global_summaries','contributions'), c('warnings','1'))
+  add_attribute <- function(x, path, attribute) {
+    if (!length(path)) {
+      extra <- switch(attribute, dim = list(dim = c(1L, length(x))),
+        class = list(class = 'schema_record'), metadata = list(metadata = 'unexpected'))
+      attributes(x) <- c(attributes(x), extra)
+      return(x)
+    }
+    key <- path[1]; if (grepl('^[0-9]+$', key)) key <- as.integer(key)
+    x[[key]] <- add_attribute(x[[key]], path[-1], attribute)
+    x
+  }
+  for (path in paths) for (attribute in c('dim','class','metadata')) {
+    expect_error(validate_model_brain(add_attribute(b, path, attribute)), 'Model Brain')
+  }
+})
+
 test_that('link curve values must remain plain numeric vectors for JSON arrays', {
   b <- fixture_brain()
   for (field in c('eta','prediction')) {

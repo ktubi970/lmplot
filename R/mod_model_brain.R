@@ -10,7 +10,7 @@ model_brain_tolerance <- function(expected) pmax(1e-10, 1e-8 * abs(expected))
   all(is.finite(y)) && all(abs(x-y) <= model_brain_tolerance(y))
 .brain_object <- function(x, keys) {
   .brain_assert(is.list(x) && !is.data.frame(x) && !is.pairlist(x) &&
-    identical(names(x), keys), 'invalid object fields or field order')
+    identical(attributes(x), list(names = keys)), 'invalid object fields or attributes')
 }
 
 model_brain_observation_ids <- function(df) {
