@@ -2,6 +2,8 @@ model_path <- file.path("..", "R", "mod_model.R")
 registry_path <- file.path("..", "R", "model_registry.R")
 if (file.exists(registry_path)) source(registry_path)
 if (file.exists(model_path)) source(model_path)
+source(file.path("..", "R", "model_metrics.R"))
+source(file.path("..", "R", "model_diagnostics.R"))
 source(file.path("..", "R", "mod_simulation.R"))
 
 expected_matrix <- list(
@@ -132,7 +134,7 @@ test_that("extract_model_kpis and extract_coefficient_table return structured me
     "health_label", "health_value", "health_sub", "health_status", "health_badge_class"
   ))
   expect_match(kpis$r2_label, "R²")
-  valid_classes <- c("status-optimal", "status-warning", "status-alert")
+  valid_classes <- c("text-secondary", "status-warning")
   expect_true(kpis$r2_badge_class %in% valid_classes)
   expect_true(kpis$aic_badge_class %in% valid_classes)
   expect_true(kpis$err_badge_class %in% valid_classes)
@@ -141,7 +143,8 @@ test_that("extract_model_kpis and extract_coefficient_table return structured me
   coef_df <- extract_coefficient_table(fit)
   expect_s3_class(coef_df, "data.frame")
   expect_true(nrow(coef_df) >= 2L)
-  expect_true(all(c("Term", "Estimate", "StdError", "Statistic", "PValue", "CI95") %in% names(coef_df)))
+  expect_true(all(c("term", "estimate", "standard_error", "statistic", "p_value", "conf_low", "conf_high", "interval_available") %in% names(coef_df)))
+  expect_false(any(grepl("optimal|parsim|healthy|converged", unlist(kpis), ignore.case = TRUE)))
 })
 
 test_that("model_latex_formula returns LaTeX formula for all 15 model/link combinations", {
@@ -191,20 +194,20 @@ test_that("format_pval and get_pval_sig_class return significance tiers", {
   expect_equal(get_pval_sig_class(NA), "sig-ns")
 })
 
-test_that("diagnose_model_linearity correctly distinguishes linear vs non-linear data", {
+test_that("residual diagnostics flag curvature without claiming adequacy", {
   df_lin <- simulate_data("lm_2d", "identity", n = 150L, seed = 42L, pattern = "linear")
   fit_lin <- fit_model(df_lin, "lm_2d", "identity")
   diag_lin <- diagnose_model_linearity(fit_lin, df_lin, "lm_2d")
 
-  expect_equal(diag_lin$status, "LINEAR_MATCH")
-  expect_false(diag_lin$is_nonlinear)
+  expect_equal(diag_lin$status, "information")
+  expect_length(diag_lin$warnings, 0L)
 
   df_quad <- simulate_data("lm_2d", "identity", n = 150L, seed = 42L, pattern = "quadratic")
   fit_quad <- fit_model(df_quad, "lm_2d", "identity")
   diag_quad <- diagnose_model_linearity(fit_quad, df_quad, "lm_2d")
 
-  expect_equal(diag_quad$status, "NONLINEAR_MISSPECIFIED")
-  expect_true(diag_quad$is_nonlinear)
+  expect_equal(diag_quad$status, "warning")
+  expect_true(any(grepl("curvature", diag_quad$warnings)))
 })
 
 

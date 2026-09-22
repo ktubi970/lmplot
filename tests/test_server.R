@@ -184,6 +184,10 @@ test_that("server generates plot summary diagnostics and table for all six modes
       expect_equal(nrow(result$data), 40L, info = model_type)
       expect_false(is.null(output$main_plot), info = model_type)
       expect_true(length(output$model_summary) > 0L, info = model_type)
+      coefficient_html <- output$coef_table_ui$html
+      expected_method <- if (model_type == "glmm") "Unavailable for this model" else if (startsWith(model_type, "glm")) "Wald" else "Student t"
+      expect_match(coefficient_html, expected_method, info = model_type)
+      expect_false(grepl("Adéquat|bien respectée|successful convergence", output$linearity_diag_banner$html))
       expect_false(is.null(output$diag_plots), info = model_type)
       expect_false(is.null(output$data_table), info = model_type)
     }

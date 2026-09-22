@@ -4,6 +4,8 @@ app_root <- if (file.exists(file.path("..", "R", "config.R"))) ".." else "."
 source(file.path(app_root, "R", "config.R"), local = TRUE)
 source(file.path(app_root, "R", "model_registry.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_model.R"), local = TRUE)
+source(file.path(app_root, "R", "model_metrics.R"), local = TRUE)
+source(file.path(app_root, "R", "model_diagnostics.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_simulation.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_visualization.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_examples.R"), local = TRUE)
@@ -12,7 +14,7 @@ source(file.path(app_root, "R", "mod_pipeline.R"), local = TRUE)
 test_that("create_analysis_pipeline creates a customizable pipeline with DI", {
   pipeline <- create_analysis_pipeline()
   expect_type(pipeline, "list")
-  expect_named(pipeline, c("fit", "predict", "kpis", "coefficients", "diagnostics", "grid"))
+  expect_named(pipeline, c("fit", "predict", "kpis", "coefficients", "diagnostics", "grid", "metrics", "intervals"))
   expect_true(is.function(pipeline$fit))
   expect_true(is.function(pipeline$predict))
   expect_true(is.function(pipeline$kpis))
@@ -47,7 +49,7 @@ test_that("run_analysis_usecase executes simulation workflow correctly", {
   expect_named(
     result,
     c("data", "display", "example", "fit", "model_type", "link", "code",
-      "labels", "kpis", "coefficients", "linearity_diag", "prediction_grid")
+      "labels", "kpis", "coefficients", "linearity_diag", "prediction_grid", "metrics", "diagnostics", "response_interval")
   )
   expect_null(result$example)
   expect_equal(nrow(result$data), 50L)
@@ -57,7 +59,9 @@ test_that("run_analysis_usecase executes simulation workflow correctly", {
   expect_true(nzchar(result$code))
   expect_false(is.null(result$linearity_diag))
   expect_false(is.null(result$prediction_grid))
-  expect_equal(result$linearity_diag$status, "LINEAR_MATCH")
+  expect_equal(result$diagnostics$status, "information")
+  expect_equal(result$metrics$r_squared, summary(result$fit)$r.squared)
+  expect_true(result$response_interval$available)
 })
 
 test_that("run_analysis_usecase handles non-linear pattern simulation", {
@@ -70,8 +74,8 @@ test_that("run_analysis_usecase handles non-linear pattern simulation", {
   )
 
   expect_s3_class(result_quad, "analysis_result")
-  expect_equal(result_quad$linearity_diag$status, "NONLINEAR_MISSPECIFIED")
-  expect_true(result_quad$linearity_diag$is_nonlinear)
+  expect_equal(result_quad$diagnostics$status, "warning")
+  expect_true(any(grepl("curvature", result_quad$diagnostics$warnings)))
 })
 
 test_that("run_analysis_usecase executes real data workflow correctly", {
@@ -99,14 +103,14 @@ test_that("run_analysis_usecase supports GLMM on real data", {
 
   expect_s3_class(result, "analysis_result")
   expect_equal(result$example$id, "inner_london_exam")
-  expect_true(inherits(result$fit, "merMod") || inherits(result$fit, "lme") || inherits(result$fit, "lm"))
+  expect_s4_class(result$fit, "merMod")
   expect_equal(nrow(result$data), 4059L)
 })
 
 test_that("run_analysis_usecase respects dependency injection pipeline", {
   custom_kpis <- list(r2_status = "perfect", r2_value = "1.00", health_value = "100")
   mock_pipeline <- create_analysis_pipeline(
-    kpis_fn = function(fit, model_type) custom_kpis
+    kpis_fn = function(fit, model_type, metrics, diagnostics) custom_kpis
   )
 
   result <- run_analysis_usecase(
@@ -117,6 +121,21 @@ test_that("run_analysis_usecase respects dependency injection pipeline", {
   )
 
   expect_identical(result$kpis, custom_kpis)
+})
+
+test_that("assessment services are injected and their values reach presentation", {
+  pipeline <- create_analysis_pipeline(metrics_fn = function(fit, model_type, data) {
+    metrics <- extract_model_metrics(fit, model_type, data)
+    metrics$r_squared <- .123
+    metrics
+  }, diag_fn = function(fit, data, model_type) {
+    list(strategy = "lm", status = "warning", summary = "Injected diagnostic result",
+      checks = list(), warnings = "Injected warning")
+  })
+  result <- run_analysis_usecase(model_type = "lm_2d", pipeline = pipeline, root = app_root)
+  expect_identical(result$metrics$r_squared, .123)
+  expect_identical(result$kpis$r2_value, "12.3%")
+  expect_identical(result$kpis$health_sub, "Injected diagnostic result")
 })
 
 test_that("run_analysis_usecase rejects invalid arguments", {

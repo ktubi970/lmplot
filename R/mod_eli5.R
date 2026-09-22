@@ -1,231 +1,72 @@
-# Module ELI5 (Explain Like I'm 5) - Assistant d'Explication en Langage Naturel
+# Deterministic, model-aware interpretation; all text is rendered as escaped content.
+COEFFICIENT_EXPLANATIONS <- list(
+  identity = function(beta) sprintf("an additive change of %.4g response units in the conditional mean", beta),
+  log = function(beta) sprintf("a multiplicative factor exp(beta) = %.4g for the conditional mean (%.4g%% change)", exp(beta), 100 * expm1(beta)),
+  logit = function(beta) sprintf("a conditional odds ratio exp(beta) = %.4g; the probability change depends on baseline probability", exp(beta)),
+  probit = function(beta) sprintf("a change of %.4g on the probit link scale; response probability changes depend on the starting covariates", beta),
+  cloglog = function(beta) sprintf("a change of %.4g on the cloglog link scale; response probability changes depend on the starting covariates", beta),
+  inverse = function(beta) sprintf("a change of %.4g on the inverse link scale (1 / conditional mean); response changes depend on the starting covariates", beta),
+  sqrt = function(beta) sprintf("a change of %.4g on the sqrt link scale (square root of the conditional mean); response changes depend on the starting covariates", beta)
+)
 
-generate_eli5_explanation <- function(fit, model_type, link = "identity",
-                                      data_source = "simulation", example_metadata = NULL,
-                                      df = NULL) {
-  config <- model_config(model_type)
-  kpis <- extract_model_kpis(fit, model_type)
-  coef_df <- extract_coefficient_table(fit)
-  diag <- diagnose_model_linearity(fit, df = df, model_type = model_type)
-  
-  resp_name <- if (!is.null(example_metadata)) example_metadata$response_label else "Z (Variable Réponse)"
-  pred_x_name <- if (!is.null(example_metadata)) example_metadata$predictor_x_label else "X (Prédicteur Principal)"
-  pred_y_name <- if (!is.null(example_metadata) && nzchar(example_metadata$predictor_y_label)) example_metadata$predictor_y_label else "Y (Second Prédicteur)"
-  group_name <- if (!is.null(example_metadata) && nzchar(example_metadata$group_source)) example_metadata$group_source else "Group (Groupe)"
-
-  # 1. Concept Simplifié (ELI5 Concept)
-  concept <- switch(
-    model_type,
-    "lm_2d" = sprintf("Imaginez que vous voulez deviner **%s** en traçant une droite à partir de **%s**. C'est le modèle régression linéaire le plus simple !", resp_name, pred_x_name),
-    "lm_3d" = sprintf("On essaie de prédire **%s** en combinant deux informations à la fois : **%s** et **%s**.", resp_name, pred_x_name, pred_y_name),
-    "glm_binomial_2d" = sprintf("Ici, on cherche à prédire un événement (Oui/Non, 0 ou 1) pour **%s** en fonction de **%s** avec une courbe en 'S' (%s).", resp_name, pred_x_name, link),
-    "glm_binomial" = sprintf("C'est une météo du risque : quelle est la probabilité que **%s** se produise (0 ou 1) selon **%s** et **%s** ?", resp_name, pred_x_name, pred_y_name),
-    "glm_poisson" = sprintf("On compte des événements (ex. nombre de réussites, comptages) pour **%s** à l'aide de **%s** et **%s** (lien %s).", resp_name, pred_x_name, pred_y_name, link),
-    "glm_gamma" = sprintf("On mesure des durées ou des montants toujours positifs pour **%s** en observant **%s** et **%s** (lien %s).", resp_name, pred_x_name, pred_y_name, link),
-    "glmm" = sprintf("On tient compte des différences entre groupes (%s) tout en mesurant l'effet global de **%s** et **%s**.", group_name, pred_x_name, pred_y_name),
-    sprintf("Modèle statistique ajusté pour prédire %s à partir de vos variables.", resp_name)
-  )
-
-  # 2. Diagnostic de Linéarité (Modèle Linéaire vs Non-Linéaire / Mal Spécifié)
-  linearity_eval <- if (diag$status == "LINEAR_MATCH") {
-    "✅ **Relation Linéaire Adéquate :** Le modèle linéaire s'ajuste très bien aux données ! La tendance observée suit une droite/surface rectiligne, et les résidus sont répartis uniformément autour de 0 sans courbure ni déformation (homoscédasticité)."
+explain_coefficient <- function(estimate, p_value = NA_real_, link = "identity", term = "X", mixed = FALSE) {
+  explain <- COEFFICIENT_EXPLANATIONS[[link]]
+  if (is.null(explain)) stop("Unsupported interpretation link: ", link, call. = FALSE)
+  if (!is.finite(estimate)) return(paste(term, "is not estimable from this fitted design."))
+  effect <- if (term == "(Intercept)") {
+    sprintf("Intercept: %.4g on the %s link scale when included predictors are zero and factors are at their reference levels; this baseline may be outside the observed data.", estimate, link)
   } else {
-    sprintf(
-      "⚠️ **Détection de Modèle Non-Linéaire / Mal Spécifié :** Les résultats du modèle linéaire classique sont mauvais ou insuffisants car la vraie relation sous-jacente est **NON-LINÉAIRE** (%s). Le modèle linéaire (droite ou plan rigide) traverse la forme sans pouvoir s'y plier.<br><br>💡 **Comment apprendre cette dimension ?**<br>• Regardez le graphique principal : la droite/surface ne suit pas la courbure des points.<br>• Regardez le graphique des résidus (<em>Residuals vs Fitted</em>) : une forme en U ou courbe indique une non-linéarité ($Y^2$ ou $\\cos(Y)$), tandis qu'un entonnoir indique une variance variable.<br>• Solution : ajouter un terme $Y^2$, une transformation, ou un modèle non-linéaire.",
-      diag$pattern_desc
-    )
+    sprintf("%s: a one-unit increase is associated with %s, holding other included covariates fixed.", term, explain(estimate))
   }
-
-  # 3. Explication des Coefficients (Effets observés)
-  effect_bullets <- list()
-  if (nrow(coef_df) > 0) {
-    for (i in seq_len(nrow(coef_df))) {
-      term <- coef_df$Term[i]
-      est_val <- suppressWarnings(as.numeric(coef_df$Estimate[i]))
-      p_str <- coef_df$PValue[i]
-      
-      if (term == "(Intercept)") {
-        msg <- sprintf("📍 **Point de départ (Ordonnée à l'origine) :** Quand toutes les variables valent zéro, la valeur de départ estimée est de **%s**.", coef_df$Estimate[i])
-      } else {
-        direction <- if (!is.na(est_val) && est_val > 0) "augmente" else "diminue"
-        change_amount <- if (!is.na(est_val)) sprintf("%.4f", abs(est_val)) else coef_df$Estimate[i]
-        
-        var_label <- if (term == "X") pred_x_name else if (term == "Y") pred_y_name else term
-        
-        sig_explanation <- if (grepl("***", p_str, fixed = TRUE)) {
-          "très solide (presque 0% de chance d'être du hasard)"
-        } else if (grepl("**", p_str, fixed = TRUE)) {
-          "solide (moins de 1% de chance de hasard)"
-        } else if (grepl("*", p_str, fixed = TRUE)) {
-          "significatif (moins de 5% de hasard)"
-        } else {
-          "non incertaine ou potentiellement due au hasard"
-        }
-        
-        msg <- sprintf("📈 **Effet de %s :** Chaque fois que **%s** augmente de 1 unité, **%s** %s en moyenne de **%s** unités. Cette relation est %s (p = %s).", var_label, var_label, resp_name, direction, change_amount, sig_explanation, p_str)
-      }
-      effect_bullets[[length(effect_bullets) + 1L]] <- msg
-    }
-  }
-
-  # 4. Qualité Globale (R² et Erreur)
-  r2_val <- kpis$r2_value
-  r2_eval <- switch(
-    kpis$r2_status,
-    "EXCELLENT FIT" = "⭐ **Excellente précision !** Le modèle explique une très grande partie de la réalité.",
-    "GOOD FIT" = "✅ **Bonne précision.** Le modèle capture bien la tendance principale.",
-    "MODERATE FIT" = "🟡 **Précision modérée.** La tendance existe, mais d'autres facteurs non mesurés jouent un rôle.",
-    "LOW FIT" = "ℹ️ **Faible pouvoir explicatif.** Le modèle voit une tendance, mais 80%+ de la variation reste inexpliquée par ces variables seules.",
-    "Le modèle est ajusté."
-  )
-
-  # 5. Bilan / Conclusion Pratique (ELI5 Synthesis)
-  conclusion <- sprintf(
-    "En résumé : votre modèle a calculé l'effet de vos variables sur %s observations (%s). %s",
-    kpis$health_value,
-    diag$status_label,
-    r2_eval
-  )
-
-  list(
-    concept = concept,
-    linearity_eval = linearity_eval,
-    linearity_diag = diag,
-    effects = effect_bullets,
-    r2_eval = r2_eval,
-    r2_val = r2_val,
-    conclusion = conclusion
-  )
+  if (mixed) effect <- paste(effect, "This fixed-effect comparison is at a common random-effect value.")
+  inference <- if (is.finite(p_value)) {
+    sprintf("Under the fitted model and its assumptions, p = %.4g summarizes compatibility of the observed statistic with a zero coefficient.", p_value)
+  } else "A p-value is unavailable for this coefficient."
+  paste(effect, inference)
 }
 
-try_ollama_llm_explanation <- function(prompt_payload, model_name = "stat-eli5", ollama_url = "http://localhost:11434") {
-  tryCatch({
-    endpoint <- paste0(ollama_url, "/api/generate")
-    body_data <- jsonlite::toJSON(list(
-      model = model_name,
-      prompt = paste("Explique ce modèle statistique en français simple (ELI5) :", jsonlite::toJSON(prompt_payload, auto_unbox = TRUE)),
-      stream = FALSE
-    ), auto_unbox = TRUE)
-
-    con <- url(endpoint, headers = c("Content-Type" = "application/json"))
-    on.exit(close(con), add = TRUE)
-
-    # Court timeout pour ne jamais bloquer l'interface
-    opts <- options(timeout = 2)
-    on.exit(options(opts), add = TRUE)
-
-    response_text <- suppressWarnings(readLines(con, warn = FALSE))
-    if (length(response_text) > 0) {
-      json_res <- jsonlite::fromJSON(paste(response_text, collapse = ""))
-      if (!is.null(json_res$response) && nzchar(json_res$response)) {
-        return(json_res$response)
-      }
-    }
-    return(NULL)
-  }, error = function(e) {
-    return(NULL)
+guided_interpretation <- function(result) {
+  coefficients <- result$coefficients %||% extract_coefficient_table(result$fit, result$model_type, result$link)
+  diagnostics <- result$diagnostics %||% result$linearity_diag %||% diagnose_model(result$fit, result$data, result$model_type)
+  metrics <- result$metrics %||% extract_model_metrics(result$fit, result$model_type, result$data)
+  effects <- lapply(seq_len(nrow(coefficients)), function(i) {
+    explain_coefficient(coefficients$estimate[i], coefficients$p_value[i], result$link,
+      coefficients$term[i], mixed = result$model_type == "glmm")
   })
+  list(concept = sprintf("%s uses a %s link to relate included predictors to the conditional mean response.",
+      model_config(result$model_type)$label, result$link),
+    effects = effects, diagnostics = diagnostics, metrics = metrics,
+    comparison = COMPARISON_CRITERIA_DESCRIPTION,
+    caution = paste("These estimates describe association under the model, not causation.",
+      "In-sample metrics do not establish performance for future observations or new groups.",
+      "Confidence intervals for mean responses do not describe the spread of future observations."))
 }
 
-eli5_ui <- function(id) {
+guided_interpretation_ui <- function(id) {
   ns <- shiny::NS(id)
-  shiny::div(
-    class = "eli5-card-container mb-3",
-    shiny::div(
-      class = "card border-0 shadow-sm rounded-3 overflow-hidden",
-      shiny::div(
-        class = "card-header bg-gradient-slate text-white d-flex align-items-center justify-content-between p-3",
-        shiny::div(
-          class = "d-flex align-items-center gap-2",
-          shiny::span("🤖", class = "fs-4"),
-          shiny::div(
-            shiny::div("Assistant IA ELI5 (Explain Like I'm 5)", class = "fw-bold fs-6"),
-            shiny::div("Explications statistiques en langage naturel simple", class = "small opacity-75")
-          )
-        ),
-        shiny::actionButton(
-          ns("explain_btn"),
-          "🤖 Expliquer en français simple",
-          class = "btn btn-sm btn-light text-primary fw-bold shadow-sm"
-        )
-      ),
-      shiny::uiOutput(ns("eli5_content"))
-    )
-  )
+  shiny::div(class = "card mb-3",
+    shiny::div(class = "card-header", shiny::h3("Guided interpretation", class = "h6"),
+      shiny::p("Deterministic explanations of estimates, uncertainty and diagnostic limitations."),
+      shiny::actionButton(ns("explain_btn"), "Show interpretation", class = "btn btn-sm btn-secondary")),
+    shiny::uiOutput(ns("content")))
 }
 
-eli5_server <- function(id, last_result) {
+guided_interpretation_server <- function(id, last_result) {
   shiny::moduleServer(id, function(input, output, session) {
-    show_explanation <- shiny::reactiveVal(FALSE)
-
-    shiny::observeEvent(input$explain_btn, {
-      show_explanation(TRUE)
-    })
-
-    # Réinitialise la vue automatique si le modèle change
-    shiny::observeEvent(last_result(), {
-      show_explanation(FALSE)
-    })
-
-    output$eli5_content <- shiny::renderUI({
+    show <- shiny::reactiveVal(FALSE)
+    shiny::observeEvent(last_result(), show(FALSE))
+    shiny::observeEvent(input$explain_btn, show(TRUE))
+    output$content <- shiny::renderUI({
       result <- last_result()
       shiny::req(result)
-
-      if (!show_explanation()) {
-        return(shiny::div(
-          class = "p-3 text-center bg-light text-muted small",
-          "Cliquez sur le bouton ci-dessus pour générer une explication pédagogique en français simple du modèle sélectionné."
-        ))
-      }
-
-      meta <- if (!is.null(result$example)) result$example$metadata else NULL
-      eli5 <- generate_eli5_explanation(
-        result$fit,
-        result$model_type,
-        result$link,
-        data_source = if (!is.null(result$example)) "real" else "simulation",
-        example_metadata = meta,
-        df = result$data
-      )
-
-      effect_items <- lapply(eli5$effects, function(eff) {
-        shiny::tags$li(class = "mb-2", shiny::HTML(eff))
-      })
-
-      diag_alert_class <- if (identical(eli5$linearity_diag$status, "LINEAR_MATCH")) {
-        "alert alert-success border-0 bg-success-subtle text-success-emphasis rounded-3 mb-3 p-3"
-      } else {
-        "alert alert-warning border-0 bg-warning-subtle text-warning-emphasis rounded-3 mb-3 p-3"
-      }
-
-      shiny::div(
-        class = "card-body bg-white p-4",
-        shiny::div(
-          class = "alert alert-primary border-0 bg-primary-subtle text-primary-emphasis rounded-3 mb-3 p-3",
-          shiny::div(class = "fw-bold mb-1", "💡 Concept Clé (ELI5) :"),
-          shiny::div(shiny::HTML(eli5$concept))
-        ),
-        shiny::div(
-          class = diag_alert_class,
-          shiny::div(class = "fw-bold mb-1", "📏 Diagnostic Linéarité (Vrai Linéaire vs Non-Linéaire) :"),
-          shiny::div(shiny::HTML(eli5$linearity_eval))
-        ),
-        shiny::div(
-          class = "mb-3",
-          shiny::div(class = "fw-bold text-dark mb-2", "🔍 Que signifient vos chiffres en pratique ?"),
-          shiny::tags$ul(class = "ps-3 mb-0 text-secondary small", effect_items)
-        ),
-        shiny::div(
-          class = "p-3 border rounded bg-light mb-3",
-          shiny::div(class = "fw-bold text-dark mb-1", "📊 Évaluation de la Précision :"),
-          shiny::div(class = "small text-secondary", shiny::HTML(eli5$r2_eval))
-        ),
-        shiny::div(
-          class = "d-flex align-items-center justify-content-between p-2 bg-success-subtle text-success-emphasis rounded border border-success-subtle small",
-          shiny::span(class = "fw-bold", "📌 Conclusion :"),
-          shiny::span(eli5$conclusion)
-        )
-      )
+      if (!show()) return(shiny::p(class = "p-3", "Select Show interpretation to inspect this model."))
+      explanation <- guided_interpretation(result)
+      shiny::div(class = "card-body",
+        shiny::p(explanation$concept),
+        shiny::tags$ul(lapply(explanation$effects, shiny::tags$li)),
+        shiny::p(explanation$diagnostics$summary),
+        shiny::tags$ul(lapply(explanation$diagnostics$warnings, shiny::tags$li)),
+        shiny::p(explanation$comparison), shiny::p(explanation$caution))
     })
   })
 }

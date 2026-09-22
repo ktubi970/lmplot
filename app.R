@@ -7,6 +7,8 @@ app_root <- if (file.exists(file.path("R", "config.R"))) "." else ".."
 source(file.path(app_root, "R", "config.R"), local = TRUE)
 source(file.path(app_root, "R", "model_registry.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_model.R"), local = TRUE)
+source(file.path(app_root, "R", "model_metrics.R"), local = TRUE)
+source(file.path(app_root, "R", "model_diagnostics.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_simulation.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_visualization.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_examples.R"), local = TRUE)
@@ -123,7 +125,7 @@ ui <- bslib::page_sidebar(
       bslib::layout_column_wrap(
         width = 1,
         # ELI5 Natural Language Assistant Card
-        eli5_ui("eli5_explainer"),
+        guided_interpretation_ui("guided_interpretation"),
 
         # Status Overview (Executive Cockpit Banner)
         shiny::uiOutput("kpi_banner"),
@@ -502,7 +504,7 @@ server <- function(input, output, session) {
   )
   last_result <- shiny::reactiveVal(NULL)
 
-  eli5_server("eli5_explainer", last_result)
+  guided_interpretation_server("guided_interpretation", last_result)
 
   shiny::observeEvent(input$generate, {
     tryCatch({
@@ -528,7 +530,7 @@ server <- function(input, output, session) {
   output$kpi_banner <- shiny::renderUI({
     result <- last_result()
     shiny::req(result)
-    kpis <- extract_model_kpis(result$fit, result$model_type)
+    kpis <- result$kpis
 
     shiny::div(
       class = "kpi-card-grid",
@@ -578,7 +580,7 @@ server <- function(input, output, session) {
   output$coef_table_ui <- shiny::renderUI({
     result <- last_result()
     shiny::req(result)
-    df_coef <- extract_coefficient_table(result$fit)
+    df_coef <- format_coefficient_table(result$coefficients)
     if (nrow(df_coef) == 0) return(NULL)
 
     formula_latex <- model_latex_formula(result$model_type, result$link)
@@ -622,6 +624,7 @@ server <- function(input, output, session) {
 
     shiny::tagList(
       formula_box,
+      shiny::p(class = "small text-secondary", unique(df_coef$IntervalMethod)),
       shiny::div(
         class = "coef-table-container",
         shiny::tags$table(
@@ -724,26 +727,13 @@ server <- function(input, output, session) {
   output$linearity_diag_banner <- shiny::renderUI({
     result <- last_result()
     shiny::req(result)
-    diag <- diagnose_model_linearity(result$fit, df = result$data, model_type = result$model_type)
-    if (diag$status == "NONLINEAR_MISSPECIFIED") {
-      shiny::div(
-        class = "alert alert-warning border-0 bg-warning-subtle text-warning-emphasis mb-3 p-3 rounded-3 shadow-sm",
-        shiny::div(class = "fw-bold fs-6 mb-1", diag$status_label),
-        shiny::div(
-          class = "small",
-          shiny::HTML(sprintf(
-            "<strong>Motif de résidus détecté :</strong> %s.<br>Un modèle linéaire classique produit de mauvais résultats de prédiction car la vraie relation sous-jacente est non-linéaire ou hétéroscédastique. Remarquez la courbure ou la déformation dans le graphique ci-dessous.",
-            diag$pattern_desc
-          ))
-        )
-      )
-    } else {
-      shiny::div(
-        class = "alert alert-success border-0 bg-success-subtle text-success-emphasis mb-3 p-3 rounded-3 shadow-sm",
-        shiny::div(class = "fw-bold fs-6 mb-1", diag$status_label),
-        shiny::div(class = "small", "La relation linéaire est bien respectée. Les résidus sont homogènes autour de zéro sans motif systématique.")
-      )
-    }
+    diagnostic <- result$diagnostics
+    shiny::div(
+      class = paste("alert mb-3", if (diagnostic$status == "warning") "alert-warning" else "alert-secondary"),
+      shiny::div(class = "fw-bold", paste("Model diagnostics:", diagnostic$strategy)),
+      shiny::p(diagnostic$summary),
+      shiny::tags$ul(lapply(diagnostic$warnings, shiny::tags$li))
+    )
   })
 
   output$diag_plots <- shiny::renderPlot({

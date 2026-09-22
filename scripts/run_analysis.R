@@ -21,6 +21,8 @@ app_root <- if (file.exists("R/config.R")) "." else ".."
 source(file.path(app_root, "R", "config.R"), local = TRUE)
 source(file.path(app_root, "R", "model_registry.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_model.R"), local = TRUE)
+source(file.path(app_root, "R", "model_metrics.R"), local = TRUE)
+source(file.path(app_root, "R", "model_diagnostics.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_simulation.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_visualization.R"), local = TRUE)
 source(file.path(app_root, "R", "mod_examples.R"), local = TRUE)

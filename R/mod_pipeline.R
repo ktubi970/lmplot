@@ -9,9 +9,11 @@
 #'
 #' @param fit_fn Function(df, model_type, link) -> model fit
 #' @param predict_fn Function(fit, newdata, population) -> numeric vector
-#' @param kpis_fn Function(fit, model_type) -> list of KPIs
-#' @param coef_fn Function(fit) -> data.frame of coefficients
-#' @param diag_fn Function(fit, df, model_type) -> list with linearity diagnostics
+#' @param kpis_fn Function(fit, model_type, metrics, diagnostics) -> display KPIs
+#' @param coef_fn Function(fit, model_type, link) -> numeric coefficient table
+#' @param diag_fn Function(fit, data, model_type) -> family diagnostics
+#' @param metrics_fn Function(fit, model_type, data) -> numeric assessment
+#' @param interval_fn Function(fit, newdata, model_type) -> mean-response intervals
 #' @param grid_fn Function(df, fit, model_type) -> data.frame prediction grid
 #' @return A list with the injected pipeline closures
 create_analysis_pipeline <- function(
@@ -19,8 +21,10 @@ create_analysis_pipeline <- function(
   predict_fn = predict_response,
   kpis_fn = extract_model_kpis,
   coef_fn = extract_coefficient_table,
-  diag_fn = diagnose_model_linearity,
-  grid_fn = prediction_grid
+  diag_fn = diagnose_model,
+  grid_fn = prediction_grid,
+  metrics_fn = extract_model_metrics,
+  interval_fn = predict_response_interval
 ) {
   list(
     fit = fit_fn,
@@ -28,7 +32,9 @@ create_analysis_pipeline <- function(
     kpis = kpis_fn,
     coefficients = coef_fn,
     diagnostics = diag_fn,
-    grid = grid_fn
+    grid = grid_fn,
+    metrics = metrics_fn,
+    intervals = interval_fn
   )
 }
 
@@ -130,14 +136,16 @@ run_analysis_usecase <- function(
   }
 
   fit <- pipeline$fit(data, model_type, link)
-  kpis <- pipeline$kpis(fit, model_type)
-  coef_df <- pipeline$coefficients(fit)
-  diag <- pipeline$diagnostics(fit, df = data, model_type = model_type)
+  metrics <- pipeline$metrics(fit, model_type, data)
+  diag <- pipeline$diagnostics(fit, data = data, model_type = model_type)
+  kpis <- pipeline$kpis(fit, model_type, metrics = metrics, diagnostics = diag)
+  coef_df <- pipeline$coefficients(fit, model_type, link)
   grid <- if (!is.null(grid_length_out)) {
     pipeline$grid(data, fit, model_type, length_out = grid_length_out)
   } else {
     pipeline$grid(data, fit, model_type)
   }
+  response_interval <- pipeline$intervals(fit, grid, model_type)
 
   structure(
     list(
@@ -152,7 +160,10 @@ run_analysis_usecase <- function(
       kpis = kpis,
       coefficients = coef_df,
       linearity_diag = diag,
-      prediction_grid = grid
+      prediction_grid = grid,
+      metrics = metrics,
+      diagnostics = diag,
+      response_interval = response_interval
     ),
     class = "analysis_result"
   )
@@ -175,4 +186,3 @@ print.analysis_result <- function(x, ...) {
   )
   invisible(x)
 }
-
