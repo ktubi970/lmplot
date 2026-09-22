@@ -60,7 +60,10 @@ validate_model_data <- function(df, model_type) {
 }
 
 fit_lm_strategy <- function(df, link) {
-  if ("Y" %in% names(df)) stats::lm(Z ~ X + Y, data = df) else stats::lm(Z ~ X, data = df)
+  config <- attr(df, "model_config")
+  if (is.null(config)) stop("LM fitting requires model configuration", call. = FALSE)
+  formula <- if (config$dimensions == 2L) Z ~ X else Z ~ X + Y
+  stats::lm(formula, data = df)
 }
 
 fit_glm_strategy <- function(df, link) {

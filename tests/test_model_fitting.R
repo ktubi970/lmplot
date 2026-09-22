@@ -40,3 +40,15 @@ test_that("GLMM never returns an lm or lme fallback", {
 
   expect_s4_class(fit, "merMod")
 })
+
+test_that("lm_2d ignores an extra Y column", {
+  data <- data.frame(
+    X = seq_len(12L),
+    Y = rep(c(-10, 10), each = 6L),
+    Z = 4 + 2 * seq_len(12L)
+  )
+
+  fit <- fit_model(data, "lm_2d", "identity")
+
+  expect_equal(attr(stats::terms(fit), "term.labels"), "X")
+})

@@ -1,3 +1,4 @@
+source("R/model_registry.R")
 source("R/mod_model.R")
 source("R/mod_simulation.R")
 source("R/mod_visualization.R")
