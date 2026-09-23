@@ -1,3 +1,7 @@
+if (isTRUE(getOption("lmplot.renv_unavailable"))) {
+  stop("Restore dependencies explicitly before starting LM Plot Explorer.", call. = FALSE)
+}
+
 app_root <- if (file.exists(file.path("R", "config.R"))) "." else ".."
 for (file in c("config.R", "model_registry.R", "mod_model.R", "model_metrics.R",
     "model_diagnostics.R", "mod_simulation.R", "mod_examples.R", "mod_visualization.R",

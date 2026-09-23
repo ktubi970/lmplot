@@ -26,7 +26,7 @@ WORKDIR /srv/shiny-server/lmplot
 # into root's home. Runtime workers read this self-contained project library.
 COPY renv.lock .Rprofile ./
 COPY renv/activate.R ./renv/activate.R
-RUN R --vanilla -s -e "source('renv/activate.R'); renv::restore(prompt = FALSE, clean = TRUE)"
+RUN R --vanilla -s -e "Sys.setenv(LMPLOT_EXPLICIT_BOOTSTRAP='1'); source('renv/activate.R'); renv::restore(prompt = FALSE, clean = TRUE)"
 
 # Only reviewed runtime inputs enter the image, including just the used asset.
 COPY app.R ./

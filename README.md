@@ -8,26 +8,28 @@ release candidate; publication remains subject to the gates in
 
 ## Run locally
 
-Requires R 4.6.0. From the project root, restore the committed package lock and
-start Shiny on loopback:
+Requires R 4.6.0. From the project root, run the explicit network-enabled
+bootstrap once, then start Shiny on loopback in a new R process:
 
-```r
-renv::restore(prompt = FALSE)
-shiny::runApp('.', host = '127.0.0.1', port = 3838)
+```sh
+Rscript --vanilla scripts/bootstrap.R
+Rscript -e "shiny::runApp('.', host = '127.0.0.1', port = 3838)"
 ```
 
 Open [the local application](http://127.0.0.1:3838/). Starting R in the project
-root loads `.Rprofile`, activates the isolated project library, and bootstraps
-the locked renv version if necessary. Restoration requires access to the package
-repositories and is an explicit bootstrap/build step. Application and CLI
-runtime code never install dependencies. On Windows, perform that explicit
-restore first. Then `run.bat` changes to the project directory, uses R 4.6.0
-with `--vanilla` to bypass startup bootstrap, checks the standard Windows
+root loads `.Rprofile` and activates only an already-restored project library.
+If its locked `renv` is absent, normal Shiny startup stops and the CLI returns
+a dependency error; neither downloads packages nor creates a replacement
+library. The separate bootstrap command restores `renv.lock` and requires
+package-repository access. Docker build and CI restoration explicitly opt in to
+that step; application runtime does not. On Windows, bootstrap first. Then
+`run.bat` changes to the project directory, uses R 4.6.0 with `--vanilla` to
+bypass startup-profile processing, checks the standard Windows
 project library against the lock, and opens a local Shiny session on an
 automatically selected port. Missing or inconsistent packages stop the launcher
 with an explicit-restore instruction; it never installs or restores on launch.
 The launcher expects `renv/library/windows/R-4.6/x86_64-w64-mingw32`; custom library
-layouts can use the explicit R commands above.
+layouts can set `RENV_PATHS_LIBRARY` for the bootstrap and runtime commands.
 
 ## Docker and public deployment
 
@@ -243,7 +245,7 @@ online, then rebuild offline:
 ```
 
 Restore the exact package set before reproducing artifacts with
-`renv::restore(prompt = FALSE)`. The fetch script verifies the recorded checksums; the build
+`Rscript --vanilla scripts/bootstrap.R`. The fetch script verifies the recorded checksums; the build
 scripts preserve source row order and enforce each example's declared schema,
 exclusions, units, row count, and statistical domain.
 

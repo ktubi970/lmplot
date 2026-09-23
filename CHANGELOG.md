@@ -62,8 +62,10 @@ Complete the release gates below before tagging or deploying publicly.
   operators. UI and request/use-case validation both enforce the boundary.
   Never enable it on a public service; public Compose and Docker CI omit it.
 - Runtime code never installs packages. Dependency restoration occurs during
-  explicit bootstrap/build. User-facing errors are sanitized; technical
-  server/CLI logs require operator-controlled access.
+  explicit bootstrap/build. Direct local Shiny and CLI startup fail closed
+  when the project renv library is absent; the CLI keeps its exit-3 error JSON.
+  User-facing errors are sanitized; technical server/CLI logs require
+  operator-controlled access.
 - The Windows launcher no longer installs renv or restores packages on each
   launch. It bypasses startup profiles, validates the explicitly restored
   standard Windows project library, and fails with bootstrap instructions when

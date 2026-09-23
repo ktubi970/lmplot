@@ -59,7 +59,8 @@ test_that("README documents the exact beta matrix and trusted expert boundary", 
   for (row in expected_rows) expect_match(readme, row, fixed = TRUE)
   expect_match(readme, "15 model/link combinations", fixed = TRUE)
   expect_match(readme, "Requires R 4.6.0", fixed = TRUE)
-  expect_match(readme, "renv::restore(prompt = FALSE)", fixed = TRUE)
+  expect_match(readme, "Rscript --vanilla scripts/bootstrap.R", fixed = TRUE)
+  expect_no_match(readme, "bootstraps the locked renv version if necessary", fixed = TRUE)
   expect_match(readme, "testthat::test_dir('tests', reporter='summary')", fixed = TRUE)
   expect_match(readme, "trusted local use", fixed = TRUE)
 })
@@ -97,6 +98,58 @@ test_that("Windows launcher fails without bootstrapping an absent project librar
   expect_match(paste(output, collapse = "\n"), "Restore dependencies explicitly", fixed = TRUE)
   expect_no_match(paste(output, collapse = "\n"), "UNEXPECTED_PROFILE_EXECUTION", fixed = TRUE)
   expect_false(dir.exists(file.path(directory, "renv")))
+})
+
+test_that("direct R and CLI startup refuse a missing project library without bootstrapping", {
+  rscript <- Sys.which("Rscript")
+  if (!nzchar(rscript)) rscript <- file.path(R.home("bin"),
+    if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript")
+  directory <- tempfile("missing-renv-runtime-")
+  dir.create(directory)
+  on.exit(unlink(directory, recursive = TRUE), add = TRUE)
+  library <- file.path(directory, "missing-library")
+  runtime_env <- c(
+    RENV_PATHS_LIBRARY = library,
+    R_USER_CACHE_DIR = file.path(directory, "cache"),
+    RENV_CONFIG_REPOS_OVERRIDE = "file:///nonexistent-lmplot-test-repository"
+  )
+  invoke <- function(args) withr::with_envvar(runtime_env,
+    withr::with_dir(release_root,
+      suppressWarnings(system2(rscript, args, stdout = TRUE, stderr = TRUE))))
+
+  local <- invoke(c("-e", shQuote("source('app.R'); cat('RUNTIME_REACHED\\n')")))
+  expect_identical(as.integer(attr(local, "status")), 1L, info = paste(local, collapse = "\n"))
+  expect_match(paste(local, collapse = "\n"), "Restore dependencies explicitly", fixed = TRUE)
+  expect_no_match(paste(local, collapse = "\n"), "RUNTIME_REACHED", fixed = TRUE)
+  expect_false(dir.exists(library))
+
+  request_path <- file.path(directory, "request.json")
+  output_path <- file.path(directory, "output.json")
+  writeLines('{"schema_version":"lmplot-analysis-request/1.0","data_source":"simulation","model_type":"lm_2d","link":"identity","simulation":{"n":30,"seed":11}}', request_path)
+  cli <- invoke(c("scripts/run_analysis.R", shQuote(request_path), shQuote(output_path)))
+  expect_identical(as.integer(attr(cli, "status")), 3L, info = paste(cli, collapse = "\n"))
+  expect_match(paste(cli, collapse = "\n"), "Restore dependencies explicitly", fixed = TRUE)
+  expect_true(file.exists(output_path))
+  if (file.exists(output_path)) {
+    error <- jsonlite::read_json(output_path)
+    expect_identical(error$schema_version, "lmplot-error/1.0")
+    expect_identical(error$error$code, "dependency_unavailable")
+  }
+  expect_false(dir.exists(library))
+})
+
+test_that("explicit bootstrap command restores an already locked project", {
+  rscript <- Sys.which("Rscript")
+  if (!nzchar(rscript)) rscript <- file.path(R.home("bin"),
+    if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript")
+  output <- withr::with_envvar(c(
+    RENV_CONFIG_REPOS_OVERRIDE = "file:///nonexistent-lmplot-test-repository",
+    LMPLOT_EXPLICIT_BOOTSTRAP = ""
+  ), withr::with_dir(release_root,
+    suppressWarnings(system2(rscript, c("--vanilla", "scripts/bootstrap.R"),
+      stdout = TRUE, stderr = TRUE))))
+  expect_null(attr(output, "status"), info = paste(output, collapse = "\n"))
+  expect_match(paste(output, collapse = "\n"), "Bootstrap complete", fixed = TRUE)
 })
 
 test_that("renv lockfile covers runtime and test dependencies", {
@@ -191,6 +244,18 @@ test_that("CI requires both locked R platforms and isolated Docker health", {
   for (path in c("/tmp", "/var/log/shiny-server", "/var/lib/shiny-server",
       "/var/run/shiny-server", "/var/shiny-server/sockets")) {
     expect_match(smoke, paste0("--tmpfs ", path, ":"), fixed = TRUE)
+  }
+})
+
+test_that("image and CI restoration explicitly opt in to renv bootstrap", {
+  dockerfile <- read_release_file("Dockerfile")
+  expect_match(dockerfile, "Sys.setenv(LMPLOT_EXPLICIT_BOOTSTRAP='1')", fixed = TRUE)
+  workflow <- yaml::read_yaml(file.path(release_root, ".github/workflows/ci.yml"))
+  setup <- Filter(function(x) identical(x$uses, "r-lib/actions/setup-renv@v2"),
+    workflow$jobs[["r-check"]]$steps)
+  expect_length(setup, 1L)
+  if (length(setup) == 1L) {
+    expect_identical(setup[[1]]$env$LMPLOT_EXPLICIT_BOOTSTRAP, "1")
   }
 })
 

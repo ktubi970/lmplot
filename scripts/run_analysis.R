@@ -21,7 +21,10 @@ cli_script_path <- function() {
 }
 
 app_root <- dirname(dirname(cli_script_path()))
-cli_bootstrap_error <- NULL
+cli_bootstrap_error <- if (isTRUE(getOption("lmplot.renv_unavailable"))) {
+  structure(list(message = "Restore dependencies explicitly before analysis.", call = NULL),
+    class = c("analysis_dependency_error", "error", "condition"))
+} else NULL
 for (module in c("config", "model_registry", "mod_model", "model_metrics",
     "model_diagnostics", "mod_simulation", "mod_visualization", "mod_examples",
     "mod_model_brain", "mod_pipeline", "json_contract")) {
