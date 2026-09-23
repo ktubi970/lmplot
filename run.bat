@@ -7,7 +7,9 @@ if not exist "%RSCRIPT%" (
   popd
   exit /b 1
 )
-"%RSCRIPT%" -e "if (!requireNamespace('renv', quietly=TRUE)) install.packages('renv', repos='https://cloud.r-project.org'); renv::restore(prompt=FALSE); shiny::runApp('.', launch.browser=TRUE)"
+rem Runtime only: bypass .Rprofile so a missing renv cannot bootstrap itself.
+set "LMPLOT_LIBRARY=%CD%\renv\library\windows\R-4.6\x86_64-w64-mingw32"
+"%RSCRIPT%" --vanilla -e "project_library <- Sys.getenv('LMPLOT_LIBRARY'); .libPaths(project_library, include.site=FALSE); if (!dir.exists(project_library) || !requireNamespace('renv', quietly=TRUE, lib.loc=project_library)) stop('Restore dependencies explicitly; see README.md.', call.=FALSE); if (!isTRUE(renv::status(project='.', library=.libPaths())$synchronized)) stop('Restore dependencies explicitly; see README.md.', call.=FALSE); shiny::runApp('.', launch.browser=TRUE)"
 set "EXIT_CODE=%ERRORLEVEL%"
 popd
 endlocal & exit /b %EXIT_CODE%

@@ -3,5 +3,5 @@ if (file.exists(config_path)) source(config_path)
 
 test_that("beta version is exact", {
   expect_true(exists("APP_VERSION", inherits = TRUE))
-  expect_identical(APP_VERSION, "0.9.0-beta.1")
+  expect_identical(APP_VERSION, "0.10.0-beta.1")
 })

@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  r-check:
+    name: R 4.6.0 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6.0'
+          use-public-rspm: true
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential gfortran libcurl4-openssl-dev libssl-dev libxml2-dev \
+            libgit2-dev libicu-dev libnlopt-dev libglpk-dev libuv1-dev \
+            libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev \
+            libpng-dev libjpeg-dev libtiff-dev
+
+      # setup-renv keys its library cache by OS, R version and renv.lock.
+      - uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: v1
+
+      - name: Select the installed Chrome executable
+        shell: pwsh
+        run: |
+          if ($env:RUNNER_OS -eq 'Windows') {
+            $chrome = Join-Path $env:ProgramFiles 'Google\Chrome\Application\chrome.exe'
+            if (!(Test-Path -LiteralPath $chrome)) { throw "Chrome was not found: $chrome" }
+          } else {
+            $chrome = (Get-Command google-chrome -ErrorAction Stop).Source
+          }
+          "CHROMOTE_CHROME=$chrome" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Verify locked runtime, packages and browser
+        shell: pwsh
+        run: |
+          $checks = @'
+          stopifnot(getRversion() == "4.6.0")
+          stopifnot(isTRUE(renv::status()$synchronized))
+          required <- c("renv", "shiny", "plotly", "bslib", "DT", "ggplot2",
+            "ggfortify", "lme4", "jsonlite", "shinyWidgets", "shinyAce",
+            "testthat", "shinytest2", "chromote", "yaml")
+          stopifnot(all(vapply(required, requireNamespace, logical(1), quietly = TRUE)))
+          packages <- installed.packages()
+          print(packages[intersect(required, rownames(packages)), c("Package", "Version", "Built"), drop = FALSE])
+          stopifnot(file.exists(Sys.getenv("CHROMOTE_CHROME")))
+          local({
+            browser <- chromote::ChromoteSession$new()
+            on.exit(browser$close())
+            print(browser$Browser$getVersion())
+          })
+          '@
+          Rscript -e $checks
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run the complete R, CLI, and real-browser suite
+        shell: pwsh
+        env:
+          NOT_CRAN: 'true'
+          LMPLOT_TRUSTED_LOCAL: ''
+        run: |
+          $tests = @'
+          results <- testthat::test_dir('tests', reporter='summary')
+          evidence <- as.data.frame(results)
+          print(evidence[c("file", "test", "failed", "error", "warning", "skipped", "passed")])
+          stopifnot(!any(evidence$failed > 0L | evidence$error | evidence$skipped))
+          '@
+          Rscript -e $tests
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+  docker-health:
+    name: Docker build and egress-blocked application health
+    needs: r-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Validate public Compose isolation
+        run: |
+          docker compose config --quiet
+          docker compose config --format json | jq -e '
+            . as $config |
+            ($config.services | keys == ["lmplot"]) and
+            ($config.services.lmplot as $app |
+              (($app.environment // {}) | has("LMPLOT_TRUSTED_LOCAL") | not) and
+              (($app.ports // []) | length == 0) and
+              ($app.read_only == true) and
+              ($app.networks | keys | length > 0) and
+              ([$app.networks | keys[] | $config.networks[.].internal] | all(. == true)))'
+
+      - name: Build locked Shiny image
+        uses: docker/build-push-action@v6
+        with:
+          context: '.'
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: lmplot:0.10.0-beta.1
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Internal app health proves offline startup, not external ingress.
+      # Deployment-owner ingress and WebSocket staging remain release gates.
+      - name: Check read-only application health without egress
+        run: |
+          docker run -d --name lmplot-health --network none --read-only \
+            --tmpfs /tmp:mode=1777 \
+            --tmpfs /var/log/shiny-server:uid=997,gid=997,mode=0770 \
+            --tmpfs /var/lib/shiny-server:uid=997,gid=997,mode=0770 \
+            --tmpfs /var/run/shiny-server:uid=997,gid=997,mode=0770 \
+            --tmpfs /var/shiny-server/sockets:uid=997,gid=997,mode=0770 \
+            --security-opt no-new-privileges:true --cap-drop ALL \
+            --cpus 2 --memory 1g --memory-reservation 512m --pids-limit 256 \
+            lmplot:0.10.0-beta.1
+          # 180 seconds exceeds the 30s start period + six 10s intervals
+          # and six 6s timeouts declared by the image.
+          for attempt in $(seq 1 90); do
+            running="$(docker inspect --format '{{.State.Running}}' lmplot-health)"
+            status="$(docker inspect --format '{{.State.Health.Status}}' lmplot-health)"
+            if [ "$running" != true ] || [ "$status" = unhealthy ]; then
+              docker inspect lmplot-health
+              docker logs lmplot-health
+              exit 1
+            fi
+            if [ "$status" = healthy ]; then
+              docker exec lmplot-health wget --quiet --tries=1 --timeout=5 \
+                --output-document=- http://127.0.0.1:3838/ > /tmp/lmplot-root.html
+              grep -F 'LM Plot Explorer' /tmp/lmplot-root.html
+              grep -F '0.10.0-beta.1' /tmp/lmplot-root.html
+              exit 0
+            fi
+            sleep 2
+          done
+          docker inspect lmplot-health
+          docker logs lmplot-health
+          exit 1
+
+      - name: Collect container logs
+        if: always()
+        run: docker logs lmplot-health || true
+
+      - name: Remove health container
+        if: always()
+        run: docker rm -f lmplot-health || true
