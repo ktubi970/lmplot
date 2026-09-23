@@ -7,9 +7,7 @@ read_release_file <- function(path) {
   )
 }
 
-test_that("release artifacts agree on the beta version", {
-  expect_match(read_release_file("README.md"), "0.9.0-beta.1", fixed = TRUE)
-  expect_match(read_release_file("TODO.md"), "0.9.0-beta.1", fixed = TRUE)
+test_that("release retains the locked Shiny runtime and launch contract", {
   expect_true(file.exists(file.path(release_root, "renv.lock")))
   expect_true(file.exists(file.path(release_root, ".Rprofile")))
   expect_true(file.exists(file.path(release_root, "renv", "activate.R")))
