@@ -14,13 +14,5 @@ tests/
 docs/
 artifacts/
 graphify-out/
-__pycache__/
-*.pyc
-*.pyo
-*.py
-.streamlit/
-streamlit_app.py
-requirements.txt
-packages.txt
 .env
 www/.env

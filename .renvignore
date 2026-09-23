@@ -6,9 +6,3 @@ docs/
 .git/
 artifacts/
 .positai/
-.streamlit/
-streamlit_app.py
-requirements.txt
-packages.txt
-*.py
-__pycache__/

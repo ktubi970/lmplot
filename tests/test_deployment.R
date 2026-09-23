@@ -18,6 +18,14 @@ test_that("the shipped runtime contains only the maintained Shiny application", 
   }
 })
 
+test_that("ignore configuration retires Python deployment exclusions", {
+  obsolete <- c("__pycache__/", "*.pyc", "*.pyo", "*.py", ".streamlit/",
+                "streamlit_app.py", "requirements.txt", "packages.txt")
+  for (path in c(".dockerignore", ".renvignore")) {
+    expect_identical(intersect(deployment_lines(path), obsolete), character(), info = path)
+  }
+})
+
 test_that("the image builds locked dependencies and starts Shiny without privileged init", {
   lines <- deployment_lines("Dockerfile")
   expect_identical(lines[[1]], paste0("FROM rocker/shiny:4.6.0@sha256:",
