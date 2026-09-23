@@ -71,7 +71,7 @@ overview_server <- function(id, result, generation = shiny::reactive(0L),
     output$chart_summary <- shiny::renderText({
       value <- result(); shiny::req(value)
       paste(model_config(value$model_type)$label, "with", nrow(value$data), "observations.",
-        "Points show observed responses; the fit shows the model mean response.",
+        paste('Points show', value$model_brain$labels$z, '; the fit shows', analysis_predicted_label(value), '.'),
         if (value$model_type == "glmm") "The surface is a population prediction without random intercepts." else "",
         paste('N =', value$model_brain$n, '; response unit:', value$model_brain$units$z %||% 'unit not specified'),
         if (value$model_type == 'glmm') 'Response-scale intervals are unavailable for this GLMM.' else
@@ -86,7 +86,10 @@ overview_server <- function(id, result, generation = shiny::reactive(0L),
     output$grid_table <- shiny::renderUI({ shiny::req(result()); accessible_data_table(analysis_chart_grid(result()), 'Mean-response prediction grid') })
     output$grid_download <- shiny::downloadHandler(filename = function() 'lmplot-prediction-grid.csv',
       content = function(file) { shiny::req(result()); write_chart_csv(analysis_chart_grid(result()), file) })
-    output$coefficients <- shiny::renderTable({ shiny::req(result()); result()$coefficients },
+    output$coefficients <- shiny::renderTable({ shiny::req(result());
+      table <- result()$coefficients
+      table$units <- brain_term_units(table$term, result()$model_brain$units)
+      table },
       digits = 6, na = "Unavailable", striped = TRUE)
     output$variable_mapping <- shiny::renderText({
       shiny::req(result()); paste(names(result()$labels), unlist(result()$labels), sep = ": ", collapse = "; ")

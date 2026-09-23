@@ -17,7 +17,8 @@ test_that("real-data manifest covers the seven models exactly", {
     "license_name", "license_url", "default_link", "response_source",
     "predictor_x_source", "predictor_y_source", "group_source",
     "response_label", "predictor_x_label", "predictor_y_label",
-    "expected_rows", "adaptation_note", "preprocessing_summary"
+    "expected_rows", "adaptation_note", "preprocessing_summary",
+    "observed_response_label", "predictor_x_unit", "predictor_y_unit", "response_unit"
   )
   expect_setequal(names(manifest), required)
   if ("preprocessing_summary" %in% names(manifest)) {

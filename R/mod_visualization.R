@@ -1,4 +1,21 @@
 # Shiny facades below consume the committed scientific snapshot only.
+label_with_unit <- function(label, unit) {
+  if (is.null(unit) || grepl(paste0('(', unit, ')'), label, fixed = TRUE)) return(label)
+  paste0(label, ' (', unit, ')')
+}
+
+analysis_predicted_label <- function(result) {
+  prefix <- if (result$model_type == 'glmm') 'Predicted population mean:' else 'Predicted mean:'
+  paste(prefix, label_with_unit(result$labels$z, result$model_brain$units$z))
+}
+
+analysis_chart_units <- function(table, result) {
+  table$x_unit <- result$model_brain$units$x %||% 'unit not specified'
+  if ('Y' %in% names(table)) table$y_unit <- result$model_brain$units$y %||% 'unit not specified'
+  table$response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  table
+}
+
 analysis_chart_observations <- function(result) {
   records <- analysis_observations(result)
   table <- result$data
@@ -8,22 +25,25 @@ analysis_chart_observations <- function(result) {
   table$fitted <- vapply(records, `[[`, numeric(1), 'prediction')
   table$response_residual <- vapply(records, `[[`, numeric(1), 'residual')
   table$response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  table$observed_response_label <- result$model_brain$labels$z
+  table$fitted_response_label <- paste('Fitted mean:', result$labels$z)
   table$interval_available <- vapply(records, function(x) x$response_interval$available, logical(1))
   table$interval_lower <- vapply(records, function(x) x$response_interval$lower %||% NA_real_, numeric(1))
   table$interval_upper <- vapply(records, function(x) x$response_interval$upper %||% NA_real_, numeric(1))
   table$interval_level <- vapply(records, function(x) x$response_interval$level, numeric(1))
   table$interval_method <- vapply(records, function(x) x$response_interval$method %||% NA_character_, character(1))
   table$interval_reason <- vapply(records, function(x) x$response_interval$reason %||% NA_character_, character(1))
-  table
+  analysis_chart_units(table, result)
 }
 
 analysis_chart_grid <- function(result) {
   table <- result$prediction_grid
   table$prediction_mode <- if (result$model_type == 'glmm') 'population' else 'conditional'
   table$response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  table$predicted_response_label <- analysis_predicted_label(result)
   table$interval_available <- FALSE
   table$interval_reason <- 'This stored prediction grid provides point estimates only.'
-  table
+  analysis_chart_units(table, result)
 }
 
 render_analysis_main_plot <- function(result, show_surface = TRUE, source = "overview", generation = 0L) {
@@ -35,6 +55,9 @@ render_analysis_main_plot <- function(result, show_surface = TRUE, source = "ove
     list(observation_id = row$observation_id, generation = generation), auto_unbox = TRUE)), character(1))
   config <- model_config(result$model_type)
   labels <- normalize_plot_labels(result$model_brain$labels)
+  for (key in c('x', 'y', 'z')) labels[[key]] <- label_with_unit(labels[[key]], result$model_brain$units[[key]])
+  labels$response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  predicted_label <- analysis_predicted_label(result)
   data$.hover <- observed_hover_text(data, labels, config$dimensions == 3L, config$requires_group)
   if (config$dimensions == 2L) {
     plot <- plotly::plot_ly(data, x = ~X, y = ~Z, type = "scatter", mode = "markers",
@@ -42,6 +65,7 @@ render_analysis_main_plot <- function(result, show_surface = TRUE, source = "ove
       marker = list(color = '#1d4ed8', opacity = 1))
     grid <- result$prediction_grid
     plot <- plotly::add_lines(plot, x = grid$X, y = grid$.fitted, name = "Mean response",
+      hovertemplate = paste0(labels$x, ': %{x:.3f}<br>', predicted_label, ': %{y:.3f}<extra>Mean response</extra>'),
       line = list(color = '#92400e', dash = 'dash'), inherit = FALSE)
     plot <- plotly::layout(plot, xaxis = list(title = labels$x), yaxis = list(title = labels$z))
   } else {
@@ -55,6 +79,8 @@ render_analysis_main_plot <- function(result, show_surface = TRUE, source = "ove
       z[cbind(match(grid$Y, y), match(grid$X, x))] <- grid$.fitted
       plot <- plotly::add_surface(plot, x = x, y = y, z = z, inherit = FALSE,
         name = if (result$model_type == 'glmm') "Population mean response" else "Mean response",
+        hovertemplate = paste0(labels$x, ': %{x:.3f}<br>', labels$y, ': %{y:.3f}<br>',
+          predicted_label, ': %{z:.3f}<extra>Mean response</extra>'),
         opacity = 1, showscale = FALSE, colorscale = list(list(0, '#0f766e'), list(1, '#0f766e')),
         lighting = list(ambient = .8, diffuse = .2, specular = 0, roughness = 1))
     }
@@ -72,10 +98,14 @@ render_analysis_diagnostics <- function(result) {
   records <- analysis_observations(result)
   data <- data.frame(fitted = vapply(records, `[[`, numeric(1), "prediction"),
     residual = vapply(records, `[[`, numeric(1), "residual"))
+  response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  fitted_label <- paste(if (result$model_type == 'glmm') 'Conditional fitted mean:' else 'Fitted mean:',
+    label_with_unit(result$labels$z, result$model_brain$units$z))
   plot <- plotly::plot_ly(data, x = ~fitted, y = ~residual, type = "scatter", mode = "markers", name = "Response residual",
+      hovertemplate = paste0(fitted_label, ': %{x}<br>Response residual (', response_unit, '): %{y}<extra></extra>'),
       marker = list(color = '#1d4ed8', opacity = 1)) |>
-    plotly::layout(xaxis = list(title = paste("Fitted", result$labels$z)),
-      yaxis = list(title = paste("Response residual:", result$labels$z)),
+    plotly::layout(xaxis = list(title = fitted_label),
+      yaxis = list(title = paste('Response residual (observed minus fitted):', result$model_brain$units$z %||% 'unit not specified')),
       shapes = list(list(type = "line", xref = "paper", x0 = 0, x1 = 1, y0 = 0, y1 = 0,
         line = list(dash = "dash"))), font = list(family = "system-ui, sans-serif"))
   plotly::config(plot, displayModeBar = FALSE, staticPlot = TRUE)
@@ -122,7 +152,8 @@ enrich_data <- function(df, fit) {
 }
 
 normalize_plot_labels <- function(labels = NULL) {
-  resolved <- list(x = "X", y = "Y", z = "Z", group = "Group")
+  resolved <- list(x = "X", y = "Y", z = "Z", group = "Group",
+    predicted = 'Predicted mean response', response_unit = 'unit not specified')
   if (is.null(labels)) return(resolved)
   if (!is.list(labels)) {
     stop("Plot labels must be supplied as a named list", call. = FALSE)
@@ -149,7 +180,8 @@ observed_hover_text <- function(data, labels, include_y, include_group) {
   if (include_group) {
     text <- paste0(text, "<br>", labels$group, ": ", data$Group)
   }
-  paste0(text, "<br>Residual: ", sprintf("%.3f", data$.residual))
+  paste0(text, '<br>Response residual (', labels$response_unit %||% 'unit not specified', '): ',
+    sprintf("%.3f", data$.residual))
 }
 
 build_main_plot <- function(df, fit, model_type, show_surface = TRUE,
@@ -168,7 +200,7 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE,
     curve <- enriched[order(enriched$X), ]
     curve$.fitted_hover <- paste0(
       labels$x, ": ", sprintf("%.3f", curve$X),
-      "<br>Fitted ", labels$z, ": ", sprintf("%.3f", curve$.fitted)
+      "<br>", labels$predicted, ": ", sprintf("%.3f", curve$.fitted)
     )
     return(
       plotly::plot_ly(
@@ -255,7 +287,7 @@ build_main_plot <- function(df, fit, model_type, show_surface = TRUE,
       hovertemplate = paste0(
         labels$x, ": %{x:.3f}<br>",
         labels$y, ": %{y:.3f}<br>",
-        labels$z, ": %{z:.3f}<extra>Population fit</extra>"
+        labels$predicted, ": %{z:.3f}<extra>Population fit</extra>"
       ),
       inherit = FALSE
     )

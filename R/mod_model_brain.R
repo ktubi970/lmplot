@@ -91,8 +91,24 @@ model_brain_observation_ids <- function(df) {
   seq(limits[1], limits[2], length.out = 201L)
 }
 
+.brain_units <- function(units, link) {
+  resolved <- list(x = NULL, y = NULL, z = NULL)
+  if (!is.null(units)) {
+    .brain_assert(is.list(units) && !is.data.frame(units) && !is.null(names(units)) &&
+      !anyDuplicated(names(units)) && all(names(units) %in% names(resolved)) &&
+      all(vapply(units, function(x) is.null(x) || .brain_string(x), logical(1))), 'invalid units')
+    resolved[names(units)] <- units
+  }
+  response <- resolved$z %||% 'response units'
+  scales <- list(identity = function() response, logit = function() 'log-odds',
+    probit = function() 'probit scale', cloglog = function() 'complementary log-log scale',
+    log = function() paste0('log mean (response in ', response, ')'),
+    inverse = function() paste0('1/(', response, ')'), sqrt = function() paste0('sqrt(', response, ')'))
+  c(resolved, list(eta = scales[[link]]()))
+}
+
 build_model_brain <- function(fit, data, model_type, link, labels = NULL,
-                              warnings = character(), prediction_mode = NULL) {
+                              warnings = character(), prediction_mode = NULL, units = NULL) {
   config <- model_config(model_type)
   link <- validate_model_link(model_type, link)
   mixed <- identical(model_type, 'glmm')
@@ -108,6 +124,7 @@ build_model_brain <- function(fit, data, model_type, link, labels = NULL,
   modes <- if (mixed) c('conditional', 'population') else 'conditional'
   .brain_assert(is.null(prediction_mode) || (.brain_string(prediction_mode) && prediction_mode %in% modes), 'unsupported prediction mode')
   labels <- .brain_labels(labels)
+  units <- .brain_units(units, link)
   matrix <- stats::model.matrix(fit)
   table <- extract_coefficient_table(fit, model_type, link)
   terms <- table$term
@@ -164,7 +181,7 @@ build_model_brain <- function(fit, data, model_type, link, labels = NULL,
   .brain_assert(all(is.finite(curve)), 'non-finite link curve')
   list(schema_version = 'model-brain/1.0', model_type = model_type, family = config$family,
     link = link, formula = paste(deparse(stats::formula(fit)), collapse = ' '), labels = labels,
-    units = list(x = NULL, y = NULL, z = NULL, eta = if (link == 'identity') 'response units' else 'link scale'),
+    units = units,
     n = nrow(data), prediction_modes = modes,
     default_observation_id = ids[order(prediction, ids, method = 'radix')[ceiling(length(ids)/2)]],
     topology = .brain_topology(terms, table$estimate, mixed, labels), coefficients = coefficients,

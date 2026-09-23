@@ -19,21 +19,24 @@ scientific_plot_specs <- list(
     family = "Binomial GLM",
     x = "Bill length (mm)",
     y = "Body mass (g)",
-    z = "Probability molecular sex is female"
+    z = "Probability molecular sex is female",
+    observed = 'Female indicator (0/1)'
   ),
   abalone_rings = list(
     model_type = "glm_poisson",
     family = "Poisson GLM",
     x = "Shell length (mm)",
     y = "Dried shell weight (g)",
-    z = "Expected ring count"
+    z = "Expected ring count",
+    observed = 'Observed ring count'
   ),
   forest_fire_positive_area = list(
     model_type = "glm_gamma",
     family = "Gamma GLM",
     x = "Temperature (\u00b0C)",
     y = "Relative humidity (%)",
-    z = "Expected burned area given area > 0 (ha)"
+    z = "Expected burned area given area > 0 (ha)",
+    observed = 'Burned area (ha)'
   ),
   inner_london_exam = list(
     model_type = "glmm",
@@ -96,9 +99,11 @@ test_that("all real Plotly traces use literal scientific hover labels", {
         identical(trace$mode, "markers")
     }, built$x$data)
 
+    observed_labels <- spec[c('x', 'y', 'z', 'group')]
+    observed_labels$z <- spec$observed %||% spec$z
     expect_scientific_hover(
       observed,
-      spec[c("x", "y", "z", "group")],
+      observed_labels,
       example_id,
       "observed"
     )

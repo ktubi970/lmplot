@@ -186,6 +186,8 @@ test_that("CLI exports real-data identity and GLMM unavailable intervals", {
   expect_identical(real$status, 0L, info = real$stderr)
   expect_identical(real$json$source, list(data_source = "real", example_id = "adelie_flipper_mass"))
   expect_length(real$json$data, 151L)
+  expect_identical(real$json$model_brain$units, list(x = 'mm', y = NULL, z = 'g', eta = 'g'))
+  expect_identical(names(real$json$model_brain$labels), c('x', 'y', 'z', 'group'))
   payload <- cli_payload(); payload$model_type <- "glmm"; payload$simulation$n <- 60L
   mixed <- cli_process(payload)
   expect_identical(mixed$status, 0L, info = mixed$stderr)

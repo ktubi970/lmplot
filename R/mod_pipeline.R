@@ -151,6 +151,7 @@ run_analysis_usecase <- function(request, services, root = ".") {
     link <- request$link
     example <- NULL
     labels <- list(x = "X", y = "Y", z = "Z")
+    units <- NULL
     if (request$data_source == "real") {
       id <- request$example_id %||% services$resolve_example(model_type, root)
       example <- services$load_example(id, root)
@@ -161,6 +162,10 @@ run_analysis_usecase <- function(request, services, root = ".") {
       display <- example$display
       labels <- list(x = example$metadata$predictor_x_label %||% "X",
         y = example$metadata$predictor_y_label %||% "Y", z = example$metadata$response_label %||% "Z")
+      # Injected example loaders may omit unknown units; bundled examples validate theirs at load time.
+      if (any(c('predictor_x_unit', 'predictor_y_unit', 'response_unit') %in% names(example$metadata))) {
+        units <- example_units(example$metadata)
+      }
       code <- paste0("example <- load_real_example(", encodeString(example$id, quote = '"'),
         ")\nfit <- fit_model(example$analysis, ", encodeString(model_type, quote = '"'),
         ", ", encodeString(link, quote = '"'), ")")
@@ -183,8 +188,10 @@ run_analysis_usecase <- function(request, services, root = ".") {
     diagnostics <- services$diagnostics(fit, data, model_type)
     collect(diagnostics$warnings %||% character())
     grid <- services$prediction_grid(data, fit, model_type, length_out = request$grid_length_out)
+    brain_labels <- labels
+    if (!is.null(example)) brain_labels$z <- example$metadata$observed_response_label %||% labels$z
     brain <- services$build_model_brain(fit = fit, data = data, model_type = model_type,
-      link = link, labels = labels, warnings = warnings)
+      link = link, labels = brain_labels, warnings = warnings, units = units)
     brain <- services$validate_model_brain(brain)
     structure(list(data = data, display = display, example = example, fit = fit,
       model_type = model_type, link = link, code = code, labels = labels,

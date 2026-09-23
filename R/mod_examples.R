@@ -5,6 +5,18 @@ read_example_manifest <- function(root = ".") {
   manifest
 }
 
+example_units <- function(metadata) {
+  keys <- c(x = 'predictor_x_unit', y = 'predictor_y_unit', z = 'response_unit')
+  lapply(keys, function(key) {
+    value <- metadata[[key]]
+    if (identical(key, 'predictor_y_unit') && model_config(metadata$model_type)$dimensions == 2L) return(NULL)
+    if (!is.character(value) || length(value) != 1L || is.na(value) || !nzchar(trimws(value))) {
+      stop('Example units must be non-empty for every modeled variable.', call. = FALSE)
+    }
+    value
+  })
+}
+
 example_ids <- function(root = ".") read_example_manifest(root)$example_id
 
 example_config <- function(example_id, root = ".") {
@@ -229,6 +241,10 @@ build_real_examples <- function(root = ".") {
 
 load_real_example <- function(example_id, root = ".") {
   config <- example_config(example_id, root)
+  example_units(config)
+  if (!is.character(config$observed_response_label) || !nzchar(trimws(config$observed_response_label))) {
+    stop('Example observed response label must be non-empty.', call. = FALSE)
+  }
   path <- file.path(root, "data", "real", example_id, "model-data.csv")
   data <- utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE)
   analysis <- data[canonical_columns(config$model_type)]
@@ -254,11 +270,14 @@ example_plot <- function(example, fit, show_surface = TRUE) {
   metadata <- example$metadata
   config <- model_config(metadata$model_type)
   labels <- list(
-    x = metadata$predictor_x_label,
-    z = metadata$response_label
+    x = label_with_unit(metadata$predictor_x_label, metadata$predictor_x_unit),
+    z = label_with_unit(metadata$observed_response_label, metadata$response_unit),
+    predicted = paste(if (config$requires_group) 'Predicted population mean:' else 'Predicted mean:',
+      label_with_unit(metadata$response_label, metadata$response_unit)),
+    response_unit = metadata$response_unit
   )
   if (config$dimensions == 3L) {
-    labels$y <- metadata$predictor_y_label
+    labels$y <- label_with_unit(metadata$predictor_y_label, metadata$predictor_y_unit)
   }
   if (config$requires_group) {
     labels$group <- tools::toTitleCase(
@@ -289,8 +308,8 @@ example_plot <- function(example, fit, show_surface = TRUE) {
     plotly::layout(
       plot,
       title = list(text = title),
-      xaxis = list(title = metadata$predictor_x_label),
-      yaxis = list(title = metadata$response_label)
+      xaxis = list(title = labels$x),
+      yaxis = list(title = labels$z)
     )
   } else {
     plotly::layout(
@@ -298,9 +317,9 @@ example_plot <- function(example, fit, show_surface = TRUE) {
       title = list(text = title),
       showlegend = metadata$model_type != "glmm",
       scene = list(
-        xaxis = list(title = metadata$predictor_x_label),
-        yaxis = list(title = metadata$predictor_y_label),
-        zaxis = list(title = metadata$response_label)
+        xaxis = list(title = labels$x),
+        yaxis = list(title = labels$y),
+        zaxis = list(title = labels$z)
       )
     )
   }

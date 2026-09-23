@@ -11,7 +11,22 @@ analysis_display_data <- function(result) {
   stopifnot(nrow(data) == length(records))
   data$.fitted <- vapply(records, `[[`, numeric(1), "prediction")
   data$.residual <- vapply(records, `[[`, numeric(1), "residual")
+  data$.prediction_mode <- vapply(records, `[[`, character(1), 'prediction_mode')
+  data$.response_unit <- result$model_brain$units$z %||% 'unit not specified'
+  data$.x_unit <- result$model_brain$units$x %||% 'unit not specified'
+  if ('Y' %in% names(result$data)) data$.y_unit <- result$model_brain$units$y %||% 'unit not specified'
+  data$.observed_response_label <- result$model_brain$labels$z
+  data$.fitted_response_label <- paste('Fitted mean:', result$labels$z)
   data
+}
+
+analysis_prediction_context <- function(result) {
+  if (result$model_type == 'glmm') {
+    return(paste('Observed-row fitted values are conditional on estimated group random intercepts;',
+      'response residuals are observed minus these conditional fitted values.',
+      'The Overview surface is the fixed-effects population mean, without random intercepts.'))
+  }
+  'Fitted values are model mean responses; response residuals are observed minus fitted values.'
 }
 
 data_provenance_ui <- function(id) {
@@ -29,7 +44,9 @@ data_provenance_server <- function(id, result, successful_request = shiny::react
   shiny::moduleServer(id, function(input, output, session) {
     displayed <- shiny::reactive({ shiny::req(result()); display_data(result()) })
     output$table <- DT::renderDT({ DT::datatable(displayed(), rownames = FALSE,
-      filter = "top", options = list(pageLength = 10, scrollX = TRUE), caption = "Committed observations with fitted responses and response residuals") })
+      filter = "top", options = list(pageLength = 10, scrollX = TRUE),
+      caption = paste('Committed observations.', analysis_prediction_context(result()),
+        'Response unit:', result()$model_brain$units$z %||% 'unit not specified')) })
     output$download <- shiny::downloadHandler(filename = function() "lmplot-enriched-data.csv",
       content = function(file) utils::write.csv(displayed(), file, row.names = FALSE, na = "NA"))
     output$code <- shiny::renderText({ shiny::req(result()); result()$code })
@@ -46,7 +63,8 @@ data_provenance_server <- function(id, result, successful_request = shiny::react
       metadata <- value$example$metadata
       fields <- c(publication_url = "Publication", publication_doi = "Publication DOI", source_url = "Source",
         license_name = "License", license_url = "License URL", source_sha256 = "Source SHA-256 checksum", preprocessing_summary = "Preparation",
-        adaptation_note = "Adaptation and limitations", response_label = "Response (Z)", response_source = "Response source column",
+        adaptation_note = "Adaptation and limitations", observed_response_label = 'Observed response (Z)',
+        response_label = 'Predicted mean response', response_unit = 'Response unit', response_source = "Response source column",
         predictor_x_label = "Predictor X", predictor_x_source = "X source column",
         predictor_y_label = "Predictor Y", predictor_y_source = "Y source column", group_source = "Group source column")
       shiny::div(class = "example-provenance", shiny::h3(metadata$title), shiny::p("Rows: ", nrow(value$data)),

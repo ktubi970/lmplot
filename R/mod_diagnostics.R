@@ -30,7 +30,8 @@ diagnostics_server <- function(id, result, render_diagnostics = render_analysis_
       if (is.null(result())) return("No analysis yet")
       paste(model_config(result()$model_type)$label, "— Diagnostic evidence")
     })
-    output$summary <- shiny::renderText({ shiny::req(result()); result()$diagnostics$summary })
+    output$summary <- shiny::renderText({ shiny::req(result());
+      paste(analysis_prediction_context(result()), result()$diagnostics$summary) })
     output$checks <- shiny::renderTable({ shiny::req(result()); diagnostics_check_table(result()$diagnostics) }, striped = TRUE)
     output$plot <- plotly::renderPlotly({ shiny::req(result()); render_diagnostics(result()) })
     output$guidance <- shiny::renderUI({
@@ -47,6 +48,7 @@ diagnostics_server <- function(id, result, render_diagnostics = render_analysis_
       shiny::req(result()); paste('Response residuals versus fitted responses; N =', result()$model_brain$n,
         '; response unit:', result()$model_brain$units$z %||% 'unit not specified',
         '. The dashed line marks zero residual. Descriptive observed-minus-fitted values; no residual confidence interval is estimated.',
+        analysis_prediction_context(result()),
         result()$diagnostics$summary)
     })
     data <- shiny::reactive({ shiny::req(result()); analysis_chart_observations(result()) })

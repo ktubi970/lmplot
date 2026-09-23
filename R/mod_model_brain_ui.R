@@ -117,9 +117,10 @@ model_brain_server <- function(id, result, generation, selection, select_observa
     output$observation_summary <- shiny::renderText({
       o <- selected_observation()
       if (is.null(o)) return('No analysis yet. Choose settings and select Generate & fit model.')
-      sprintf('Observation %d of %d, ID %s; %s. Prediction %s; observed %s; residual %s. %s',
+      sprintf('Observation %d of %d, ID %s; %s. Predicted mean %s; observed %s; residual %s. Response unit: %s. %s',
         o$index, result()$model_brain$n, o$observation_id, o$prediction_mode,
         format(o$prediction, digits = 6), format(o$observed, digits = 6), format(o$residual, digits = 6),
+        result()$model_brain$units$z %||% 'unit not specified',
         brain_interval_text(o$response_interval))
     })
     view <- shiny::reactive({ shiny::req(selected_index()); brain_view_data(result()$model_brain, selected_index(), mode()) })
