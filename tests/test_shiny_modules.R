@@ -35,6 +35,18 @@ test_that("configuration resets shared links and ignores delayed prior selection
   })
 })
 
+test_that("a same-default model switch accepts the next visible link selection", {
+  shiny::testServer(configuration_server, args = list(root = ".."), {
+    session$setInputs(model_type = "glm_binomial_2d", data_source = "simulation")
+    session$setInputs(link_sel = "logit")
+    expect_identical(payload()$link, "logit")
+    session$setInputs(model_type = "glm_binomial")
+    expect_identical(payload()$link, "logit")
+    session$setInputs(link_sel = "probit")
+    expect_identical(payload()$link, "probit")
+  })
+})
+
 test_that("views render committed values without scientific recomputation", {
   for (name in c("overview_server", "diagnostics_server", "data_provenance_server")) expect_true(exists(name), info = name)
   if (!exists("overview_server")) return()

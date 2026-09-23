@@ -5,6 +5,14 @@ predict_response <- function(fit, newdata = NULL, population = FALSE) {
   stats::predict(fit, newdata = newdata)
 }
 
+valid_model_link_predictor <- function(model_type, link, eta) {
+  family <- model_config(model_type)$family
+  needs_positive_eta <- (identical(family, "poisson") &&
+    link %in% c("identity", "sqrt")) || (identical(family, "Gamma") &&
+    link %in% c("identity", "inverse"))
+  is.finite(eta) & (!needs_positive_eta | eta > 0)
+}
+
 fitted_response <- function(fit) as.numeric(predict_response(fit))
 
 response_residuals <- function(fit) {

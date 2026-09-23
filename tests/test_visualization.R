@@ -221,6 +221,27 @@ test_that("3D plots include initial camera eye position", {
   expect_equal(built$x$layout$scene$camera$eye$z, 1.5)
 })
 
+test_that("padded count and Gamma grids mark invalid means unavailable", {
+  cases <- list(c("glm_poisson", "identity"), c("glm_gamma", "inverse"))
+  for (case in cases) {
+    df <- simulate_data(case[[1]], case[[2]], n = 200L, seed = 123L,
+      beta0 = 1, beta1 = .8, beta2 = 0)
+    fit <- fit_model(df, case[[1]], case[[2]])
+    grid <- prediction_grid(df, fit, case[[1]], length_out = 30L)
+    raw <- as.numeric(predict_response(fit, grid))
+    expect_true(any(raw <= 0), info = paste(case, collapse = "/"))
+    expect_true(all(c(".available", ".reason") %in% names(grid)),
+      info = paste(case, collapse = "/"))
+    if (!all(c(".available", ".reason") %in% names(grid))) next
+    expect_true(any(!grid$.available), info = paste(case, collapse = "/"))
+    expect_true(all(is.na(grid$.fitted[!grid$.available])))
+    expect_true(all(nzchar(grid$.reason[!grid$.available])))
+    expect_true(all(is.finite(grid$.fitted[grid$.available]) &
+      grid$.fitted[grid$.available] > 0))
+    expect_true(all(is.na(grid$.reason[grid$.available])))
+  }
+})
+
 test_that('committed chart alternatives retain exact prediction and interval values', {
   app <- new.env(); source(file.path('..', 'app.R'), local = app)
   value <- app$run_analysis_usecase(app$new_analysis_request(list(

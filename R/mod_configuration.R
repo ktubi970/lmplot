@@ -35,7 +35,11 @@ configuration_server <- function(id, trusted_local = FALSE, root = ".",
     link_selection <- shiny::reactiveVal(NULL)
     shiny::observeEvent(list(model(), source()), {
       spec <- link_spec()
-      link_selection(list(model = model(), source = source(), link = spec$default, awaiting_default_ack = TRUE))
+      # Shiny does not resend an unchanged select value. A shared default is
+      # already acknowledged; different old values still wait for the reset.
+      awaiting_ack <- !identical(shiny::isolate(input$link_sel), spec$default)
+      link_selection(list(model = model(), source = source(), link = spec$default,
+        awaiting_default_ack = awaiting_ack))
       shiny::updateSelectInput(session, "link_sel", choices = spec$choices, selected = spec$default)
     }, priority = 100)
     shiny::observeEvent(input$link_sel, {

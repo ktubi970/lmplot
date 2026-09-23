@@ -37,6 +37,8 @@ test_that("the image builds locked dependencies and starts Shiny without privile
   expect_match(text, "WORKDIR /srv/shiny-server/lmplot", fixed = TRUE)
   expect_match(text, "app_dir /srv/shiny-server/lmplot;", fixed = TRUE)
   expect_match(text, "http://127.0.0.1:3838/", fixed = TRUE)
+  expect_match(text, "HEALTHCHECK --interval=10s --timeout=65s --start-period=90s --retries=3", fixed = TRUE)
+  expect_match(text, "wget --quiet --tries=1 --timeout=60", fixed = TRUE)
   expect_match(text, "CMD [\"/usr/bin/shiny-server\"]", fixed = TRUE)
   expect_no_match(text, "LMPLOT_TRUSTED_LOCAL|8501|streamlit|\\bpip\\b|/init")
   copies <- grep("^COPY ", lines, value = TRUE)

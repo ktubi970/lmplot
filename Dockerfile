@@ -54,6 +54,6 @@ RUN printf '%s\n' \
 RUN printf '\nR_USER_CACHE_DIR=/tmp/R-cache\n' >> /usr/local/lib/R/etc/Renviron.site
 USER shiny
 EXPOSE 3838
-HEALTHCHECK --interval=10s --timeout=6s --start-period=30s --retries=6 \
-  CMD wget --quiet --tries=1 --timeout=5 --output-document=/dev/null http://127.0.0.1:3838/ || exit 1
+HEALTHCHECK --interval=10s --timeout=65s --start-period=90s --retries=3 \
+  CMD wget --quiet --tries=1 --timeout=60 --output-document=/dev/null http://127.0.0.1:3838/ || exit 1
 CMD ["/usr/bin/shiny-server"]

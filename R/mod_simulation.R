@@ -54,7 +54,11 @@ simulate_data <- function(model_type, link = NULL, n = 200L, seed = 123L,
     result <- data.frame(X = X, Y = Y, Z = Z, Group = Group)
   } else {
     family_object <- do.call(config$family, list(link = link))
-    mu <- family_object$linkinv(eta + nonlin_effect)
+    generating_eta <- eta + nonlin_effect
+    if (any(!valid_model_link_predictor(model_type, link, generating_eta))) {
+      stop("Selected link predictor is outside its valid domain", call. = FALSE)
+    }
+    mu <- family_object$linkinv(generating_eta)
     if (any(!is.finite(mu))) stop("Selected coefficients produce non-finite means", call. = FALSE)
     if (config$family == "binomial") {
       mu <- pmin(pmax(mu, .Machine$double.eps), 1 - .Machine$double.eps)

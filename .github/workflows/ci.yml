@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -144,9 +144,9 @@ jobs:
             --security-opt no-new-privileges:true --cap-drop ALL \
             --cpus 2 --memory 1g --memory-reservation 512m --pids-limit 256 \
             lmplot:0.10.0-beta.1
-          # 180 seconds exceeds the 30s start period + six 10s intervals
-          # and six 6s timeouts declared by the image.
-          for attempt in $(seq 1 90); do
+          # Include the 90s start period, three 65s cold-start probe budgets,
+          # and scheduling slack under the declared CPU/memory limits.
+          for attempt in $(seq 1 180); do
             running="$(docker inspect --format '{{.State.Running}}' lmplot-health)"
             status="$(docker inspect --format '{{.State.Health.Status}}' lmplot-health)"
             if [ "$running" != true ] || [ "$status" = unhealthy ]; then
@@ -155,10 +155,14 @@ jobs:
               exit 1
             fi
             if [ "$status" = healthy ]; then
-              docker exec lmplot-health wget --quiet --tries=1 --timeout=5 \
+              docker exec lmplot-health wget --quiet --tries=1 --timeout=60 \
                 --output-document=- http://127.0.0.1:3838/ > /tmp/lmplot-root.html
               grep -F 'LM Plot Explorer' /tmp/lmplot-root.html
               grep -F '0.10.0-beta.1' /tmp/lmplot-root.html
+              if docker logs lmplot-health 2>&1 | grep -F 'Error getting worker'; then
+                docker logs lmplot-health
+                exit 1
+              fi
               exit 0
             fi
             sleep 2

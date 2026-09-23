@@ -188,6 +188,10 @@ run_analysis_usecase <- function(request, services, root = ".") {
     diagnostics <- services$diagnostics(fit, data, model_type)
     collect(diagnostics$warnings %||% character())
     grid <- services$prediction_grid(data, fit, model_type, length_out = request$grid_length_out)
+    if (".available" %in% names(grid) && any(!grid$.available)) {
+      collect(paste(sum(!grid$.available),
+        "prediction grid points are unavailable outside the fitted link or response domain."))
+    }
     brain_labels <- labels
     if (!is.null(example)) brain_labels$z <- example$metadata$observed_response_label %||% labels$z
     brain <- services$build_model_brain(fit = fit, data = data, model_type = model_type,

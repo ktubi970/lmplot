@@ -74,6 +74,9 @@ overview_server <- function(id, result, generation = shiny::reactive(0L),
         paste('Points show', value$model_brain$labels$z, '; the fit shows', analysis_predicted_label(value), '.'),
         if (value$model_type == "glmm") "The surface is a population prediction without random intercepts." else "",
         paste('N =', value$model_brain$n, '; response unit:', value$model_brain$units$z %||% 'unit not specified'),
+        if (".available" %in% names(value$prediction_grid) && any(!value$prediction_grid$.available))
+          paste(sum(!value$prediction_grid$.available),
+            "prediction grid points unavailable outside the fitted link or response domain; gaps are not model predictions.") else "",
         if (value$model_type == 'glmm') 'Response-scale intervals are unavailable for this GLMM.' else
           'Available 95% mean-response confidence intervals are included in the observed data table; the grid is a point prediction.',
         if (isTRUE(input$show_surface %||% TRUE)) 'Fitted surface shown when applicable.' else 'Fitted surface hidden.',

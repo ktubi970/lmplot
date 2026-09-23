@@ -75,6 +75,46 @@ test_that("CLI returns the versioned complete result from any working directory"
   expect_false(grepl(':(NaN|-?Inf)([,}])', result$text))
 })
 
+test_that("serialized Brain contributions retain reconstructible precision", {
+  requests <- list(cli_payload(), list(schema_version = "lmplot-analysis-request/1.0",
+    data_source = "real", model_type = "glm_binomial", example_id = "adelie_sex"))
+  for (request in requests) {
+    result <- cli_process(request)
+    expect_identical(result$status, 0L, info = result$stderr)
+    observations <- result$json$model_brain$observations
+    violations <- character()
+    for (observation in observations) {
+      for (term in observation$contributions) {
+        reconstructed <- term$input * term$coefficient
+        tolerance <- max(1e-10, 1e-8 * abs(reconstructed))
+        if (abs(term$value - reconstructed) > tolerance) violations <- c(violations,
+          paste(observation$observation_id, term$term))
+      }
+      eta <- sum(vapply(observation$contributions, `[[`, numeric(1), "value")) +
+        observation$random_effect$value
+      if (abs(observation$eta - eta) > max(1e-10, 1e-8 * abs(eta))) violations <- c(violations,
+        paste(observation$observation_id, "eta"))
+    }
+    expect_true(length(violations) == 0L, info = paste(request$model_type,
+      paste(head(violations, 6L), collapse = ", ")))
+  }
+})
+
+test_that("CLI exports out-of-domain grid predictions as explained nulls", {
+  request <- list(schema_version = "lmplot-analysis-request/1.0",
+    data_source = "simulation", model_type = "glm_poisson", link = "identity",
+    simulation = list(n = 200L, seed = 123L, beta0 = 1, beta1 = .8, beta2 = 0))
+  result <- cli_process(request)
+  expect_identical(result$status, 0L, info = result$stderr)
+  missing <- Filter(function(row) !row$.available, result$json$prediction_grid)
+  expect_gt(length(missing), 0L)
+  expect_true(all(vapply(missing, function(row) is.null(row$.fitted) &&
+    is.character(row$.reason) && nzchar(row$.reason), logical(1))))
+  expect_match(paste(unlist(result$json$warnings), collapse = " "),
+    "prediction grid points are unavailable", fixed = TRUE)
+  expect_false(grepl(':(NaN|-?Inf)([,}])', result$text))
+})
+
 test_that("CLI classifies malformed and forbidden public requests", {
   cases <- list('{SECRET invalid json', '{"data_source":"simulation","model_type":"lm_2d"}',
     '{"schema_version":"wrong","data_source":"simulation","model_type":"lm_2d"}',

@@ -1,5 +1,21 @@
 source(file.path("..", "app.R"), local = TRUE)
 
+test_that("out-of-domain grid rows are explained in the committed result", {
+  request <- new_analysis_request(list(schema_version = "lmplot-analysis-request/1.0",
+    data_source = "simulation", model_type = "glm_poisson", link = "identity",
+    simulation = list(n = 200L, seed = 123L, beta0 = 1, beta1 = .8, beta2 = 0)))
+  result <- run_analysis_usecase(request, create_analysis_services(), "..")
+  expect_true(all(c(".available", ".reason") %in% names(result$prediction_grid)))
+  if (!all(c(".available", ".reason") %in% names(result$prediction_grid))) return()
+  expect_true(any(!result$prediction_grid$.available))
+  expect_match(paste(result$warnings, collapse = " "), "prediction grid", fixed = TRUE)
+  table <- analysis_chart_grid(result)
+  expect_true(all(nzchar(table$.reason[!table$.available])))
+  shiny::testServer(overview_server, args = list(result = shiny::reactiveVal(result)), {
+    expect_match(output$chart_summary, "prediction grid points unavailable", fixed = TRUE)
+  })
+})
+
 scientific_plot_specs <- list(
   adelie_flipper_mass = list(
     model_type = "lm_2d",

@@ -219,6 +219,8 @@ test_that("CI requires both locked R platforms and isolated Docker health", {
   expect_true(file.exists(path))
   if (!file.exists(path)) return(invisible(NULL))
   workflow <- yaml::read_yaml(path)
+  triggers <- workflow[[if ("on" %in% names(workflow)) "on" else "TRUE"]]
+  expect_true("master" %in% triggers$push$branches)
   r <- workflow$jobs[["r-check"]]
   expect_setequal(r$strategy$matrix$os, c("windows-latest", "ubuntu-latest"))
   setup <- Filter(function(x) identical(x$uses, "r-lib/actions/setup-r@v2"), r$steps)
@@ -238,7 +240,8 @@ test_that("CI requires both locked R platforms and isolated Docker health", {
   smoke <- paste(vapply(docker$steps, function(x) if (is.null(x$run)) "" else x$run, character(1)), collapse = "\n")
   for (value in c("--network none", "--read-only", "--cap-drop ALL", "--cpus 2",
       "--memory 1g", "--pids-limit 256", "no-new-privileges:true",
-      "LM Plot Explorer", "--format json", 'has("LMPLOT_TRUSTED_LOCAL")')) {
+      "LM Plot Explorer", "--format json", 'has("LMPLOT_TRUSTED_LOCAL")',
+      "Error getting worker")) {
     expect_match(smoke, value, fixed = TRUE)
   }
   for (path in c("/tmp", "/var/log/shiny-server", "/var/lib/shiny-server",

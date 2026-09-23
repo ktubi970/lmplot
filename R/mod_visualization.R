@@ -66,7 +66,7 @@ render_analysis_main_plot <- function(result, show_surface = TRUE, source = "ove
     grid <- result$prediction_grid
     plot <- plotly::add_lines(plot, x = grid$X, y = grid$.fitted, name = "Mean response",
       hovertemplate = paste0(labels$x, ': %{x:.3f}<br>', predicted_label, ': %{y:.3f}<extra>Mean response</extra>'),
-      line = list(color = '#92400e', dash = 'dash'), inherit = FALSE)
+      line = list(color = '#92400e', dash = 'dash'), connectgaps = FALSE, inherit = FALSE)
     plot <- plotly::layout(plot, xaxis = list(title = labels$x), yaxis = list(title = labels$z))
   } else {
     plot <- plotly::plot_ly(data, x = ~X, y = ~Y, z = ~Z, type = "scatter3d", mode = "markers",
@@ -139,9 +139,19 @@ prediction_grid <- function(df, fit, model_type,
     }
   }
 
-  grid$.fitted <- as.numeric(
-    predict_response(fit, grid, population = config$requires_group)
-  )
+  predicted <- as.numeric(predict_response(fit, grid, population = config$requires_group))
+  available <- is.finite(predicted)
+  if (inherits(fit, "glm")) {
+    eta <- as.numeric(stats::predict(fit, newdata = grid, type = "link"))
+    available <- available & valid_model_link_predictor(model_type, stats::family(fit)$link, eta)
+    if (config$family %in% c("poisson", "Gamma")) available <- available & predicted > 0
+    if (identical(config$family, "binomial")) available <- available &
+      predicted >= 0 & predicted <= 1
+  }
+  grid$.fitted <- ifelse(available, predicted, NA_real_)
+  grid$.available <- available
+  grid$.reason <- ifelse(available, NA_character_,
+    "Outside the fitted family's valid link or response domain.")
   grid
 }
 

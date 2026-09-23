@@ -108,7 +108,7 @@ encode_json_contract <- function(value) {
       abort_cli("cli_serialization_error", "The jsonlite package is unavailable.")
     }
     as.character(jsonlite::toJSON(sanitize_json_values(value), auto_unbox = TRUE,
-      null = "null", na = "null", digits = 8))
+      null = "null", na = "null", digits = NA))
   }, error = function(e) abort_cli("cli_serialization_error", e))
 }
 

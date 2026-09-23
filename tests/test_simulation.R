@@ -66,6 +66,12 @@ test_that("simulated responses respect their domains", {
   expect_gte(length(unique(mixed$Group)), 5L)
 })
 
+test_that("square-root count simulation rejects negative generating predictors", {
+  expect_error(simulate_data("glm_poisson", "sqrt", n = 200L, seed = 123L,
+    beta0 = -2, beta1 = .5, beta2 = -.25),
+    "link predictor is outside its valid domain", fixed = TRUE)
+})
+
 test_that("standard GLMM simulation enforces the group-count contract", {
   expect_error(
     simulate_data("glmm", "identity", n = 80L, groups = 2L),
