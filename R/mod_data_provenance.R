@@ -45,6 +45,17 @@ data_provenance_server <- function(id, result, successful_request = shiny::react
     displayed <- shiny::reactive({ shiny::req(result()); display_data(result()) })
     output$table <- DT::renderDT({ DT::datatable(displayed(), rownames = FALSE,
       filter = "top", options = list(pageLength = 10, scrollX = TRUE),
+      callback = DT::JS(
+        "var excludeSizingControls = function() {",
+        "  $(table.table().node()).children('thead').find('.dataTables_sizing')",
+        "    .find('input, select, textarea, button, [tabindex]')",
+        "    .prop('disabled', true).attr({'tabindex': '-1', 'aria-hidden': 'true'});",
+        "};",
+        "table.on('draw.dt.lmplotFilters column-sizing.dt.lmplotFilters', excludeSizingControls);",
+        "excludeSizingControls();",
+        "$(table.table().header()).find('input').on('focus.lmplotFilters', function() {",
+        "  this.scrollIntoView({behavior: 'instant', block: 'nearest', inline: 'nearest'});",
+        "});"),
       caption = paste('Committed observations.', analysis_prediction_context(result()),
         'Response unit:', result()$model_brain$units$z %||% 'unit not specified')) })
     output$download <- shiny::downloadHandler(filename = function() "lmplot-enriched-data.csv",
