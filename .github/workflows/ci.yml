@@ -77,7 +77,10 @@ jobs:
             print(browser$Browser$getVersion())
           })
           '@
-          Rscript -e $checks
+          # The Windows bin/Rscript.exe dispatcher truncates multiline -e input.
+          $checksPath = Join-Path $env:RUNNER_TEMP 'lmplot-ci-checks.R'
+          $checks | Set-Content -LiteralPath $checksPath -Encoding utf8
+          Rscript $checksPath
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run the complete R, CLI, and real-browser suite
@@ -92,7 +95,9 @@ jobs:
           print(evidence[c("file", "test", "failed", "error", "warning", "skipped", "passed")])
           stopifnot(!any(evidence$failed > 0L | evidence$error | evidence$skipped))
           '@
-          Rscript -e $tests
+          $testsPath = Join-Path $env:RUNNER_TEMP 'lmplot-ci-tests.R'
+          $tests | Set-Content -LiteralPath $testsPath -Encoding utf8
+          Rscript $testsPath
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
   docker-health:

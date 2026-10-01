@@ -88,7 +88,13 @@ test_that("Windows launcher fails without bootstrapping an absent project librar
   directory <- tempfile("launcher with spaces ")
   dir.create(directory)
   on.exit(unlink(directory, recursive = TRUE), add = TRUE)
-  file.copy(file.path(release_root, "run.bat"), directory)
+  # Hosted Windows installs R outside the launcher's standard local path.
+  # Change only the runtime path in this fixture; execute the real guard below.
+  rscript <- normalizePath(file.path(R.home("bin"), "Rscript.exe"),
+    winslash = "/", mustWork = TRUE)
+  launcher <- sub("C:\\Program Files\\R\\R-4.6.0\\bin\\x64\\Rscript.exe",
+    rscript, launcher, fixed = TRUE)
+  writeLines(launcher, file.path(directory, "run.bat"))
   # --vanilla must prevent this project startup profile from executing.
   writeLines("stop('UNEXPECTED_PROFILE_EXECUTION')", file.path(directory, ".Rprofile"))
   output <- suppressWarnings(system2(Sys.getenv("COMSPEC", "cmd.exe"),
