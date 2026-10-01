@@ -237,7 +237,7 @@ test_that("CI requires both locked R platforms and isolated Docker health", {
   expect_match(commands, "isTRUE(renv::status()$synchronized)", fixed = TRUE)
   expect_match(commands, "CHROMOTE_CHROME", fixed = TRUE)
   expect_match(commands, "$LASTEXITCODE", fixed = TRUE)
-  expect_match(commands, "testthat::test_dir('tests', reporter='summary')", fixed = TRUE)
+  expect_match(commands, "testthat::test_dir('tests', reporter='summary', stop_on_failure=FALSE)", fixed = TRUE)
   docker <- workflow$jobs[["docker-health"]]
   expect_identical(docker$needs, "r-check")
   expect_identical(docker[["runs-on"]], "ubuntu-latest")

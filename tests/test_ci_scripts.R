@@ -44,3 +44,43 @@ test_that("both CI R steps execute later lines and propagate their failure on Wi
     expect_identical(as.integer(attr(output, "status")), 1L, info = details)
   }
 })
+
+test_that("CI saves complete test evidence before failing for errors or skipped tests", {
+  workflow <- yaml::read_yaml(file.path("..", ".github", "workflows", "ci.yml"))
+  steps <- Filter(function(step) !is.null(step$run) &&
+    grepl("(?m)^\\$tests\\s*=\\s*@'\\r?$", step$run, perl = TRUE),
+    workflow$jobs[["r-check"]]$steps)
+  expect_length(steps, 1L)
+  lines <- strsplit(steps[[1L]]$run, "\n", fixed = TRUE)[[1L]]
+  payload <- lines[seq.int(grep("@'\\r?$", lines) + 1L, grep("^'@\\r?$", lines) - 1L)]
+  script <- file.path(withr::local_tempdir(), "ci-evidence.R")
+  libraries <- paste(capture.output(dput(.libPaths())), collapse = "\n")
+  writeLines(c(paste0(".libPaths(", libraries, ")"), payload), script)
+
+  for (case in c("passed", "failed", "error", "skipped")) {
+    directory <- withr::local_tempdir(pattern = paste0("ci-evidence-", case))
+    dir.create(file.path(directory, "tests"))
+    expression <- switch(case,
+      passed = "expect_true(TRUE)", failed = "expect_true(FALSE)",
+      error = "stop('intentional fixture error')", skipped = "skip('intentional fixture skip')")
+    writeLines(c("test_that('passing control', { expect_equal(2 + 2, 4) })",
+      paste0("test_that('", case, " fixture', { ", expression, " })")),
+      file.path(directory, "tests", "test_fixture.R"))
+    output <- withr::with_dir(directory, withr::with_envvar(c(RUNNER_TEMP = directory),
+      suppressWarnings(system2(file.path(R.home("bin"),
+        if (.Platform$OS.type == "windows") "Rscript.exe" else "Rscript"),
+        c("--vanilla", shQuote(script)), stdout = TRUE, stderr = TRUE))))
+    status <- attr(output, "status")
+    if (is.null(status)) status <- 0L
+    expect_identical(as.integer(status), if (case == "passed") 0L else 1L,
+      info = paste(case, paste(output, collapse = "\n")))
+    path <- file.path(directory, "lmplot-test-evidence", "results.csv")
+    expect_true(file.exists(path), info = case)
+    if (!file.exists(path)) next
+    evidence <- read.csv(path)
+    expect_identical(evidence$test, c("passing control", paste(case, "fixture")))
+    expect_identical(evidence$failed > 0L, c(FALSE, case == "failed"))
+    expect_identical(evidence$error, c(FALSE, case == "error"))
+    expect_identical(evidence$skipped, c(FALSE, case == "skipped"))
+  }
+})

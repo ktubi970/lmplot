@@ -90,15 +90,38 @@ jobs:
           LMPLOT_TRUSTED_LOCAL: ''
         run: |
           $tests = @'
-          results <- testthat::test_dir('tests', reporter='summary')
+          results <- testthat::test_dir('tests', reporter='summary', stop_on_failure=FALSE)
           evidence <- as.data.frame(results)
-          print(evidence[c("file", "test", "failed", "error", "warning", "skipped", "passed")])
+          evidence <- evidence[c("file", "test", "failed", "error", "warning", "skipped", "passed")]
+          evidence_dir <- file.path(Sys.getenv("RUNNER_TEMP", unset=tempdir()), "lmplot-test-evidence")
+          dir.create(evidence_dir, recursive=TRUE, showWarnings=FALSE)
+          write.csv(evidence, file.path(evidence_dir, "results.csv"), row.names=FALSE)
+          print(evidence)
           stopifnot(!any(evidence$failed > 0L | evidence$error | evidence$skipped))
           '@
           $testsPath = Join-Path $env:RUNNER_TEMP 'lmplot-ci-tests.R'
           $tests | Set-Content -LiteralPath $testsPath -Encoding utf8
           Rscript $testsPath
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Diagnose Windows browser failure without changing test deadlines
+        if: failure() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $evidencePath = Join-Path $env:RUNNER_TEMP 'lmplot-test-evidence'
+          New-Item -ItemType Directory -Force -Path $evidencePath | Out-Null
+          Rscript scripts/ci_browser_diagnostic.R *> (Join-Path $evidencePath 'browser-diagnostic.log')
+          $diagnosticExit = $LASTEXITCODE
+          Get-Content -LiteralPath (Join-Path $evidencePath 'browser-diagnostic.log')
+          exit $diagnosticExit
+
+      - name: Preserve test results and browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-evidence-${{ matrix.os }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lmplot-test-evidence/
+          if-no-files-found: warn
 
   docker-health:
     name: Docker build and egress-blocked application health
