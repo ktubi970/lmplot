@@ -1,4 +1,14 @@
 # Build boundary: only these reviewed runtime files may enter the public site.
+shinylive_paths_in_root <- function(paths, root,
+    case_insensitive = .Platform$OS.type == "windows") {
+  prefix <- paste0(root, "/")
+  if (case_insensitive) {
+    paths <- tolower(paths)
+    prefix <- tolower(prefix)
+  }
+  startsWith(paths, prefix)
+}
+
 stage_shinylive_app <- function(root, stage) {
   root <- normalizePath(root, winslash = "/", mustWork = TRUE)
   if (file.exists(stage) && (!dir.exists(stage) ||
@@ -31,8 +41,8 @@ stage_shinylive_app <- function(root, stage) {
   }
   # Resolve symlinks/junctions before copying: an allowed name is not enough.
   real_paths <- as.character(fs::path_real(source_paths))
-  real_root <- paste0(as.character(fs::path_real(root)), "/")
-  if (any(!startsWith(tolower(real_paths), tolower(real_root)))) {
+  real_root <- as.character(fs::path_real(root))
+  if (any(!shinylive_paths_in_root(real_paths, real_root))) {
     stop("Runtime files must resolve inside the application root.", call. = FALSE)
   }
   dir.create(stage, recursive = TRUE, showWarnings = FALSE)

@@ -59,3 +59,32 @@ test_that("a missing required runtime file aborts before creating the bundle", {
   expect_error(stage_shinylive_app(root, stage), "Missing.*runtime")
   expect_false(dir.exists(stage))
 })
+
+test_that("containment respects case on Linux and component boundaries everywhere", {
+  paths <- c("/work/lmplot/R/config.R", "/work/LMPlot/secret.csv", "/work/lmplot-extra/secret.csv")
+  expect_identical(shinylive_paths_in_root(paths, "/work/lmplot", case_insensitive = FALSE),
+                   c(TRUE, FALSE, FALSE))
+  expect_identical(shinylive_paths_in_root(paths, "/work/lmplot", case_insensitive = TRUE),
+                   c(TRUE, TRUE, FALSE))
+})
+
+test_that("an external runtime directory link is rejected before writing an export", {
+  fixture <- tempfile("shinylive-linked-source-")
+  root <- file.path(fixture, "lmplot")
+  # Linux exercises the case-differing sibling that previously leaked files.
+  external <- file.path(fixture, if (.Platform$OS.type == "windows") "outside" else "LMPlot")
+  stage <- tempfile("shinylive-output-")
+  on.exit(unlink(c(fixture, stage), recursive = TRUE), add = TRUE)
+  stage_shinylive_app("..", root)
+  expect_true(file.rename(file.path(root, "R"), external))
+  if (.Platform$OS.type == "windows") {
+    quote_ps <- function(path) paste0("'", gsub("'", "''", path, fixed = TRUE), "'")
+    command <- paste("New-Item -ItemType Junction -Path", quote_ps(file.path(root, "R")),
+                     "-Target", quote_ps(external), "| Out-Null")
+    expect_equal(system2("powershell.exe", c("-NoProfile", "-Command", shQuote(command))), 0L)
+  } else {
+    expect_true(file.symlink(external, file.path(root, "R")))
+  }
+  expect_error(stage_shinylive_app(root, stage), "inside the application root")
+  expect_false(dir.exists(stage))
+})

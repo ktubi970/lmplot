@@ -12,6 +12,7 @@ test_that("browser downloads remove Chromium's service worker bypass attribute",
   links <- htmltools::tagQuery(adapted)$find("a.shiny-download-link")$selectedTags()
   expect_length(links, 2L)
   expect_false(any(vapply(links, function(tag) "download" %in% names(tag$attribs), logical(1))))
+  expect_false(any(vapply(links, function(tag) "target" %in% names(tag$attribs), logical(1))))
   expect_true(grepl('download="example.csv"', html, fixed = TRUE))
   expect_true(grepl('id="data-download"', html, fixed = TRUE))
   expect_true(grepl('id="chart-download"', html, fixed = TRUE))

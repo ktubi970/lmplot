@@ -4,5 +4,6 @@
 adapt_browser_downloads <- function(ui,
     browser_runtime = grepl("^wasm32-", R.version$platform)) {
   if (!browser_runtime) return(ui)
-  htmltools::tagQuery(ui)$find("a.shiny-download-link")$removeAttrs("download")$allTags()
+  # Keep the request in the app's frame; the response triggers the file download.
+  htmltools::tagQuery(ui)$find("a.shiny-download-link")$removeAttrs(c("download", "target"))$allTags()
 }

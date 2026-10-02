@@ -40,7 +40,7 @@ Check the actual exported application in Chromium, including a repository-style 
 
 The site bundles WASM dependencies. The first visit downloads R and application packages and can take tens of seconds or longer on a slow connection. The complete artifact is around 133 MB in the initial build; not all of it is required for every page. A browser with JavaScript, WebAssembly and service-worker support is needed. The offline helper that creates static PNGs through Chrome remains a native build tool, not a browser feature.
 
-Shinylive downloads use Shiny's normal response headers for the filename. In WASM only, `R/browser_compatibility.R` removes the HTML `download` attribute from Shiny links, following the [official Chromium service-worker workaround](https://shiny.posit.co/r/components/inputs/download-button/). Native Shiny links are unchanged.
+Shinylive downloads use Shiny's normal response headers for the filename. In WASM only, `R/browser_compatibility.R` removes the HTML `download` attribute from Shiny links, following the [official Chromium service-worker workaround](https://shiny.posit.co/r/components/inputs/download-button/). It also keeps downloads in the application frame rather than opening a new tab. Native Shiny links are unchanged.
 
 ## Publish only the export
 
