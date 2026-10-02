@@ -209,6 +209,7 @@ sim_server <- function(id, model_type, link, trusted_local = FALSE) {
       }
       do.call(shiny::tagList, controls)
     })
+    shiny::outputOptions(output, "controls_ui", suspendWhenHidden = FALSE)
 
     shiny::reactive({
       parameters <- list(

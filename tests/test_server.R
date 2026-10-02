@@ -49,32 +49,40 @@ test_that("service and logger failure preserves results; first failure is not st
   })
 })
 
-test_that("app generates only on submission and drafts preserve downloads", {
+test_that("automatic app updates replace data only after the next analysis succeeds", {
   expect_true(exists("create_app_coordinator"))
   if (!exists("create_app_coordinator")) return()
   shiny::testServer(server, {
-    session$setInputs(`configuration-model_type` = "glm_binomial_2d", `configuration-data_source` = "simulation")
+    session$setInputs(`configuration-model_type` = "glm_binomial_2d", `configuration-data_source` = "simulation",
+      `configuration-link_sel` = "logit")
     expect_true(exists("coordinator"))
-    expect_null(coordinator$result())
-    session$setInputs(`configuration-simulation-n` = 40L, `configuration-generate` = 1L)
+    expect_identical(coordinator$result()$model_type, "glm_binomial_2d")
+    expect_equal(nrow(coordinator$result()$data), 200L)
+    session$setInputs(`configuration-simulation-n` = 40L)
+    session$elapse(350)
     previous <- coordinator$result()
     expect_identical(previous$model_type, "glm_binomial_2d")
     csv <- read.csv(output$`data_provenance-download`)
     session$setInputs(`configuration-model_type` = "glm_gamma", `configuration-simulation-n` = 90L)
     expect_identical(coordinator$result(), previous)
     expect_identical(read.csv(output$`data_provenance-download`), csv)
+    session$setInputs(`configuration-link_sel` = "inverse")
+    session$elapse(350)
+    expect_identical(coordinator$result()$model_type, "glm_gamma")
+    expect_equal(nrow(read.csv(output$`data_provenance-download`)), 90L)
   })
 })
 
 test_that("all registered models and real examples use the canonical workflow", {
   shiny::testServer(server, {
     session$flushReact()
-    count <- 0L
+    simulation_links <- c(lm_2d = "identity", lm_3d = "identity", glm_binomial_2d = "logit",
+      glm_binomial = "logit", glm_poisson = "log", glm_gamma = "inverse", glmm = "identity")
     for (source in c("simulation", "real")) for (id in model_ids()) {
-      count <- count + 1L
       session$setInputs(`configuration-model_type` = id, `configuration-data_source` = source,
         `configuration-simulation-n` = 40L)
-      session$setInputs(`configuration-generate` = count)
+      session$setInputs(`configuration-link_sel` = if (source == "real" && id == "glm_gamma") "log" else simulation_links[[id]])
+      session$elapse(350)
       value <- coordinator$result()
       expect_identical(value$model_type, id, info = paste(source, id))
       expect_identical(is.null(value$example), source == "simulation")
@@ -97,14 +105,15 @@ test_that("trusted Expert runs only through the boundary and invalid GLMM retain
   shiny::testServer(app$server, {
     session$flushReact()
     session$setInputs(`configuration-model_type` = "lm_2d", `configuration-data_source` = "simulation",
+      `configuration-link_sel` = "identity",
       `configuration-simulation-n` = 40L, `configuration-simulation-expert_mode` = TRUE,
       `configuration-simulation-code` = "simulate_data('lm_2d', n = n, seed = seed)")
-    session$setInputs(`configuration-generate` = 1L)
+    session$elapse(350)
     previous <- coordinator$result(); expect_equal(nrow(previous$data), 40)
     csv <- read.csv(output$`data_provenance-download`)
     session$setInputs(`configuration-model_type` = "glmm",
       `configuration-simulation-code` = "data.frame(X=1:40, Y=1:40, Z=1:40, Group=rep(1:4,10))")
-    log <- capture.output(session$setInputs(`configuration-generate` = 2L), type = "message")
+    log <- capture.output(session$elapse(350), type = "message")
     expect_match(paste(log, collapse = " "), "at least 5 observed groups")
     expect_identical(coordinator$result(), previous)
     expect_identical(read.csv(output$`data_provenance-download`), csv)

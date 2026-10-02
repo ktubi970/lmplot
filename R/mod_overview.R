@@ -1,14 +1,20 @@
 overview_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(shiny::h2("Overview"), shiny::uiOutput(ns("metrics")),
-    shiny::uiOutput(ns("surface_ui")), shiny::div(class = "analysis-chart", role = "region", `aria-label` = "Observed responses and model fit",
-      `aria-describedby` = ns("chart_summary"), plotly::plotlyOutput(ns("main_plot"))),
-    shiny::textOutput(ns("chart_summary")),
-    shiny::tags$details(shiny::tags$summary("View observed response data"), shiny::uiOutput(ns("observations_table"))),
-    shiny::downloadLink(ns("observations_download"), "Download observed response data (CSV)"),
-    shiny::tags$details(shiny::tags$summary("View prediction grid data"), shiny::uiOutput(ns("grid_table"))),
-    shiny::downloadLink(ns("grid_download"), "Download prediction grid data (CSV)"), shiny::h3("Coefficient estimates"),
-    shiny::tableOutput(ns("coefficients")), shiny::textOutput(ns("variable_mapping")),
+    shiny::tags$section(class = "chart-section", `aria-labelledby` = ns("plot_heading"),
+      shiny::div(class = "chart-heading", shiny::h3(id = ns("plot_heading"), "Observed responses & model fit"),
+        shiny::uiOutput(ns("surface_ui"))),
+      shiny::div(class = "analysis-chart", role = "region", `aria-label` = "Observed responses and model fit",
+        `aria-describedby` = ns("chart_summary"), plotly::plotlyOutput(ns("main_plot"), height = "420px")),
+      shiny::tags$details(class = "chart-details", shiny::tags$summary("Details & data"),
+        shiny::textOutput(ns("chart_summary")),
+        shiny::tags$details(shiny::tags$summary("Observed responses"), shiny::uiOutput(ns("observations_table"))),
+        shiny::downloadLink(ns("observations_download"), "Download observations (CSV)"),
+        shiny::tags$details(shiny::tags$summary("Prediction grid"), shiny::uiOutput(ns("grid_table"))),
+        shiny::downloadLink(ns("grid_download"), "Download prediction grid (CSV)"))),
+    shiny::tags$details(class = "view-details", shiny::tags$summary("Coefficients & model comparison"),
+      shiny::tableOutput(ns("coefficients")), shiny::textOutput(ns("variable_mapping")),
+      shiny::p(COMPARISON_CRITERIA_DESCRIPTION)),
     guided_interpretation_ui(ns("guided_interpretation")))
 }
 
@@ -39,15 +45,14 @@ overview_server <- function(id, result, generation = shiny::reactive(0L),
     shiny::observeEvent(input$observation_selection, select_observation(input$observation_selection))
     output$metrics <- shiny::renderUI({
       value <- result()
-      if (is.null(value)) return(shiny::p("No analysis yet. Choose settings and select Generate & fit model."))
+      if (is.null(value)) return(shiny::p("No analysis yet. Select a model to begin."))
       labels <- c(sample_size = "Sample size (N)", r_squared = "R-squared", adjusted_r_squared = "Adjusted R-squared",
         deviance_explained = "Deviance explained", pearson_dispersion = "Pearson dispersion",
         population_prediction_correlation_squared = "Fixed-effects correlation-squared",
         conditional_prediction_correlation_squared = "Conditional correlation-squared", aic = "AIC", bic = "BIC")
       keys <- intersect(names(labels), names(value$metrics))
-      shiny::tagList(shiny::h3("Metrics"), shiny::tags$dl(lapply(keys, function(key) shiny::tagList(
-        shiny::tags$dt(labels[[key]]), shiny::tags$dd(format(value$metrics[[key]], digits = 7))))),
-        shiny::p(COMPARISON_CRITERIA_DESCRIPTION))
+      shiny::tags$dl(class = "metric-grid", lapply(keys, function(key) shiny::div(class = "metric-item",
+        shiny::tags$dt(labels[[key]]), shiny::tags$dd(format(value$metrics[[key]], digits = 7)))))
     })
     output$surface_ui <- shiny::renderUI({
       value <- result(); if (is.null(value) || model_config(value$model_type)$dimensions == 2L) return(NULL)
@@ -82,6 +87,7 @@ overview_server <- function(id, result, generation = shiny::reactive(0L),
         if (isTRUE(input$show_surface %||% TRUE)) 'Fitted surface shown when applicable.' else 'Fitted surface hidden.',
         "Select an observed point to explore it in Model Brain; keyboard selection is available there.")
     })
+    shiny::outputOptions(output, "chart_summary", suspendWhenHidden = FALSE)
     observation_data <- shiny::reactive({ shiny::req(result()); analysis_chart_observations(result()) })
     output$observations_table <- shiny::renderUI(accessible_data_table(observation_data(), 'Observed responses and fitted values'))
     output$observations_download <- shiny::downloadHandler(filename = function() 'lmplot-observations.csv',
@@ -89,6 +95,8 @@ overview_server <- function(id, result, generation = shiny::reactive(0L),
     output$grid_table <- shiny::renderUI({ shiny::req(result()); accessible_data_table(analysis_chart_grid(result()), 'Mean-response prediction grid') })
     output$grid_download <- shiny::downloadHandler(filename = function() 'lmplot-prediction-grid.csv',
       content = function(file) { shiny::req(result()); write_chart_csv(analysis_chart_grid(result()), file) })
+    shiny::outputOptions(output, "observations_download", suspendWhenHidden = FALSE)
+    shiny::outputOptions(output, "grid_download", suspendWhenHidden = FALSE)
     output$coefficients <- shiny::renderTable({ shiny::req(result());
       table <- result()$coefficients
       table$units <- brain_term_units(table$term, result()$model_brain$units)

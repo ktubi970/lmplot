@@ -14,7 +14,6 @@ test_that("same-default model switch fits the link selected in the browser", {
     `configuration-simulation-n` = 80L,
     `configuration-simulation-seed` = 12L)
   expect_identical(app$get_value(input = "configuration-link_sel"), "probit")
-  app$click("configuration-generate")
   app$wait_for_idle()
   app$click("overview-guided_interpretation-show")
   app$wait_for_js("document.querySelector('#overview-guided_interpretation-content .card-body') !== null")

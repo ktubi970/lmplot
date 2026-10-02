@@ -1,15 +1,16 @@
 diagnostics_ui <- function(id) {
   ns <- shiny::NS(id)
-  shiny::tagList(shiny::h2("Diagnostics"), shiny::h3(shiny::textOutput(ns("heading"))),
-    shiny::textOutput(ns("summary")), shiny::tableOutput(ns("checks")),
-    shiny::uiOutput(ns('guidance')),
-    shiny::textOutput(ns('chart_summary')),
-    shiny::div(class = "analysis-chart", role = 'region', `aria-label` = 'Response residuals versus fitted values',
-      `aria-describedby` = ns('chart_summary'), plotly::plotlyOutput(ns("plot"))),
-    shiny::tags$details(shiny::tags$summary('View residual chart data'), shiny::uiOutput(ns('chart_table'))),
-    shiny::downloadLink(ns('chart_download'), 'Download residual chart data (CSV)'),
-    shiny::p("Response residuals are observed minus fitted responses. Patterns invite investigation; they do not prove model adequacy."),
-    shiny::p("The enriched CSV in Data & provenance contains the plotted fitted values and response residuals."))
+  shiny::tagList(shiny::h2("Diagnostics"), shiny::uiOutput(ns('guidance')),
+    shiny::tags$section(class = "chart-section", `aria-labelledby` = ns("plot_heading"),
+      shiny::div(class = "chart-heading", shiny::h3(id = ns("plot_heading"), "Residuals vs fitted responses")),
+      shiny::div(class = "analysis-chart", role = 'region', `aria-label` = 'Response residuals versus fitted values',
+        `aria-describedby` = ns('chart_summary'), plotly::plotlyOutput(ns("plot"), height = "420px")),
+      shiny::tags$details(class = "chart-details", shiny::tags$summary('Details & data'),
+        shiny::textOutput(ns('chart_summary')), shiny::uiOutput(ns('chart_table')),
+        shiny::downloadLink(ns('chart_download'), 'Download residuals (CSV)'))),
+    shiny::tags$details(id = ns("checks_details"), class = "view-details", shiny::tags$summary("Diagnostic checks"),
+      shiny::h3(shiny::textOutput(ns("heading"))), shiny::textOutput(ns("summary")), shiny::tableOutput(ns("checks")),
+      shiny::p("Patterns invite investigation; they do not prove model adequacy.")))
 }
 
 diagnostics_check_table <- function(diagnostics) {
@@ -42,7 +43,8 @@ diagnostics_server <- function(id, result, render_diagnostics = render_analysis_
         'Near-boundary probabilities; inspect sparse outcomes, separation and coefficient uncertainty.',
         'Singular fit: a random-effect variance is at or near its boundary (tolerance 1e-4).')
       guidance <- intersect(result()$diagnostics$warnings, known)
-      if (length(guidance)) shiny::tagList(shiny::h3('Diagnostic guidance'), shiny::tags$ul(lapply(guidance, shiny::tags$li)))
+      if (length(guidance)) shiny::div(class = "diagnostic-guidance", role = "note",
+        shiny::tags$ul(lapply(guidance, shiny::tags$li)))
     })
     output$chart_summary <- shiny::renderText({
       shiny::req(result()); paste('Response residuals versus fitted responses; N =', result()$model_brain$n,
@@ -51,9 +53,11 @@ diagnostics_server <- function(id, result, render_diagnostics = render_analysis_
         analysis_prediction_context(result()),
         result()$diagnostics$summary)
     })
+    shiny::outputOptions(output, "chart_summary", suspendWhenHidden = FALSE)
     data <- shiny::reactive({ shiny::req(result()); analysis_chart_observations(result()) })
     output$chart_table <- shiny::renderUI(accessible_data_table(data(), 'Response residuals versus fitted values'))
     output$chart_download <- shiny::downloadHandler(filename = function() 'lmplot-residuals.csv',
       content = function(file) write_chart_csv(data(), file))
+    shiny::outputOptions(output, "chart_download", suspendWhenHidden = FALSE)
   })
 }

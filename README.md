@@ -6,6 +6,11 @@ uses bundled scientific examples and deterministic simulation. This is a beta
 release candidate; publication remains subject to the gates in
 [CHANGELOG.md](CHANGELOG.md).
 
+Selecting a model, source, link or simulation setting automatically updates the
+analysis. Rapid changes are coalesced, and the last successful result remains
+available if a setting fails. Plots are shown first; explanations, coefficient
+tables, chart data and provenance can be expanded when needed.
+
 ## Run locally
 
 Requires R 4.6.0. From the project root, run the explicit network-enabled

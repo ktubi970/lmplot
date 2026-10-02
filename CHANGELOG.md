@@ -30,6 +30,14 @@ Complete the release gates below before tagging or deploying publicly.
 
 ### Changed / breaking
 
+- Model, source, link and simulation settings now trigger analysis automatically
+  instead of requiring a Generate & fit button. Equivalent numeric input
+  acknowledgements do not repeat a fit; failed updates retain the last result.
+- Views put charts or data first, use compact metrics and consistent chart
+  sections, and collapse supporting explanations. Model Brain aligns related
+  plots and supports keyboard conditional/population selection with a native
+  control.
+
 - Shiny is the only supported application runtime, using port 3838. The former
   Streamlit/Python runtime and port 8501 entrypoints are removed.
 - Public inputs are limited to bundled teaching examples and deterministic

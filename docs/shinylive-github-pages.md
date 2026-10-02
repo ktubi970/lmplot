@@ -31,9 +31,9 @@ Serve the directory using `httpuv::runStaticServer(".superpowers/shinylive-site"
 
 Check the actual exported application in Chromium, including a repository-style URL subpath:
 
-1. Generate a simulated LM and inspect metrics and the main Plotly chart.
-2. Inspect Diagnostics and Model Brain; change the selected observation.
-3. Generate each GLM family and a Gaussian GLMM; verify fit status and model labels.
+1. Start the app and inspect the automatically fitted simulated LM, compact metrics and main Plotly chart.
+2. Inspect Diagnostics and Model Brain; change the selected observation and use the keyboard to select a GLMM prediction mode.
+3. Select each GLM family and a Gaussian GLMM; verify the automatic update, fit status and model labels.
 4. Load the prepared real examples, especially the 65-school mixed model.
 5. Download the enriched CSV from Data & provenance and verify its rows and fitted/residual columns.
 6. Reload the site and check that runtime files and packages load successfully.
@@ -42,9 +42,9 @@ The site bundles WASM dependencies. The first visit downloads R and application 
 
 Shinylive downloads use Shiny's normal response headers for the filename. In WASM only, `R/browser_compatibility.R` removes the HTML `download` attribute from Shiny links, following the [official Chromium service-worker workaround](https://shiny.posit.co/r/components/inputs/download-button/). It also keeps downloads in the application frame rather than opening a new tab. Native Shiny links are unchanged.
 
-The 2026-10-02 build was checked in Chromium at a repository-style URL subpath: all seven simulated models, all seven real examples (151, 425, 146, 146, 4,177, 270 and 4,059 rows), a completed 4,059-row enriched CSV with finite fitted values/residuals, and a fresh page reload passed. Real examples can correctly finish with statistical warnings; this is a successful fit with diagnostic limitations, not a runtime failure. Diagnostics and Model Brain were also exercised interactively. These checks do not establish support for every browser or operation without a network connection.
+The 2026-10-02 interface revision was checked in Chromium at a repository-style URL subpath: automatic startup, all seven simulated models, all seven real examples (151, 425, 146, 146, 4,177, 270 and 4,059 rows), a completed 4,059-row enriched CSV with finite fitted values/residuals, and a fresh page reload passed. The main chart is visible above the fold at 1440 × 1050; Model Brain aligns its contribution and link plots and supports keyboard population selection. Real examples can correctly finish with statistical warnings; this is a successful fit with diagnostic limitations, not a runtime failure. Diagnostics and Model Brain were also exercised interactively. These checks do not establish support for every browser or operation without a network connection.
 
-The native reviewed-code suite passed 184 tests and 11,811 expectations with no failures, errors or skips. The private PR checks passed on Windows, Linux and the Docker application-health job. The manual Shinylive workflow and a live GitHub Pages deployment still need their own verification; local export success does not prove those remote steps.
+The native suite for this interface revision passed 188 tests and 11,858 expectations with no failures, errors or skips. It covers automatic updates, equivalent numeric acknowledgements, link compatibility, retained results after failure, recovery, exports and keyboard behavior. Check the current private PR's Windows, Linux and Docker application-health results before merging. The manual Shinylive workflow and a live GitHub Pages deployment still need their own verification; local export success does not prove those remote steps. Publication remains on hold for presentation review and a source-visibility decision.
 
 ## Publish only the export
 

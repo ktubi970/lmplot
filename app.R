@@ -45,10 +45,8 @@ ui <- adapt_browser_downloads(ui)
 server <- function(input, output, session) {
   coordinator <- create_app_coordinator(services, trusted_local, app_root)
   config <- configuration_server("configuration", trusted_local, app_root)
-  shiny::observeEvent(config$generate(), {
-    coordinator$analyze(config$payload())
-  }, ignoreInit = TRUE, ignoreNULL = TRUE)
-  coordinator_status_server("analysis_status", coordinator)
+  automatic <- bind_automatic_analysis(config, coordinator)
+  coordinator_status_server("analysis_status", coordinator, automatic$pending)
   overview <- overview_server("overview", coordinator$result, coordinator$generation)
   diagnostics_server("diagnostics", coordinator$result)
   data_provenance_server("data_provenance", coordinator$result, coordinator$successful_request)
