@@ -42,6 +42,10 @@ The site bundles WASM dependencies. The first visit downloads R and application 
 
 Shinylive downloads use Shiny's normal response headers for the filename. In WASM only, `R/browser_compatibility.R` removes the HTML `download` attribute from Shiny links, following the [official Chromium service-worker workaround](https://shiny.posit.co/r/components/inputs/download-button/). It also keeps downloads in the application frame rather than opening a new tab. Native Shiny links are unchanged.
 
+The 2026-10-02 build was checked in Chromium at a repository-style URL subpath: all seven simulated models, all seven real examples (151, 425, 146, 146, 4,177, 270 and 4,059 rows), a completed 4,059-row enriched CSV with finite fitted values/residuals, and a fresh page reload passed. Real examples can correctly finish with statistical warnings; this is a successful fit with diagnostic limitations, not a runtime failure. Diagnostics and Model Brain were also exercised interactively. These checks do not establish support for every browser or operation without a network connection.
+
+The native reviewed-code suite passed 184 tests and 11,811 expectations with no failures, errors or skips. The private PR checks passed on Windows, Linux and the Docker application-health job. The manual Shinylive workflow and a live GitHub Pages deployment still need their own verification; local export success does not prove those remote steps.
+
 ## Publish only the export
 
 For free GitHub Pages hosting, use a separate **public** repository such as `lmplot-demo`, keeping the original source repository private. Public hosting exposes the application source included in `app.json`; obtain an explicit decision before creating that public copy when the source project is private.

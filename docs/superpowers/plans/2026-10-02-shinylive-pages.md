@@ -12,9 +12,9 @@
 
 ## Task 1: Safe, repeatable export
 
-- [ ] Write behavior tests for the staging allowlist, complete runtime assets, rejected manifest traversal, and nonempty output protection; run them red.
-- [ ] Implement staging and export entry points; run tests green.
-- [ ] Install the export tool in a separate local library; inspect WASM package support and produce the static output.
+- [x] Write behavior tests for the staging allowlist, complete runtime assets, rejected manifest traversal, and nonempty output protection; run them red.
+- [x] Implement staging and export entry points; run tests green.
+- [x] Install the export tool in a separate local library; inspect WASM package support and produce the static output.
 
 **Interfaces:** `stage_shinylive_app(root, stage)` returns an app directory containing only runtime sources, stylesheet, prepared examples and their attribution. The exporter consumes that directory and writes a new destination directory.
 
@@ -22,17 +22,17 @@
 
 ## Task 2: Browser compatibility and deployment recipe
 
-- [ ] Serve the output locally and exercise startup, LM, GLM, GLMM, real examples, tabs and CSV download in Chromium.
-- [ ] Fix observed compatibility defects with focused regression tests.
-- [ ] Add reproducible build and GitHub Pages publication instructions, including the private repository constraint.
-- [ ] Run the native R suite and export checks, preserve evidence.
+- [x] Serve the output locally and exercise startup, LM, GLM, GLMM, real examples, tabs and CSV download in Chromium.
+- [x] Fix observed compatibility defects with focused regression tests.
+- [x] Add reproducible build and GitHub Pages publication instructions, including the private repository constraint.
+- [x] Run the native R suite and export checks, preserve evidence.
 
 **Verification:** Fresh native test suite and observed browser results. Document any unsupported behavior and stop publication if core models fail.
 
 ## Task 3: Review and publication
 
-- [ ] Request one fresh review of the complete change; address important findings.
-- [ ] Prepare a concrete separate export repository and request approval only if exposing new public content requires a user decision.
+- [x] Request one fresh review of the complete change; address important findings.
+- [x] Prepare a concrete separate export repository and request approval only if exposing new public content requires a user decision.
 - [ ] Publish when authorized, verify the live URL, and report exact status and evidence.
 
 **Review focus:** Unintended files or credentials in the static bundle; symlink/path traversal in staging; accidental native renv activation in WASM; offline-only dependencies; relative URL behavior under a GitHub Pages repository subpath; no silent fallback for GLMM; private source history; existing local changes preserved.
