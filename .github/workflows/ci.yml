@@ -117,7 +117,7 @@ jobs:
 
       - name: Preserve test results and browser diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-evidence-${{ matrix.os }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/lmplot-test-evidence/
