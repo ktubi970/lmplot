@@ -1,0 +1,11 @@
+{
+  "HealthStatus": "healthy",
+  "ImageReference": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+  "VersionPresent": true,
+  "ContainerID": "b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee",
+  "UID": 997,
+  "NoWorkerError": true,
+  "Attempt": 13,
+  "RootFetchExitCode": 0,
+  "TitlePresent": true
+}

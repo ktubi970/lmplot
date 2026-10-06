@@ -1,0 +1,17 @@
+{
+  "RevisionLabel": true,
+  "NetworkNone": true,
+  "ReadOnlyRoot": true,
+  "NoPublishedPorts": true,
+  "NoPublishAll": true,
+  "NoHostBinds": true,
+  "TmpfsExact": true,
+  "NoNewPrivileges": true,
+  "DropAllCapabilities": true,
+  "TwoCpus": true,
+  "OneGiBMemory": true,
+  "HalfGiBReservation": true,
+  "PidsLimit256": true,
+  "PublicEnvironment": true,
+  "ShinyUser": true
+}

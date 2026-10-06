@@ -1,0 +1,615 @@
+No issues found -- the project is in a consistent state.
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+             Package        Version 
+renv         "renv"         "1.2.3" 
+shiny        "shiny"        "1.14.0"
+plotly       "plotly"       "4.12.0"
+bslib        "bslib"        "0.11.0"
+DT           "DT"           "0.34.0"
+ggplot2      "ggplot2"      "4.0.3" 
+ggfortify    "ggfortify"    "0.4.19"
+lme4         "lme4"         "2.0-6" 
+jsonlite     "jsonlite"     "2.0.0" 
+shinyWidgets "shinyWidgets" "0.9.1" 
+shinyAce     "shinyAce"     "0.4.4" 
+testthat     "testthat"     "3.3.2" 
+shinytest2   "shinytest2"   "0.5.1" 
+chromote     "chromote"     "0.5.1" 
+yaml         "yaml"         "2.3.12"
+             Built                                                          
+renv         "R 4.6.0; ; 2026-08-10 11:01:10 UTC; windows"                  
+shiny        "R 4.6.1; ; 2026-08-07 02:38:32 UTC; windows"                  
+plotly       "R 4.6.1; ; 2026-07-04 03:47:58 UTC; windows"                  
+bslib        "R 4.6.0; ; 2026-08-10 11:04:04 UTC; windows"                  
+DT           "R 4.6.1; ; 2026-08-07 03:20:20 UTC; windows"                  
+ggplot2      "R 4.6.1; ; 2026-08-07 02:17:28 UTC; windows"                  
+ggfortify    "R 4.6.1; ; 2026-07-16 03:37:08 UTC; windows"                  
+lme4         "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 02:17:34 UTC; windows"
+jsonlite     "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 00:42:43 UTC; windows"
+shinyWidgets "R 4.6.1; ; 2026-08-07 02:59:01 UTC; windows"                  
+shinyAce     "R 4.6.1; ; 2026-08-07 02:59:13 UTC; windows"                  
+testthat     "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 02:59:00 UTC; windows"
+shinytest2   "R 4.6.1; x86_64-w64-mingw32; 2026-07-16 03:12:39 UTC; windows"
+chromote     "R 4.6.1; ; 2026-07-16 02:22:39 UTC; windows"                  
+yaml         "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 00:42:43 UTC; windows"
+acceptance: .........................................................................................................................
+accessibility: .................................
+analysis_request: ..............................................................................................................................................................................................................
+app: .........................................................
+app_structure: ............
+ci_scripts: .........................................
+cli_contract: ....................................................................................................................................................................................................
+config: ..
+deployment: ...............................................................................
+eli5: ....................................................................................................
+example_manifest: ............
+example_sources: ............
+examples: ................................................................................................
+link_browser: ..
+model: ....................................................................................................................................................
+model_brain: ....................................................................................................................................................................................................................................................................
+model_brain_contract: .........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+MODEL_BRAIN_BUDGET elapsed=0.420 seconds bytes=33598128
+.....
+model_brain_ui: ..................................................................................................................................................................W.......................
+model_diagnostics: .......................................................................
+model_fitting: ....
+pipeline: .........................................................................................................................................................
+production_entrypoints: .........
+real_data_acceptance: ..................................................
+release: .........................................................................................................................................
+scientific_copy: .....................................................................................................................
+scientific_copy_tables: ................
+scientific_metadata: ...............................................................................................................................................................................................................
+server: .....................................................................................................................................................
+shiny_modules: .................................................
+simulation: ..............................................................................................
+visualization: ........................................................................................................................
+
+══ Warnings ════════════════════════════════════════════════════════════════════
+1. selection is shared, generation guarded and navigation never recomputes analysis ('test_model_brain_ui.R:84:3') - package 'shiny' was built under R version 4.6.1
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+                             file
+1               test_acceptance.R
+2            test_accessibility.R
+3            test_accessibility.R
+4            test_accessibility.R
+5         test_analysis_request.R
+6         test_analysis_request.R
+7         test_analysis_request.R
+8         test_analysis_request.R
+9         test_analysis_request.R
+10                     test_app.R
+11                     test_app.R
+12                     test_app.R
+13                     test_app.R
+14           test_app_structure.R
+15              test_ci_scripts.R
+16              test_ci_scripts.R
+17            test_cli_contract.R
+18            test_cli_contract.R
+19            test_cli_contract.R
+20            test_cli_contract.R
+21            test_cli_contract.R
+22            test_cli_contract.R
+23            test_cli_contract.R
+24            test_cli_contract.R
+25            test_cli_contract.R
+26            test_cli_contract.R
+27            test_cli_contract.R
+28            test_cli_contract.R
+29            test_cli_contract.R
+30            test_cli_contract.R
+31            test_cli_contract.R
+32            test_cli_contract.R
+33            test_cli_contract.R
+34                  test_config.R
+35              test_deployment.R
+36              test_deployment.R
+37              test_deployment.R
+38              test_deployment.R
+39                    test_eli5.R
+40                    test_eli5.R
+41                    test_eli5.R
+42        test_example_manifest.R
+43        test_example_manifest.R
+44         test_example_sources.R
+45         test_example_sources.R
+46                test_examples.R
+47                test_examples.R
+48                test_examples.R
+49                test_examples.R
+50                test_examples.R
+51                test_examples.R
+52                test_examples.R
+53                test_examples.R
+54            test_link_browser.R
+55                   test_model.R
+56                   test_model.R
+57                   test_model.R
+58                   test_model.R
+59                   test_model.R
+60                   test_model.R
+61                   test_model.R
+62                   test_model.R
+63                   test_model.R
+64             test_model_brain.R
+65             test_model_brain.R
+66             test_model_brain.R
+67             test_model_brain.R
+68             test_model_brain.R
+69             test_model_brain.R
+70             test_model_brain.R
+71    test_model_brain_contract.R
+72    test_model_brain_contract.R
+73    test_model_brain_contract.R
+74    test_model_brain_contract.R
+75    test_model_brain_contract.R
+76    test_model_brain_contract.R
+77    test_model_brain_contract.R
+78    test_model_brain_contract.R
+79    test_model_brain_contract.R
+80    test_model_brain_contract.R
+81    test_model_brain_contract.R
+82    test_model_brain_contract.R
+83          test_model_brain_ui.R
+84          test_model_brain_ui.R
+85          test_model_brain_ui.R
+86          test_model_brain_ui.R
+87          test_model_brain_ui.R
+88          test_model_brain_ui.R
+89       test_model_diagnostics.R
+90       test_model_diagnostics.R
+91       test_model_diagnostics.R
+92       test_model_diagnostics.R
+93       test_model_diagnostics.R
+94       test_model_diagnostics.R
+95       test_model_diagnostics.R
+96       test_model_diagnostics.R
+97           test_model_fitting.R
+98           test_model_fitting.R
+99           test_model_fitting.R
+100          test_model_fitting.R
+101               test_pipeline.R
+102               test_pipeline.R
+103               test_pipeline.R
+104               test_pipeline.R
+105               test_pipeline.R
+106               test_pipeline.R
+107               test_pipeline.R
+108               test_pipeline.R
+109 test_production_entrypoints.R
+110   test_real_data_acceptance.R
+111                test_release.R
+112                test_release.R
+113                test_release.R
+114                test_release.R
+115                test_release.R
+116                test_release.R
+117                test_release.R
+118                test_release.R
+119                test_release.R
+120                test_release.R
+121                test_release.R
+122                test_release.R
+123                test_release.R
+124                test_release.R
+125                test_release.R
+126        test_scientific_copy.R
+127        test_scientific_copy.R
+128        test_scientific_copy.R
+129        test_scientific_copy.R
+130 test_scientific_copy_tables.R
+131 test_scientific_copy_tables.R
+132    test_scientific_metadata.R
+133    test_scientific_metadata.R
+134    test_scientific_metadata.R
+135    test_scientific_metadata.R
+136    test_scientific_metadata.R
+137                 test_server.R
+138                 test_server.R
+139                 test_server.R
+140                 test_server.R
+141                 test_server.R
+142                 test_server.R
+143          test_shiny_modules.R
+144          test_shiny_modules.R
+145          test_shiny_modules.R
+146          test_shiny_modules.R
+147          test_shiny_modules.R
+148          test_shiny_modules.R
+149          test_shiny_modules.R
+150          test_shiny_modules.R
+151             test_simulation.R
+152             test_simulation.R
+153             test_simulation.R
+154             test_simulation.R
+155             test_simulation.R
+156             test_simulation.R
+157             test_simulation.R
+158             test_simulation.R
+159             test_simulation.R
+160          test_visualization.R
+161          test_visualization.R
+162          test_visualization.R
+163          test_visualization.R
+164          test_visualization.R
+165          test_visualization.R
+166          test_visualization.R
+167          test_visualization.R
+168          test_visualization.R
+169          test_visualization.R
+170          test_visualization.R
+171          test_visualization.R
+172          test_visualization.R
+173          test_visualization.R
+174          test_visualization.R
+                                                                                       test
+1                                              the complete beta matrix executes end to end
+2                    semantic shell and Brain chart alternatives resolve their descriptions
+3         large chart alternatives explicitly preview rows and keep the table data separate
+4            local typography and selected scientific colors meet declared contrast targets
+5                            request defaults are normalized without accepting extra fields
+6                               request rejects malformed objects and required scalar types
+7                                      link grid and source presence are strictly validated
+8                             simulation validates nested keys types and every public bound
+9                           Expert requires the exact schema and a trusted local capability
+10                          browser log classification uses strict levels and warning pairs
+11                              the public modular app completes its browser smoke workflow
+12                          browser service failure retains plot and download then recovers
+13                   keyboard workflow and observed Plotly clicks share the Brain selection
+14          public shell exposes four workflows, semantic landmarks and namespaced controls
+15               both CI R steps execute later lines and propagate their failure on Windows
+16               CI saves complete test evidence before failing for errors or skipped tests
+17                     CLI returns the versioned complete result from any working directory
+18                          serialized Brain contributions retain reconstructible precision
+19                            CLI exports out-of-domain grid predictions as explained nulls
+20                                   CLI classifies malformed and forbidden public requests
+21                                CLI requires exactly two arguments and keeps stdout empty
+22                       extra CLI arguments write an error to the identifiable second path
+23          sourced CLI classifies dependency and analysis failures without leaking details
+24                   CLI handles unavailable jsonlite and lme4 without runtime installation
+25                       serialization and mapping failures produce a fixed exit-4 envelope
+26                               CLI leaves absent output parents absent and reports exit 4
+27                                      CLI handles dependency errors during module loading
+28                 headless CLI works with Shiny present and optional UI addons unavailable
+29                     CLI handles request I/O and keeps original serialization diagnostics
+30                            CLI exports real-data identity and GLMM unavailable intervals
+31                 CLI validates the Brain once and retains one-item arrays and factor text
+32                     JSON sanitizer preserves row and array positions with explicit nulls
+33                  atomic writer uses one replacement and never moves the old output aside
+34                                                                    beta version is exact
+35                       the shipped runtime contains only the maintained Shiny application
+36                                ignore configuration retires Python deployment exclusions
+37            the image builds locked dependencies and starts Shiny without privileged init
+38                      Compose bounds an immutable non-root service on an internal network
+39                coefficient copy uses link-specific associations and conditional p-values
+40                           Guided interpretation is deterministic for all 15 combinations
+41                                   Guided interpretation renders an English public module
+42                                       real-data manifest covers the seven models exactly
+43                         real-data manifest records deterministic preprocessing summaries
+44                                                         SHA-256 helper hashes file bytes
+45                                        all reviewed sources exist and match the manifest
+46                                                prepared examples load, validate, and fit
+47                                            prepared examples satisfy their exact domains
+48                                   each model resolves to its assigned scientific example
+49                               prepared examples retain exact source-role display columns
+50                               example metadata retains exact scientific labels and units
+51                           real examples expose scientific plots and enriched diagnostics
+52                                       GLMM example omits the unreadable 65-school legend
+53                                 all source hashes pass before any builder or writer runs
+54                          same-default model switch fits the link selected in the browser
+55                                              registry exposes the beta acceptance matrix
+56                                                 invalid models and links fail explicitly
+57                            every beta combination fits and returns response-scale values
+58                               Poisson identity fits the documented acceptance simulation
+59                            fit_model validates GLMM groups without relying on simulation
+60               extract_model_kpis and extract_coefficient_table return structured metrics
+61             model_latex_formula returns LaTeX formula for all 15 model/link combinations
+62                             format_pval and get_pval_sig_class return significance tiers
+63                            residual diagnostics flag curvature without claiming adequacy
+64                                          all 15 model/link cases reproduce R predictions
+65                               observation records preserve residuals and term arithmetic
+66                 observation IDs prefer a valid business ID and otherwise use row numbers
+67                                 tolerance is scaled without weakening its absolute floor
+68                                             labels are normalized without inferred units
+69                                  lme4 GLMM modes use the fitted random intercept exactly
+70                                      legacy nlme and fixed-factor GLMM fits are rejected
+71                  all registry cases produce complete valid contracts and exact intervals
+72                          schema and arithmetic mutations cannot be accepted or sanitized
+73       selection is a strict pure lookup and default is the median conditional prediction
+74      record collections cannot become keyed objects and scalar values cannot be matrices
+75                   builder rejects changed fitted rows and invalid label or mode requests
+76              schema records contain only their names attribute before JSON serialization
+77                      link curve values must remain plain numeric vectors for JSON arrays
+78                      GLMM source groups match fitted rows independently of factor levels
+79                         GLMM group summary ordering is independent of factor level order
+80              GLMM always contains both modes and rejects legacy fits and malformed pairs
+81                   analysis builds and validates exactly once and navigation never refits
+82               warnings are ordered records and the 5000-row contract stays within budget
+83                   chart CSV retains double precision and explicit missing numeric values
+84               Brain renderers preserve stored contributions, intervals and curve samples
+85          GLMM group alternatives retain every group and mark population effects inactive
+86                           all supported Brain renderers need no scientific recomputation
+87         selection is shared, generation guarded and navigation never recomputes analysis
+88                 GLMM mode changes preserve source identity and select stored mode values
+89                                      LM metrics retain neutral numeric comparison values
+90                         GLM metrics use Pearson dispersion and preserve undefined values
+91                       coefficient intervals use LM t limits and GLM labelled Wald limits
+92                             LM and GLM intervals target mean responses and preserve rows
+93         inverse and sqrt link intervals cannot reverse bounds or cross a branch silently
+94                        GLMM correlations separate population and conditional predictions
+95                family diagnostic strategies return information without validity verdicts
+96                 GLMM diagnostics expose optimizer messages singularity and unknown codes
+97                                       every registry entry resolves a named fit strategy
+98                                 GLMM reports a dependency error when lme4 is unavailable
+99                                                 GLMM never returns an lm or lme fallback
+100                                                         lm_2d ignores an extra Y column
+101                                     service factory validates every injected dependency
+102                              validated simulation returns canonical assessment and grid
+103                                  nonlinear diagnostics and custom grid reach the result
+104                              real examples resolve lazily and match the requested model
+105                  default real requests use injected resolution without a local manifest
+106                           service outputs warnings and errors are faithfully propagated
+107                          Expert execution enforces trust and the four argument contract
+108                 use case rejects legacy and mutated boundaries before service execution
+109                               run_analysis production entry point fits an lm_2d request
+110                                            all examples have complete offline artifacts
+111                            release retains the locked Shiny runtime and launch contract
+112                                         a fresh R process activates the project library
+113                      README documents the exact beta matrix and trusted expert boundary
+114                  launcher validates an explicitly restored library before running Shiny
+115                  Windows launcher fails without bootstrapping an absent project library
+116         direct R and CLI startup refuse a missing project library without bootstrapping
+117                           explicit bootstrap command restores an already locked project
+118                                      renv lockfile covers runtime and test dependencies
+119                    ignore rules exclude transient state without hiding release evidence
+120                                      TODO records completed automated beta verification
+121                         release identity agrees across runtime, image, docs and license
+122              public release guidance documents CLI and the isolated deployment boundary
+123                          CI requires both locked R platforms and isolated Docker health
+124                            image and CI restoration explicitly opt in to renv bootstrap
+125                                            runtime R sources never install dependencies
+126                    documented real units reach the strict Brain and exported chart data
+127          observations and fitted means use distinct scientifically correct chart labels
+128               coefficient units distinguish predictor units and transformed link scales
+129 GLMM diagnostic and enriched exports identify conditional predictions without refitting
+130                      Overview coefficients and enriched CSV include each predictor unit
+131         unit validation rejects empty supplied metadata and names the actual link scale
+132                           out-of-domain grid rows are explained in the committed result
+133                              all real Plotly traces use literal scientific hover labels
+134                        real plot titles include exact model family labels and citations
+135                           simulation plots retain generic canonical axes without labels
+136                          every real provenance card defines variables and preprocessing
+137              coordinator retains success, logs details, sanitizes failures and recovers
+138                service and logger failure preserves results; first failure is not stale
+139                          app generates only on submission and drafts preserve downloads
+140                      all registered models and real examples use the canonical workflow
+141              trusted Expert runs only through the boundary and invalid GLMM retains CSV
+142                separate sessions start empty and only literal trust flag enables Expert
+143             configuration validates source-exclusive requests and rejects forged Expert
+144                  configuration resets shared links and ignores delayed prior selections
+145                     a same-default model switch accepts the next visible link selection
+146                          views render committed values without scientific recomputation
+147           public and trusted configuration controls are capability-gated and namespaced
+148               Overview selection uses stable identities and rejects stale result events
+149                  diagnostic guidance exposes known advice without raw optimizer details
+150                                       configuration instances keep disjoint draft state
+151                 simulation collector returns parameters and code without executing them
+152                    generated reproducible code preserves patterns and random draw order
+153                                        all beta combinations simulate deterministically
+154                                               simulated responses respect their domains
+155                     square-root count simulation rejects negative generating predictors
+156                              standard GLMM simulation enforces the group-count contract
+157               GLMM simulation data requires complete membership in five observed groups
+158                                                expert evaluation rejects invalid output
+159         simulate_data supports non-linear patterns (quadratic, cosine, heteroscedastic)
+160                                     prediction grids contain finite response-scale fits
+161                                    GLMM prediction grids represent a population surface
+162                                               GLMM surfaces accept character group data
+163                            enrichment adds exactly fitted values and response residuals
+164                              valid GLMM fitting and enrichment preserve every input row
+165                           2D LM plot contains observations and an X-ordered fitted line
+166                            3D plots contain point clouds and optional response surfaces
+167                                       surface matrix rows map to Y and columns map to X
+168                                            GLMM observations retain group color mapping
+169                                          diagnostic plots use supported representations
+170                           diagnostic warning filtering preserves non-lifecycle warnings
+171                               prediction_grid expands bounds according to pad parameter
+172                                            3D plots include initial camera eye position
+173                             padded count and Gamma grids mark invalid means unavailable
+174                committed chart alternatives retain exact prediction and interval values
+    failed error warning skipped passed
+1        0 FALSE       0   FALSE    121
+2        0 FALSE       0   FALSE     22
+3        0 FALSE       0   FALSE      3
+4        0 FALSE       0   FALSE      8
+5        0 FALSE       0   FALSE      8
+6        0 FALSE       0   FALSE     36
+7        0 FALSE       0   FALSE     28
+8        0 FALSE       0   FALSE    111
+9        0 FALSE       0   FALSE     23
+10       0 FALSE       0   FALSE      7
+11       0 FALSE       0   FALSE     18
+12       0 FALSE       0   FALSE      8
+13       0 FALSE       0   FALSE     24
+14       0 FALSE       0   FALSE     12
+15       0 FALSE       0   FALSE     16
+16       0 FALSE       0   FALSE     25
+17       0 FALSE       0   FALSE     16
+18       0 FALSE       0   FALSE      4
+19       0 FALSE       0   FALSE      5
+20       0 FALSE       0   FALSE     35
+21       0 FALSE       0   FALSE      8
+22       0 FALSE       0   FALSE     13
+23       0 FALSE       0   FALSE     24
+24       0 FALSE       0   FALSE     10
+25       0 FALSE       0   FALSE     10
+26       0 FALSE       0   FALSE      5
+27       0 FALSE       0   FALSE     10
+28       0 FALSE       0   FALSE      4
+29       0 FALSE       0   FALSE     12
+30       0 FALSE       0   FALSE     14
+31       0 FALSE       0   FALSE      3
+32       0 FALSE       0   FALSE     11
+33       0 FALSE       0   FALSE     12
+34       0 FALSE       0   FALSE      2
+35       0 FALSE       0   FALSE     43
+36       0 FALSE       0   FALSE      2
+37       0 FALSE       0   FALSE     14
+38       0 FALSE       0   FALSE     20
+39       0 FALSE       0   FALSE     21
+40       0 FALSE       0   FALSE     77
+41       0 FALSE       0   FALSE      2
+42       0 FALSE       0   FALSE     11
+43       0 FALSE       0   FALSE      1
+44       0 FALSE       0   FALSE      1
+45       0 FALSE       0   FALSE     11
+46       0 FALSE       0   FALSE     36
+47       0 FALSE       0   FALSE      6
+48       0 FALSE       0   FALSE      1
+49       0 FALSE       0   FALSE      6
+50       0 FALSE       0   FALSE      6
+51       0 FALSE       0   FALSE     35
+52       0 FALSE       0   FALSE      2
+53       0 FALSE       0   FALSE      4
+54       0 FALSE       0   FALSE      2
+55       0 FALSE       0   FALSE      4
+56       0 FALSE       0   FALSE      2
+57       0 FALSE       0   FALSE     87
+58       0 FALSE       0   FALSE      4
+59       0 FALSE       0   FALSE     11
+60       0 FALSE       0   FALSE     11
+61       0 FALSE       0   FALSE     20
+62       0 FALSE       0   FALSE      5
+63       0 FALSE       0   FALSE      4
+64       0 FALSE       0   FALSE     79
+65       0 FALSE       0   FALSE    161
+66       0 FALSE       0   FALSE      5
+67       0 FALSE       0   FALSE      1
+68       0 FALSE       0   FALSE      4
+69       0 FALSE       0   FALSE      8
+70       0 FALSE       0   FALSE      2
+71       0 FALSE       0   FALSE   8102
+72       0 FALSE       0   FALSE     75
+73       0 FALSE       0   FALSE     12
+74       0 FALSE       0   FALSE      9
+75       0 FALSE       0   FALSE      9
+76       0 FALSE       0   FALSE     55
+77       0 FALSE       0   FALSE      8
+78       0 FALSE       0   FALSE      3
+79       0 FALSE       0   FALSE      2
+80       0 FALSE       0   FALSE    565
+81       0 FALSE       0   FALSE     65
+82       0 FALSE       0   FALSE      5
+83       0 FALSE       0   FALSE      3
+84       0 FALSE       0   FALSE     28
+85       0 FALSE       0   FALSE      9
+86       0 FALSE       0   FALSE    121
+87       0 FALSE       1   FALSE     19
+88       0 FALSE       0   FALSE      5
+89       0 FALSE       0   FALSE      6
+90       0 FALSE       0   FALSE      5
+91       0 FALSE       0   FALSE      8
+92       0 FALSE       0   FALSE     22
+93       0 FALSE       0   FALSE      4
+94       0 FALSE       0   FALSE      6
+95       0 FALSE       0   FALSE     13
+96       0 FALSE       0   FALSE      7
+97       0 FALSE       0   FALSE      1
+98       0 FALSE       0   FALSE      1
+99       0 FALSE       0   FALSE      1
+100      0 FALSE       0   FALSE      1
+101      0 FALSE       0   FALSE    101
+102      0 FALSE       0   FALSE     11
+103      0 FALSE       0   FALSE      3
+104      0 FALSE       0   FALSE      9
+105      0 FALSE       0   FALSE      6
+106      0 FALSE       0   FALSE      4
+107      0 FALSE       0   FALSE      6
+108      0 FALSE       0   FALSE     13
+109      0 FALSE       0   FALSE      9
+110      0 FALSE       0   FALSE     50
+111      0 FALSE       0   FALSE      4
+112      0 FALSE       0   FALSE      1
+113      0 FALSE       0   FALSE     21
+114      0 FALSE       0   FALSE      9
+115      0 FALSE       0   FALSE      5
+116      0 FALSE       0   FALSE     10
+117      0 FALSE       0   FALSE      2
+118      0 FALSE       0   FALSE      2
+119      0 FALSE       0   FALSE      2
+120      0 FALSE       0   FALSE      2
+121      0 FALSE       0   FALSE     14
+122      0 FALSE       0   FALSE     11
+123      0 FALSE       0   FALSE     29
+124      0 FALSE       0   FALSE      3
+125      0 FALSE       0   FALSE     22
+126      0 FALSE       0   FALSE     61
+127      0 FALSE       0   FALSE     32
+128      0 FALSE       0   FALSE      6
+129      0 FALSE       0   FALSE     18
+130      0 FALSE       0   FALSE      4
+131      0 FALSE       0   FALSE     12
+132      0 FALSE       0   FALSE      5
+133      0 FALSE       0   FALSE     77
+134      0 FALSE       0   FALSE     18
+135      0 FALSE       0   FALSE      5
+136      0 FALSE       0   FALSE    102
+137      0 FALSE       0   FALSE     16
+138      0 FALSE       0   FALSE      8
+139      0 FALSE       0   FALSE      6
+140      0 FALSE       0   FALSE     98
+141      0 FALSE       0   FALSE      6
+142      0 FALSE       0   FALSE     15
+143      0 FALSE       0   FALSE      6
+144      0 FALSE       0   FALSE      6
+145      0 FALSE       0   FALSE      3
+146      0 FALSE       0   FALSE     17
+147      0 FALSE       0   FALSE      4
+148      0 FALSE       0   FALSE      7
+149      0 FALSE       0   FALSE      2
+150      0 FALSE       0   FALSE      4
+151      0 FALSE       0   FALSE     19
+152      0 FALSE       0   FALSE     12
+153      0 FALSE       0   FALSE     46
+154      0 FALSE       0   FALSE      4
+155      0 FALSE       0   FALSE      1
+156      0 FALSE       0   FALSE      3
+157      0 FALSE       0   FALSE      2
+158      0 FALSE       0   FALSE      2
+159      0 FALSE       0   FALSE      5
+160      0 FALSE       0   FALSE     21
+161      0 FALSE       0   FALSE      4
+162      0 FALSE       0   FALSE      4
+163      0 FALSE       0   FALSE     28
+164      0 FALSE       0   FALSE      4
+165      0 FALSE       0   FALSE      6
+166      0 FALSE       0   FALSE     15
+167      0 FALSE       0   FALSE      2
+168      0 FALSE       0   FALSE      2
+169      0 FALSE       0   FALSE      4
+170      0 FALSE       0   FALSE      2
+171      0 FALSE       0   FALSE      4
+172      0 FALSE       0   FALSE      3
+173      0 FALSE       0   FALSE     14
+174      0 FALSE       0   FALSE      7
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+TOTAL files 31 tests 174 passed 11648 failed 0 errors 0 skips 0 warnings 1 

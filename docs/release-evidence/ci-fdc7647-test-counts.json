@@ -1,0 +1,32 @@
+{
+  "run_id": 36885551520,
+  "attempt": 1,
+  "head_sha": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+  "run_status": "completed",
+  "run_conclusion": "success",
+  "source": "Downloaded test-evidence artifacts; independently summed locally without running tests",
+  "results": [
+    {
+      "os": "windows",
+      "tests": 175,
+      "files": 32,
+      "passed_assertions": 11756,
+      "failed": 0,
+      "error": 0,
+      "skipped": 0,
+      "warning": 0,
+      "csv_sha256": "17bc001934f257cba85744f84b2b8b6422620711114e009caf4de39a686874ec"
+    },
+    {
+      "os": "ubuntu",
+      "tests": 175,
+      "files": 32,
+      "passed_assertions": 11745,
+      "failed": 0,
+      "error": 0,
+      "skipped": 0,
+      "warning": 0,
+      "csv_sha256": "a40fd51f963945935dc23226e3eabe151b0e335a7caa3637f56191207d51ef73"
+    }
+  ]
+}

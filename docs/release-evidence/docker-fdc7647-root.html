@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <script type="application/shiny-singletons"></script>
+  <script type="application/html-dependencies">jquery[3.7.1];shiny-sass[1.14.0];shiny-busy-indicators[1.14.0];shiny-javascript[1.14.0];bootstrap[5.3.8];bs3compat[0.11.0];htmltools-fill[0.5.9];htmlwidgets[1.6.4];plotly-binding[4.12.0];selectize[0.15.2];font-awesome[6.5.2];datatables-css[0.0.0];datatables-binding[0.34.0];crosstalk[1.2.2];bslib-component-js[0.11.0];bslib-component-css[0.11.0];bslib-tag-require[0.11.0]</script>
+<script src="jquery-3.7.1/jquery.min.js"></script>
+<link href="shiny-sass-1.14.0/shiny-sass.css" rel="stylesheet" />
+<link href="shiny-busy-indicators-1.14.0/busy-indicators.css" rel="stylesheet" />
+<script src="shiny-javascript-1.14.0/shiny.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<link href="bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet" />
+<script src="bootstrap-5.3.8/bootstrap.bundle.min.js"></script>
+<script src="bs3compat-0.11.0/transition.js"></script>
+<script src="bs3compat-0.11.0/tabs.js"></script>
+<script src="bs3compat-0.11.0/bs3compat.js"></script>
+<link href="htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="plotly-binding-4.12.0/plotly.js"></script>
+<link href="selectize-0.15.2/selectize.css" rel="stylesheet" />
+<script src="selectize-0.15.2/selectize.min.js"></script>
+<script src="selectize-0.15.2/selectize-plugin-a11y.min.js"></script>
+<link href="font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+<link href="datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="datatables-binding-0.34.0/datatables.js"></script>
+<link href="crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet" />
+<script src="crosstalk-1.2.2/js/crosstalk.min.js"></script>
+<script src="bslib-component-js-0.11.0/components.min.js"></script>
+<script src="bslib-component-js-0.11.0/web-components.min.js" type="module"></script>
+<link href="bslib-component-css-0.11.0/bslib-component-css.min.css" rel="stylesheet" />
+<script src="bslib-tag-require-0.11.0/tag-require.js"></script>  <title>LM Plot Explorer 0.10.0-beta.1</title>
+  <style>html { height: 100%; }</style>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    document.documentElement.lang = 'en';
+    document.addEventListener('DOMContentLoaded', function() {
+      var skip = document.querySelector('.skip-link');
+      document.body.insertBefore(skip, document.body.firstChild);
+      skip.addEventListener('click', function() { document.getElementById('main-content').focus(); });
+      Shiny.addCustomMessageHandler('brain-controls', function(x) { document.getElementById(x.id).disabled = x.disabled; });
+      Shiny.addCustomMessageHandler('brain-index-error', function(x) {
+        var input = document.getElementById(x.id);
+        input.setAttribute('aria-describedby', x.error_id); input.setAttribute('aria-invalid', String(x.invalid));
+      });
+    });</script>
+<script src="__assets__/sockjs.min.js"></script>
+<script src="__assets__/shiny-server-client.min.js"></script>
+<script>preShinyInit({reconnect:true,disableProtocols:[]});</script>
+<link rel="stylesheet" type="text/css" href="__assets__/shiny-server.css"/>
+
+</head>
+<body>
+  <body class="bslib-page-fill bslib-gap-spacing bslib-flow-mobile html-fill-container bslib-page-sidebar" style="padding:0px;gap:0px;">
+    <div class="navbar navbar-static-top">
+      <div class="container-fluid">
+        <header>
+          <h1>LM Plot Explorer</h1>
+          <span class="version-badge">0.10.0-beta.1</span>
+        </header>
+      </div>
+    </div>
+    <div class="bslib-sidebar-layout bslib-mb-spacing html-fill-item" data-bslib-sidebar-border="false" data-bslib-sidebar-border-radius="false" data-bslib-sidebar-init="TRUE" data-collapsible-desktop="true" data-collapsible-mobile="false" data-open-desktop="open" data-open-mobile="always" data-require-bs-caller="layout_sidebar()" data-require-bs-version="5" style="--_sidebar-width:320px;">
+      <div class="main bslib-gap-spacing html-fill-container">
+        <main class="bslib-page-main bslib-gap-spacing html-fill-item html-fill-container" id="main-content" tabindex="-1">
+          <a href="#main-content" class="skip-link">Skip to main content</a>
+          <div id="analysis-content">
+            <div role="status" aria-live="polite">
+              <div id="analysis_status-status" class="shiny-text-output"></div>
+            </div>
+            <div role="alert">
+              <div id="analysis_status-error" class="shiny-text-output"></div>
+            </div>
+            <nav aria-label="Analysis views">
+              <div class="card bslib-card bslib-mb-spacing html-fill-item html-fill-container" data-bslib-card-init data-require-bs-caller="card()" data-require-bs-version="5">
+                <div class="card-header bslib-gap-spacing">
+                  <ul class="nav nav-tabs shiny-tab-input card-header-tabs" id="main_nav_tabs" data-tabsetid="7449">
+                    <li class="nav-item">
+                      <a href="#tab-7449-1" data-toggle="tab" data-bs-toggle="tab" data-value="overview" class="nav-link active">Overview</a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#tab-7449-2" data-toggle="tab" data-bs-toggle="tab" data-value="diagnostics" class="nav-link">Diagnostics</a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#tab-7449-3" data-toggle="tab" data-bs-toggle="tab" data-value="brain" class="nav-link">Model Brain</a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#tab-7449-4" data-toggle="tab" data-bs-toggle="tab" data-value="data_provenance" class="nav-link">Data &amp; provenance</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="tab-content html-fill-item html-fill-container" data-tabsetid="7449">
+                  <div class="tab-pane active html-fill-item html-fill-container bslib-gap-spacing" data-value="overview" id="tab-7449-1" style="gap:0;padding:0;">
+                    <div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+                      <h2>Overview</h2>
+                      <div id="overview-metrics" class="shiny-html-output"></div>
+                      <div id="overview-surface_ui" class="shiny-html-output"></div>
+                      <div class="analysis-chart" role="region" aria-label="Observed responses and model fit" aria-describedby="overview-chart_summary">
+                        <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="overview-main_plot" style="width:100%;height:400px;"></div>
+                      </div>
+                      <div id="overview-chart_summary" class="shiny-text-output"></div>
+                      <details>
+                        <summary>View observed response data</summary>
+                        <div id="overview-observations_table" class="shiny-html-output"></div>
+                      </details>
+                      <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="overview-observations_download" tabindex="-1" target="_blank">Download observed response data (CSV)</a>
+                      <details>
+                        <summary>View prediction grid data</summary>
+                        <div id="overview-grid_table" class="shiny-html-output"></div>
+                      </details>
+                      <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="overview-grid_download" tabindex="-1" target="_blank">Download prediction grid data (CSV)</a>
+                      <h3>Coefficient estimates</h3>
+                      <div id="overview-coefficients" class="shiny-html-output shiny-table-output"></div>
+                      <div id="overview-variable_mapping" class="shiny-text-output"></div>
+                      <div class="card mb-3">
+                        <div class="card-header">
+                          <h3 class="h6">Guided interpretation</h3>
+                          <p>Deterministic explanations of estimates, uncertainty and diagnostic limitations.</p>
+                          <button class="btn btn-default action-button btn btn-sm btn-secondary" id="overview-guided_interpretation-show" type="button"><span class="action-label">Show interpretation</span></button>
+                        </div>
+                        <div id="overview-guided_interpretation-content" class="shiny-html-output"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="diagnostics" id="tab-7449-2" style="gap:0;padding:0;">
+                    <div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+                      <h2>Diagnostics</h2>
+                      <h3>
+                        <div id="diagnostics-heading" class="shiny-text-output"></div>
+                      </h3>
+                      <div id="diagnostics-summary" class="shiny-text-output"></div>
+                      <div id="diagnostics-checks" class="shiny-html-output shiny-table-output"></div>
+                      <div id="diagnostics-guidance" class="shiny-html-output"></div>
+                      <div id="diagnostics-chart_summary" class="shiny-text-output"></div>
+                      <div class="analysis-chart" role="region" aria-label="Response residuals versus fitted values" aria-describedby="diagnostics-chart_summary">
+                        <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="diagnostics-plot" style="width:100%;height:400px;"></div>
+                      </div>
+                      <details>
+                        <summary>View residual chart data</summary>
+                        <div id="diagnostics-chart_table" class="shiny-html-output"></div>
+                      </details>
+                      <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="diagnostics-chart_download" tabindex="-1" target="_blank">Download residual chart data (CSV)</a>
+                      <p>Response residuals are observed minus fitted responses. Patterns invite investigation; they do not prove model adequacy.</p>
+                      <p>The enriched CSV in Data &amp; provenance contains the plotted fitted values and response residuals.</p>
+                    </div>
+                  </div>
+                  <div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="brain" id="tab-7449-3" style="gap:0;padding:0;">
+                    <div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+                      <h2>Model Brain</h2>
+                      <div id="brain-observation_summary" aria-live="polite" aria-atomic="true" role="status" class="shiny-text-output"></div>
+                      <fieldset id="brain-controls" disabled="disabled">
+                        <legend>Explore an observation</legend>
+                        <div class="brain-navigation">
+                          <button id="brain-previous" type="button" class="btn btn-default action-button"><span class="action-label">Previous</span></button>
+                          <button id="brain-next" type="button" class="btn btn-default action-button"><span class="action-label">Next</span></button>
+                        </div>
+                        <p>Previous at the first observation wraps to the last; Next at the last wraps to the first.</p>
+                        <div class="form-group shiny-input-container" data-index-control="brain-observation_index">
+                          <label class="control-label" id="brain-observation_index-label" for="brain-observation_index">Observation number</label>
+                          <input id="brain-observation_index" type="number" class="shiny-input-number form-control" value="1" data-update-on="change" min="1" step="1"/>
+                        </div>
+                        <div id="brain-index_error" role="alert" class="shiny-text-output"></div>
+                        <div class="shiny-panel-conditional" data-display-if="output[&#39;brain-is_mixed&#39;]" data-ns-prefix="">
+                          <div class="form-group shiny-input-container">
+                            <label class="control-label" id="brain-prediction_mode-label" for="brain-prediction_mode">Prediction mode</label>
+                            <div>
+                              <select id="brain-prediction_mode" class="shiny-input-select"><option value="conditional" selected>Conditional</option>
+<option value="population">Population</option></select>
+                              <script type="application/json" data-for="brain-prediction_mode" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+                            </div>
+                          </div>
+                        </div>
+                      </fieldset>
+                      <div class="shiny-panel-conditional" data-display-if="output[&#39;brain-has_result&#39;]" data-ns-prefix="">
+                        <section class="chart-section" aria-labelledby="brain-equation_heading">
+                          <h3 id="brain-equation_heading">Exact equation</h3>
+                          <div id="brain-equation_summary" class="shiny-text-output"></div>
+                          <details>
+                            <summary>View exact equation data</summary>
+                            <div id="brain-equation_table" class="shiny-html-output"></div>
+                          </details>
+                          <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="brain-equation_download" tabindex="-1" target="_blank">Download exact equation data (CSV)</a>
+                        </section>
+                        <section class="chart-section" aria-labelledby="brain-contribution_heading">
+                          <h3 id="brain-contribution_heading">Contribution waterfall</h3>
+                          <div id="brain-contribution_summary" class="shiny-text-output"></div>
+                          <div role="region" aria-label="Contribution waterfall" aria-describedby="brain-contribution_summary">
+                            <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="brain-contribution_plot" style="width:100%;height:400px;"></div>
+                          </div>
+                          <details>
+                            <summary>View contribution waterfall data</summary>
+                            <div id="brain-contribution_table" class="shiny-html-output"></div>
+                          </details>
+                          <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="brain-contribution_download" tabindex="-1" target="_blank">Download contribution waterfall data (CSV)</a>
+                        </section>
+                        <section class="chart-section" aria-labelledby="brain-link_heading">
+                          <h3 id="brain-link_heading">Link transformation</h3>
+                          <div id="brain-link_summary" class="shiny-text-output"></div>
+                          <div role="region" aria-label="Link transformation" aria-describedby="brain-link_summary">
+                            <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="brain-link_plot" style="width:100%;height:400px;"></div>
+                          </div>
+                          <details>
+                            <summary>View link transformation data</summary>
+                            <div id="brain-link_table" class="shiny-html-output"></div>
+                          </details>
+                          <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="brain-link_download" tabindex="-1" target="_blank">Download link transformation data (CSV)</a>
+                        </section>
+                        <section class="chart-section" aria-labelledby="brain-coefficient_heading">
+                          <h3 id="brain-coefficient_heading">Coefficient overview</h3>
+                          <div id="brain-coefficient_summary" class="shiny-text-output"></div>
+                          <div role="region" aria-label="Coefficient overview" aria-describedby="brain-coefficient_summary">
+                            <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="brain-coefficient_plot" style="width:100%;height:400px;"></div>
+                          </div>
+                          <details>
+                            <summary>View coefficient overview data</summary>
+                            <div id="brain-coefficient_table" class="shiny-html-output"></div>
+                          </details>
+                          <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="brain-coefficient_download" tabindex="-1" target="_blank">Download coefficient overview data (CSV)</a>
+                        </section>
+                        <div class="shiny-panel-conditional" data-display-if="output[&#39;brain-is_mixed&#39;]" data-ns-prefix="">
+                          <section class="chart-section" aria-labelledby="brain-random_heading">
+                            <h3 id="brain-random_heading">Random effects</h3>
+                            <div id="brain-random_summary" class="shiny-text-output"></div>
+                            <div role="region" aria-label="Random effects" aria-describedby="brain-random_summary">
+                              <div class="plotly html-widget html-widget-output shiny-report-size shiny-report-theme html-fill-item" id="brain-random_plot" style="width:100%;height:400px;"></div>
+                            </div>
+                            <details>
+                              <summary>View random effects data</summary>
+                              <div id="brain-random_table" class="shiny-html-output"></div>
+                            </details>
+                            <a aria-disabled="true" class="shiny-download-link disabled" download href="" id="brain-random_download" tabindex="-1" target="_blank">Download random effects data (CSV)</a>
+                          </section>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane html-fill-item html-fill-container bslib-gap-spacing" data-value="data_provenance" id="tab-7449-4" style="gap:0;padding:0;">
+                    <div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+                      <h2>Data &amp; provenance</h2>
+                      <div id="data_provenance-provenance" class="shiny-html-output"></div>
+                      <a aria-disabled="true" class="btn btn-default shiny-download-link disabled" download href="" id="data_provenance-download" tabindex="-1" target="_blank">
+                        <i class="fas fa-download" role="presentation" aria-label="download icon"></i>
+                        Download enriched CSV
+                      </a>
+                      <div class="datatables html-widget html-widget-output shiny-report-size html-fill-item" id="data_provenance-table" style="width:100%;height:auto;"></div>
+                      <h3>Reproducible R code</h3>
+                      <p>Run this code with the LM Plot Explorer R helpers loaded from the project folder.</p>
+                      <div class="repro-code-card">
+                        <pre class="shiny-text-output noplaceholder" id="data_provenance-code"></pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <script data-bslib-card-init>bslib.Card.initializeAllCards();</script>
+              </div>
+            </nav>
+          </div>
+        </main>
+      </div>
+      <aside id="bslib-sidebar-6723" class="sidebar" hidden data-resizable aria-label="Configuration">
+        <div class="sidebar-content bslib-gap-spacing">
+          <h2>Configuration</h2>
+          <div class="form-group shiny-input-container">
+            <label class="control-label" id="configuration-data_source-label" for="configuration-data_source">Data source</label>
+            <div>
+              <select id="configuration-data_source" class="shiny-input-select"><option value="simulation" selected>Simulation</option>
+<option value="real">Real data</option></select>
+              <script type="application/json" data-for="configuration-data_source" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+            </div>
+          </div>
+          <div class="form-group shiny-input-container">
+            <label class="control-label" id="configuration-model_type-label" for="configuration-model_type">Model</label>
+            <div>
+              <select id="configuration-model_type" class="shiny-input-select"><option value="lm_2d" selected>Simple LM (2D)</option>
+<option value="lm_3d">Multiple LM (3D)</option>
+<option value="glm_binomial_2d">Simple Binomial GLM (2D)</option>
+<option value="glm_binomial">Binomial GLM</option>
+<option value="glm_poisson">Poisson GLM</option>
+<option value="glm_gamma">Gamma GLM</option>
+<option value="glmm">Gaussian GLMM</option></select>
+              <script type="application/json" data-for="configuration-model_type" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+            </div>
+          </div>
+          <div id="configuration-link_ui" class="shiny-html-output"></div>
+          <div class="shiny-panel-conditional" data-display-if="input.data_source === &#39;simulation&#39;" data-ns-prefix="configuration-">
+            <div id="configuration-simulation-controls_ui" class="shiny-html-output"></div>
+          </div>
+          <div id="configuration-example_preview" class="shiny-html-output"></div>
+          <button class="btn btn-primary bslib-task-button" data-auto-reset id="configuration-generate" type="button">
+            <bslib-switch-inline case="ready">
+              <span slot="ready">Generate &amp; fit model</span>
+              <span slot="busy">
+                <i class="fas fa-arrows-rotate fa-spin" role="presentation" aria-label="arrows-rotate icon" aria-hidden="true"></i>
+                Processing...
+              </span>
+            </bslib-switch-inline>
+          </button>
+        </div>
+      </aside>
+      <button class="collapse-toggle" type="button" title="Toggle sidebar" aria-expanded="true" aria-controls="bslib-sidebar-6723"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="bi bi-chevron-left collapse-icon" style="fill:currentColor;" aria-hidden="true" role="img" ><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path></svg></button>
+      <script data-bslib-sidebar-init>bslib.Sidebar.initCollapsibleAll()</script>
+    </div>
+  </body>
+</body>
+</html>

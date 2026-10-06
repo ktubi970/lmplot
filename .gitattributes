@@ -1,0 +1,38 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Explicit text files
+*.R text eol=lf
+*.r text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.sh text eol=lf
+*.toml text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.Rprofile text eol=lf
+Dockerfile text eol=lf
+renv.lock text eol=lf
+
+# Windows scripts must preserve CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Preserved execution logs and release evidence
+docs/release-evidence/* -whitespace
+*.log -whitespace
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.RData binary
+*.rds binary

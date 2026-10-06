@@ -1,0 +1,6 @@
+"file","test","failed","error","warning","skipped","passed"
+"test_app.R","browser log classification uses strict levels and warning pairs",0,FALSE,0,FALSE,7
+"test_app.R","the public modular app completes its browser smoke workflow",0,FALSE,0,FALSE,18
+"test_app.R","browser service failure retains plot and download then recovers",0,FALSE,0,FALSE,8
+"test_app.R","keyboard workflow and observed Plotly clicks share the Brain selection",0,FALSE,0,FALSE,24
+"test_link_browser.R","same-default model switch fits the link selected in the browser",0,FALSE,0,FALSE,2

@@ -1,0 +1,176 @@
+"file","test","failed","error","warning","skipped","passed"
+"test_acceptance.R","the complete beta matrix executes end to end",0,FALSE,0,FALSE,121
+"test_accessibility.R","semantic shell and Brain chart alternatives resolve their descriptions",0,FALSE,0,FALSE,22
+"test_accessibility.R","large chart alternatives explicitly preview rows and keep the table data separate",0,FALSE,0,FALSE,3
+"test_accessibility.R","local typography and selected scientific colors meet declared contrast targets",0,FALSE,0,FALSE,8
+"test_analysis_request.R","request defaults are normalized without accepting extra fields",0,FALSE,0,FALSE,8
+"test_analysis_request.R","request rejects malformed objects and required scalar types",0,FALSE,0,FALSE,36
+"test_analysis_request.R","link grid and source presence are strictly validated",0,FALSE,0,FALSE,28
+"test_analysis_request.R","simulation validates nested keys types and every public bound",0,FALSE,0,FALSE,111
+"test_analysis_request.R","Expert requires the exact schema and a trusted local capability",0,FALSE,0,FALSE,23
+"test_app.R","browser log classification uses strict levels and warning pairs",0,FALSE,0,FALSE,7
+"test_app.R","the public modular app completes its browser smoke workflow",0,FALSE,0,FALSE,18
+"test_app.R","browser service failure retains plot and download then recovers",0,FALSE,0,FALSE,8
+"test_app.R","keyboard workflow and observed Plotly clicks share the Brain selection",0,FALSE,0,FALSE,24
+"test_app_structure.R","public shell exposes four workflows, semantic landmarks and namespaced controls",0,FALSE,0,FALSE,12
+"test_ci_scripts.R","both CI R steps execute later lines and propagate their failure on Windows",0,FALSE,0,FALSE,16
+"test_ci_scripts.R","CI saves complete test evidence before failing for errors or skipped tests",0,FALSE,0,FALSE,25
+"test_cli_contract.R","CLI returns the versioned complete result from any working directory",0,FALSE,0,FALSE,16
+"test_cli_contract.R","serialized Brain contributions retain reconstructible precision",0,FALSE,0,FALSE,4
+"test_cli_contract.R","CLI exports out-of-domain grid predictions as explained nulls",0,FALSE,0,FALSE,5
+"test_cli_contract.R","CLI classifies malformed and forbidden public requests",0,FALSE,0,FALSE,35
+"test_cli_contract.R","CLI requires exactly two arguments and keeps stdout empty",0,FALSE,0,FALSE,8
+"test_cli_contract.R","extra CLI arguments write an error to the identifiable second path",0,FALSE,0,FALSE,13
+"test_cli_contract.R","sourced CLI classifies dependency and analysis failures without leaking details",0,FALSE,0,FALSE,24
+"test_cli_contract.R","CLI handles unavailable jsonlite and lme4 without runtime installation",0,FALSE,0,FALSE,10
+"test_cli_contract.R","serialization and mapping failures produce a fixed exit-4 envelope",0,FALSE,0,FALSE,10
+"test_cli_contract.R","CLI leaves absent output parents absent and reports exit 4",0,FALSE,0,FALSE,5
+"test_cli_contract.R","CLI handles dependency errors during module loading",0,FALSE,0,FALSE,10
+"test_cli_contract.R","headless CLI works with Shiny present and optional UI addons unavailable",0,FALSE,0,FALSE,4
+"test_cli_contract.R","CLI handles request I/O and keeps original serialization diagnostics",0,FALSE,0,FALSE,12
+"test_cli_contract.R","CLI exports real-data identity and GLMM unavailable intervals",0,FALSE,0,FALSE,14
+"test_cli_contract.R","CLI validates the Brain once and retains one-item arrays and factor text",0,FALSE,0,FALSE,3
+"test_cli_contract.R","JSON sanitizer preserves row and array positions with explicit nulls",0,FALSE,0,FALSE,11
+"test_cli_contract.R","atomic writer uses one replacement and never moves the old output aside",0,FALSE,0,FALSE,12
+"test_config.R","beta version is exact",0,FALSE,0,FALSE,2
+"test_data_provenance_browser.R","Data filters remain operable without focusing or exposing sizing copies",0,FALSE,0,FALSE,108
+"test_deployment.R","the shipped runtime contains only the maintained Shiny application",0,FALSE,0,FALSE,43
+"test_deployment.R","ignore configuration retires Python deployment exclusions",0,FALSE,0,FALSE,2
+"test_deployment.R","the image builds locked dependencies and starts Shiny without privileged init",0,FALSE,0,FALSE,14
+"test_deployment.R","Compose bounds an immutable non-root service on an internal network",0,FALSE,0,FALSE,20
+"test_eli5.R","coefficient copy uses link-specific associations and conditional p-values",0,FALSE,0,FALSE,21
+"test_eli5.R","Guided interpretation is deterministic for all 15 combinations",0,FALSE,0,FALSE,77
+"test_eli5.R","Guided interpretation renders an English public module",0,FALSE,0,FALSE,2
+"test_example_manifest.R","real-data manifest covers the seven models exactly",0,FALSE,0,FALSE,11
+"test_example_manifest.R","real-data manifest records deterministic preprocessing summaries",0,FALSE,0,FALSE,1
+"test_example_sources.R","SHA-256 helper hashes file bytes",0,FALSE,0,FALSE,1
+"test_example_sources.R","all reviewed sources exist and match the manifest",0,FALSE,0,FALSE,11
+"test_examples.R","prepared examples load, validate, and fit",0,FALSE,0,FALSE,36
+"test_examples.R","prepared examples satisfy their exact domains",0,FALSE,0,FALSE,6
+"test_examples.R","each model resolves to its assigned scientific example",0,FALSE,0,FALSE,1
+"test_examples.R","prepared examples retain exact source-role display columns",0,FALSE,0,FALSE,6
+"test_examples.R","example metadata retains exact scientific labels and units",0,FALSE,0,FALSE,6
+"test_examples.R","real examples expose scientific plots and enriched diagnostics",0,FALSE,0,FALSE,35
+"test_examples.R","GLMM example omits the unreadable 65-school legend",0,FALSE,0,FALSE,2
+"test_examples.R","all source hashes pass before any builder or writer runs",0,FALSE,0,FALSE,4
+"test_link_browser.R","same-default model switch fits the link selected in the browser",0,FALSE,0,FALSE,2
+"test_model.R","registry exposes the beta acceptance matrix",0,FALSE,0,FALSE,4
+"test_model.R","invalid models and links fail explicitly",0,FALSE,0,FALSE,2
+"test_model.R","every beta combination fits and returns response-scale values",0,FALSE,0,FALSE,87
+"test_model.R","Poisson identity fits the documented acceptance simulation",0,FALSE,0,FALSE,4
+"test_model.R","fit_model validates GLMM groups without relying on simulation",0,FALSE,0,FALSE,11
+"test_model.R","extract_model_kpis and extract_coefficient_table return structured metrics",0,FALSE,0,FALSE,11
+"test_model.R","model_latex_formula returns LaTeX formula for all 15 model/link combinations",0,FALSE,0,FALSE,20
+"test_model.R","format_pval and get_pval_sig_class return significance tiers",0,FALSE,0,FALSE,5
+"test_model.R","residual diagnostics flag curvature without claiming adequacy",0,FALSE,0,FALSE,4
+"test_model_brain.R","all 15 model/link cases reproduce R predictions",0,FALSE,0,FALSE,79
+"test_model_brain.R","observation records preserve residuals and term arithmetic",0,FALSE,0,FALSE,161
+"test_model_brain.R","observation IDs prefer a valid business ID and otherwise use row numbers",0,FALSE,0,FALSE,5
+"test_model_brain.R","tolerance is scaled without weakening its absolute floor",0,FALSE,0,FALSE,1
+"test_model_brain.R","labels are normalized without inferred units",0,FALSE,0,FALSE,4
+"test_model_brain.R","lme4 GLMM modes use the fitted random intercept exactly",0,FALSE,0,FALSE,8
+"test_model_brain.R","legacy nlme and fixed-factor GLMM fits are rejected",0,FALSE,0,FALSE,2
+"test_model_brain_contract.R","all registry cases produce complete valid contracts and exact intervals",0,FALSE,0,FALSE,8102
+"test_model_brain_contract.R","schema and arithmetic mutations cannot be accepted or sanitized",0,FALSE,0,FALSE,75
+"test_model_brain_contract.R","selection is a strict pure lookup and default is the median conditional prediction",0,FALSE,0,FALSE,12
+"test_model_brain_contract.R","record collections cannot become keyed objects and scalar values cannot be matrices",0,FALSE,0,FALSE,9
+"test_model_brain_contract.R","builder rejects changed fitted rows and invalid label or mode requests",0,FALSE,0,FALSE,9
+"test_model_brain_contract.R","schema records contain only their names attribute before JSON serialization",0,FALSE,0,FALSE,55
+"test_model_brain_contract.R","link curve values must remain plain numeric vectors for JSON arrays",0,FALSE,0,FALSE,8
+"test_model_brain_contract.R","GLMM source groups match fitted rows independently of factor levels",0,FALSE,0,FALSE,3
+"test_model_brain_contract.R","GLMM group summary ordering is independent of factor level order",0,FALSE,0,FALSE,2
+"test_model_brain_contract.R","GLMM always contains both modes and rejects legacy fits and malformed pairs",0,FALSE,0,FALSE,565
+"test_model_brain_contract.R","analysis builds and validates exactly once and navigation never refits",0,FALSE,0,FALSE,65
+"test_model_brain_contract.R","warnings are ordered records and the 5000-row contract stays within budget",0,FALSE,0,FALSE,5
+"test_model_brain_ui.R","chart CSV retains double precision and explicit missing numeric values",0,FALSE,0,FALSE,3
+"test_model_brain_ui.R","Brain renderers preserve stored contributions, intervals and curve samples",0,FALSE,0,FALSE,28
+"test_model_brain_ui.R","GLMM group alternatives retain every group and mark population effects inactive",0,FALSE,0,FALSE,9
+"test_model_brain_ui.R","all supported Brain renderers need no scientific recomputation",0,FALSE,0,FALSE,121
+"test_model_brain_ui.R","selection is shared, generation guarded and navigation never recomputes analysis",0,FALSE,0,FALSE,19
+"test_model_brain_ui.R","GLMM mode changes preserve source identity and select stored mode values",0,FALSE,0,FALSE,5
+"test_model_diagnostics.R","LM metrics retain neutral numeric comparison values",0,FALSE,0,FALSE,6
+"test_model_diagnostics.R","GLM metrics use Pearson dispersion and preserve undefined values",0,FALSE,0,FALSE,5
+"test_model_diagnostics.R","coefficient intervals use LM t limits and GLM labelled Wald limits",0,FALSE,0,FALSE,8
+"test_model_diagnostics.R","LM and GLM intervals target mean responses and preserve rows",0,FALSE,0,FALSE,22
+"test_model_diagnostics.R","inverse and sqrt link intervals cannot reverse bounds or cross a branch silently",0,FALSE,0,FALSE,4
+"test_model_diagnostics.R","GLMM correlations separate population and conditional predictions",0,FALSE,0,FALSE,6
+"test_model_diagnostics.R","family diagnostic strategies return information without validity verdicts",0,FALSE,0,FALSE,13
+"test_model_diagnostics.R","GLMM diagnostics expose optimizer messages singularity and unknown codes",0,FALSE,0,FALSE,7
+"test_model_fitting.R","every registry entry resolves a named fit strategy",0,FALSE,0,FALSE,1
+"test_model_fitting.R","GLMM reports a dependency error when lme4 is unavailable",0,FALSE,0,FALSE,1
+"test_model_fitting.R","GLMM never returns an lm or lme fallback",0,FALSE,0,FALSE,1
+"test_model_fitting.R","lm_2d ignores an extra Y column",0,FALSE,0,FALSE,1
+"test_pipeline.R","service factory validates every injected dependency",0,FALSE,0,FALSE,101
+"test_pipeline.R","validated simulation returns canonical assessment and grid",0,FALSE,0,FALSE,11
+"test_pipeline.R","nonlinear diagnostics and custom grid reach the result",0,FALSE,0,FALSE,3
+"test_pipeline.R","real examples resolve lazily and match the requested model",0,FALSE,0,FALSE,9
+"test_pipeline.R","default real requests use injected resolution without a local manifest",0,FALSE,0,FALSE,6
+"test_pipeline.R","service outputs warnings and errors are faithfully propagated",0,FALSE,0,FALSE,4
+"test_pipeline.R","Expert execution enforces trust and the four argument contract",0,FALSE,0,FALSE,6
+"test_pipeline.R","use case rejects legacy and mutated boundaries before service execution",0,FALSE,0,FALSE,13
+"test_production_entrypoints.R","run_analysis production entry point fits an lm_2d request",0,FALSE,0,FALSE,9
+"test_real_data_acceptance.R","all examples have complete offline artifacts",0,FALSE,0,FALSE,50
+"test_release.R","release retains the locked Shiny runtime and launch contract",0,FALSE,0,FALSE,4
+"test_release.R","a fresh R process activates the project library",0,FALSE,0,FALSE,1
+"test_release.R","README documents the exact beta matrix and trusted expert boundary",0,FALSE,0,FALSE,21
+"test_release.R","launcher validates an explicitly restored library before running Shiny",0,FALSE,0,FALSE,9
+"test_release.R","Windows launcher fails without bootstrapping an absent project library",0,FALSE,0,FALSE,5
+"test_release.R","direct R and CLI startup refuse a missing project library without bootstrapping",0,FALSE,0,FALSE,10
+"test_release.R","explicit bootstrap command restores an already locked project",0,FALSE,0,FALSE,2
+"test_release.R","renv lockfile covers runtime and test dependencies",0,FALSE,0,FALSE,2
+"test_release.R","ignore rules exclude transient state without hiding release evidence",0,FALSE,0,FALSE,2
+"test_release.R","TODO records completed automated beta verification",0,FALSE,0,FALSE,2
+"test_release.R","release identity agrees across runtime, image, docs and license",0,FALSE,0,FALSE,14
+"test_release.R","public release guidance documents CLI and the isolated deployment boundary",0,FALSE,0,FALSE,11
+"test_release.R","CI requires both locked R platforms and isolated Docker health",0,FALSE,0,FALSE,29
+"test_release.R","image and CI restoration explicitly opt in to renv bootstrap",0,FALSE,0,FALSE,3
+"test_release.R","runtime R sources never install dependencies",0,FALSE,0,FALSE,22
+"test_scientific_copy.R","documented real units reach the strict Brain and exported chart data",0,FALSE,0,FALSE,61
+"test_scientific_copy.R","observations and fitted means use distinct scientifically correct chart labels",0,FALSE,0,FALSE,32
+"test_scientific_copy.R","coefficient units distinguish predictor units and transformed link scales",0,FALSE,0,FALSE,6
+"test_scientific_copy.R","GLMM diagnostic and enriched exports identify conditional predictions without refitting",0,FALSE,0,FALSE,18
+"test_scientific_copy_tables.R","Overview coefficients and enriched CSV include each predictor unit",0,FALSE,0,FALSE,4
+"test_scientific_copy_tables.R","unit validation rejects empty supplied metadata and names the actual link scale",0,FALSE,0,FALSE,12
+"test_scientific_metadata.R","out-of-domain grid rows are explained in the committed result",0,FALSE,0,FALSE,5
+"test_scientific_metadata.R","all real Plotly traces use literal scientific hover labels",0,FALSE,0,FALSE,77
+"test_scientific_metadata.R","real plot titles include exact model family labels and citations",0,FALSE,0,FALSE,18
+"test_scientific_metadata.R","simulation plots retain generic canonical axes without labels",0,FALSE,0,FALSE,5
+"test_scientific_metadata.R","every real provenance card defines variables and preprocessing",0,FALSE,0,FALSE,102
+"test_server.R","coordinator retains success, logs details, sanitizes failures and recovers",0,FALSE,0,FALSE,16
+"test_server.R","service and logger failure preserves results; first failure is not stale",0,FALSE,0,FALSE,8
+"test_server.R","app generates only on submission and drafts preserve downloads",0,FALSE,0,FALSE,6
+"test_server.R","all registered models and real examples use the canonical workflow",0,FALSE,0,FALSE,98
+"test_server.R","trusted Expert runs only through the boundary and invalid GLMM retains CSV",0,FALSE,0,FALSE,6
+"test_server.R","separate sessions start empty and only literal trust flag enables Expert",0,FALSE,0,FALSE,15
+"test_shiny_modules.R","configuration validates source-exclusive requests and rejects forged Expert",0,FALSE,0,FALSE,6
+"test_shiny_modules.R","configuration resets shared links and ignores delayed prior selections",0,FALSE,0,FALSE,6
+"test_shiny_modules.R","a same-default model switch accepts the next visible link selection",0,FALSE,0,FALSE,3
+"test_shiny_modules.R","views render committed values without scientific recomputation",0,FALSE,0,FALSE,17
+"test_shiny_modules.R","public and trusted configuration controls are capability-gated and namespaced",0,FALSE,0,FALSE,4
+"test_shiny_modules.R","Overview selection uses stable identities and rejects stale result events",0,FALSE,0,FALSE,7
+"test_shiny_modules.R","diagnostic guidance exposes known advice without raw optimizer details",0,FALSE,0,FALSE,2
+"test_shiny_modules.R","configuration instances keep disjoint draft state",0,FALSE,0,FALSE,4
+"test_simulation.R","simulation collector returns parameters and code without executing them",0,FALSE,0,FALSE,19
+"test_simulation.R","generated reproducible code preserves patterns and random draw order",0,FALSE,0,FALSE,12
+"test_simulation.R","all beta combinations simulate deterministically",0,FALSE,0,FALSE,46
+"test_simulation.R","simulated responses respect their domains",0,FALSE,0,FALSE,4
+"test_simulation.R","square-root count simulation rejects negative generating predictors",0,FALSE,0,FALSE,1
+"test_simulation.R","standard GLMM simulation enforces the group-count contract",0,FALSE,0,FALSE,3
+"test_simulation.R","GLMM simulation data requires complete membership in five observed groups",0,FALSE,0,FALSE,2
+"test_simulation.R","expert evaluation rejects invalid output",0,FALSE,0,FALSE,2
+"test_simulation.R","simulate_data supports non-linear patterns (quadratic, cosine, heteroscedastic)",0,FALSE,0,FALSE,5
+"test_visualization.R","prediction grids contain finite response-scale fits",0,FALSE,0,FALSE,21
+"test_visualization.R","GLMM prediction grids represent a population surface",0,FALSE,0,FALSE,4
+"test_visualization.R","GLMM surfaces accept character group data",0,FALSE,0,FALSE,4
+"test_visualization.R","enrichment adds exactly fitted values and response residuals",0,FALSE,0,FALSE,28
+"test_visualization.R","valid GLMM fitting and enrichment preserve every input row",0,FALSE,0,FALSE,4
+"test_visualization.R","2D LM plot contains observations and an X-ordered fitted line",0,FALSE,0,FALSE,6
+"test_visualization.R","3D plots contain point clouds and optional response surfaces",0,FALSE,0,FALSE,15
+"test_visualization.R","surface matrix rows map to Y and columns map to X",0,FALSE,0,FALSE,2
+"test_visualization.R","GLMM observations retain group color mapping",0,FALSE,0,FALSE,2
+"test_visualization.R","diagnostic plots use supported representations",0,FALSE,0,FALSE,4
+"test_visualization.R","diagnostic warning filtering preserves non-lifecycle warnings",0,FALSE,0,FALSE,2
+"test_visualization.R","prediction_grid expands bounds according to pad parameter",0,FALSE,0,FALSE,4
+"test_visualization.R","3D plots include initial camera eye position",0,FALSE,0,FALSE,3
+"test_visualization.R","padded count and Gamma grids mark invalid means unavailable",0,FALSE,0,FALSE,14
+"test_visualization.R","committed chart alternatives retain exact prediction and interval values",0,FALSE,0,FALSE,7

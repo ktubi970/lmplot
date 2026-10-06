@@ -1,0 +1,58 @@
+{
+  "name": "lmplot",
+  "networks": {
+    "lmplot_internal": {
+      "name": "lmplot_lmplot_internal",
+      "ipam": {},
+      "internal": true
+    }
+  },
+  "services": {
+    "lmplot": {
+      "build": {
+        "context": "D:\\projet\\lmplot",
+        "dockerfile": "Dockerfile"
+      },
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": null,
+      "deploy": {
+        "resources": {
+          "limits": {
+            "cpus": 2,
+            "memory": "1073741824",
+            "pids": 256
+          },
+          "reservations": {
+            "cpus": 0.5,
+            "memory": "536870912"
+          }
+        },
+        "placement": {}
+      },
+      "entrypoint": null,
+      "expose": [
+        "3838"
+      ],
+      "image": "lmplot:0.10.0-beta.1",
+      "networks": {
+        "lmplot_internal": null
+      },
+      "pids_limit": 256,
+      "platform": "linux/amd64",
+      "read_only": true,
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp:mode=1777",
+        "/var/log/shiny-server:uid=997,gid=997,mode=0770",
+        "/var/lib/shiny-server:uid=997,gid=997,mode=0770",
+        "/var/run/shiny-server:uid=997,gid=997,mode=0770",
+        "/var/shiny-server/sockets:uid=997,gid=997,mode=0770"
+      ]
+    }
+  }
+}

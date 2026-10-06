@@ -1,0 +1,739 @@
+﻿2026-10-01T13:14:14.2332394Z Current runner version: '2.337.0'
+2026-10-01T13:14:14.2360879Z ##[group]Runner Image Provisioner
+2026-10-01T13:14:14.2361818Z Hosted Compute Agent
+2026-10-01T13:14:14.2362526Z Version: 20260901.588
+2026-10-01T13:14:14.2363245Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-10-01T13:14:14.2364120Z Build Date: 2026-09-01T19:56:44Z
+2026-10-01T13:14:14.2364889Z Worker ID: {43c85eaf-8576-4e91-8c1f-09b815726483}
+2026-10-01T13:14:14.2365689Z Azure Region: centralus
+2026-10-01T13:14:14.2366329Z ##[endgroup]
+2026-10-01T13:14:14.2367958Z ##[group]Operating System
+2026-10-01T13:14:14.2368654Z Microsoft Windows Server 2025
+2026-10-01T13:14:14.2369352Z 10.0.26100
+2026-10-01T13:14:14.2369931Z Datacenter
+2026-10-01T13:14:14.2370501Z ##[endgroup]
+2026-10-01T13:14:14.2371103Z ##[group]Runner Image
+2026-10-01T13:14:14.2371795Z Image: windows-2025-vs2026
+2026-10-01T13:14:14.2372485Z Version: 20260925.250.1
+2026-10-01T13:14:14.2374223Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260925.250/images/windows/Windows2025-VS2026-Readme.md
+2026-10-01T13:14:14.2376643Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260925.250
+2026-10-01T13:14:14.2377718Z ##[endgroup]
+2026-10-01T13:14:14.2378992Z ##[group]GITHUB_TOKEN Permissions
+2026-10-01T13:14:14.2381068Z Contents: read
+2026-10-01T13:14:14.2381733Z Metadata: read
+2026-10-01T13:14:14.2382397Z ##[endgroup]
+2026-10-01T13:14:14.2384592Z Secret source: Actions
+2026-10-01T13:14:14.2385703Z Cache mode: write
+2026-10-01T13:14:14.2386442Z Prepare workflow directory
+2026-10-01T13:14:14.2795480Z Prepare all required actions
+2026-10-01T13:14:14.2857907Z Getting action download info
+2026-10-01T13:14:14.6245000Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-01T13:14:14.7214827Z Download action repository 'r-lib/actions@v2' (SHA:f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05)
+2026-10-01T13:14:15.3773543Z Getting action download info
+2026-10-01T13:14:15.5495064Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-10-01T13:14:15.8662977Z Complete job name: R 4.6.0 (windows-latest)
+2026-10-01T13:14:16.0094208Z ##[group]Run actions/checkout@v4
+2026-10-01T13:14:16.0096782Z with:
+2026-10-01T13:14:16.0097693Z   repository: ktubi970/lmplot
+2026-10-01T13:14:16.0105475Z   token: ***
+2026-10-01T13:14:16.0106186Z   ssh-strict: true
+2026-10-01T13:14:16.0106900Z   ssh-user: git
+2026-10-01T13:14:16.0107595Z   persist-credentials: true
+2026-10-01T13:14:16.0108321Z   clean: true
+2026-10-01T13:14:16.0109008Z   sparse-checkout-cone-mode: true
+2026-10-01T13:14:16.0109817Z   fetch-depth: 1
+2026-10-01T13:14:16.0110485Z   fetch-tags: false
+2026-10-01T13:14:16.0111153Z   show-progress: true
+2026-10-01T13:14:16.0111826Z   lfs: false
+2026-10-01T13:14:16.0112457Z   submodules: false
+2026-10-01T13:14:16.0113144Z   set-safe-directory: true
+2026-10-01T13:14:16.0113910Z   allow-unsafe-pr-checkout: false
+2026-10-01T13:14:16.0115185Z ##[endgroup]
+2026-10-01T13:14:17.5582993Z Syncing repository: ktubi970/lmplot
+2026-10-01T13:14:17.5585754Z ##[group]Getting Git version info
+2026-10-01T13:14:17.5586995Z Working directory is 'D:\a\lmplot\lmplot'
+2026-10-01T13:14:17.5588409Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-01T13:14:17.5589173Z git version 2.55.0.windows.5
+2026-10-01T13:14:17.5591493Z ##[endgroup]
+2026-10-01T13:14:17.5597762Z Temporarily overriding HOME='D:\a\_temp\099ca453-7d27-448a-840f-b6ce4a757aa0' before making global git config changes
+2026-10-01T13:14:17.5599155Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-01T13:14:17.5600401Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\lmplot\lmplot
+2026-10-01T13:14:17.5602344Z Deleting the contents of 'D:\a\lmplot\lmplot'
+2026-10-01T13:14:17.5603672Z ##[group]Initializing the repository
+2026-10-01T13:14:17.5604600Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\lmplot\lmplot
+2026-10-01T13:14:17.5607820Z Initialized empty Git repository in D:/a/lmplot/lmplot/.git/
+2026-10-01T13:14:17.5609960Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/ktubi970/lmplot
+2026-10-01T13:14:17.5612250Z ##[endgroup]
+2026-10-01T13:14:17.5615400Z ##[group]Disabling automatic garbage collection
+2026-10-01T13:14:17.5619532Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-01T13:14:17.5621892Z ##[endgroup]
+2026-10-01T13:14:17.5622872Z ##[group]Setting up auth
+2026-10-01T13:14:17.5624055Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-01T13:14:17.5627565Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-01T13:14:18.6200852Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-01T13:14:18.6536610Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-01T13:14:20.5700697Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-01T13:14:20.5702437Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-01T13:14:20.5704112Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-01T13:14:20.5705808Z ##[endgroup]
+2026-10-01T13:14:20.5706400Z ##[group]Fetching the repository
+2026-10-01T13:14:20.5707526Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +42e70f36788bfaeac880251a29195de2713ceb4c:refs/remotes/origin/master
+2026-10-01T13:14:21.6532581Z From https://github.com/ktubi970/lmplot
+2026-10-01T13:14:21.6535517Z  * [new ref]         42e70f36788bfaeac880251a29195de2713ceb4c -> origin/master
+2026-10-01T13:14:21.6763942Z ##[endgroup]
+2026-10-01T13:14:21.6792140Z ##[group]Determining the checkout info
+2026-10-01T13:14:21.6810700Z ##[endgroup]
+2026-10-01T13:14:21.6847104Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-01T13:14:21.7234778Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-01T13:14:21.7703052Z ##[group]Checking out the ref
+2026-10-01T13:14:21.7709240Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B master refs/remotes/origin/master
+2026-10-01T13:14:21.8962859Z Reset branch 'master'
+2026-10-01T13:14:21.9029360Z branch 'master' set up to track 'origin/master'.
+2026-10-01T13:14:21.9213664Z ##[endgroup]
+2026-10-01T13:14:21.9732702Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-01T13:14:22.0465999Z 42e70f36788bfaeac880251a29195de2713ceb4c
+2026-10-01T13:14:22.1200625Z ##[group]Run r-lib/actions/setup-r@v2
+2026-10-01T13:14:22.1201338Z with:
+2026-10-01T13:14:22.1201745Z   r-version: 4.6.0
+2026-10-01T13:14:22.1202153Z   use-public-rspm: true
+2026-10-01T13:14:22.1202599Z   Ncpus: 1
+2026-10-01T13:14:22.1202999Z   remove-openmp-macos: true
+2026-10-01T13:14:22.1203457Z   http-user-agent: default
+2026-10-01T13:14:22.1203914Z   install-r: true
+2026-10-01T13:14:22.1204386Z   windows-path-include-rtools: true
+2026-10-01T13:14:22.1204964Z   windows-path-include-mingw: true
+2026-10-01T13:14:22.1205422Z   update-rtools: false
+2026-10-01T13:14:22.1205900Z   working-directory: .
+2026-10-01T13:14:22.1206302Z ##[endgroup]
+2026-10-01T13:14:24.3066387Z [command]D:\a\_temp\R-4.6.0-win.exe /VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\R
+2026-10-01T13:14:49.9972906Z ##[group]Downloading and installing Ghostscript
+2026-10-01T13:14:50.7359070Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command "$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ; try { [System.IO.Compression.ZipFile]::ExtractToDirectory('D:\a\_temp\721363d7-5e23-4344-9abf-ce41730a4ffa', 'D:\a\_temp\b6c45835-5df3-4c0c-ab1b-024a66572fa7', $true) } catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath 'D:\a\_temp\721363d7-5e23-4344-9abf-ce41730a4ffa' -DestinationPath 'D:\a\_temp\b6c45835-5df3-4c0c-ab1b-024a66572fa7' -Force } else { throw $_ } } ;"
+2026-10-01T13:14:52.5043488Z ##[endgroup]
+2026-10-01T13:14:52.7402116Z ##[group]Run r-lib/actions/setup-renv@v2
+2026-10-01T13:14:52.7402567Z with:
+2026-10-01T13:14:52.7402806Z   cache-version: v1
+2026-10-01T13:14:52.7403045Z   bypass-cache: false
+2026-10-01T13:14:52.7403355Z   working-directory: .
+2026-10-01T13:14:52.7403628Z env:
+2026-10-01T13:14:52.7403872Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:14:52.7404165Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:14:52.7404474Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:14:52.7404810Z   TZ: UTC
+2026-10-01T13:14:52.7405070Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:14:52.7405349Z   NOT_CRAN: true
+2026-10-01T13:14:52.7405692Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:14:52.7406164Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:14:52.7406598Z   LMPLOT_EXPLICIT_BOOTSTRAP: 1
+2026-10-01T13:14:52.7406889Z ##[endgroup]
+2026-10-01T13:14:52.7469350Z ##[start-action display=Set RENV_PATHS_ROOT;id=__r-lib_actions_2.__run]
+2026-10-01T13:14:52.7621498Z ##[group]Run echo "RENV_PATHS_ROOT=D:\a\_temp/renv" >> $GITHUB_ENV
+2026-10-01T13:14:52.7622041Z [36;1mecho "RENV_PATHS_ROOT=D:\a\_temp/renv" >> $GITHUB_ENV[0m
+2026-10-01T13:14:52.7984567Z shell: C:\rtools45\usr\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-01T13:14:52.7985036Z env:
+2026-10-01T13:14:52.7985410Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:14:52.7985735Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:14:52.7986053Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:14:52.7986366Z   TZ: UTC
+2026-10-01T13:14:52.7986635Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:14:52.7986949Z   NOT_CRAN: true
+2026-10-01T13:14:52.7987308Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:14:52.7987809Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:14:52.7988238Z   LMPLOT_EXPLICIT_BOOTSTRAP: 1
+2026-10-01T13:14:52.7988540Z ##[endgroup]
+2026-10-01T13:14:54.2268303Z ##[end-action id=__r-lib_actions_2.__run;outcome=success;conclusion=success;duration_ms=1479]
+2026-10-01T13:14:54.2272083Z ##[start-action display=Install and activate renv;id=__r-lib_actions_2.__run_2]
+2026-10-01T13:14:54.2397049Z ##[group]Run if (!requireNamespace("renv", quietly=TRUE)) install.packages("renv")
+2026-10-01T13:14:54.2397661Z [36;1mif (!requireNamespace("renv", quietly=TRUE)) install.packages("renv")[0m
+2026-10-01T13:14:54.2398163Z [36;1mrenv::activate(profile = )[0m
+2026-10-01T13:14:54.2820818Z shell: C:\R\bin\Rscript.EXE {0}
+2026-10-01T13:14:54.2821254Z env:
+2026-10-01T13:14:54.2821720Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:14:54.2822173Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:14:54.2822592Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:14:54.2823101Z   TZ: UTC
+2026-10-01T13:14:54.2823435Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:14:54.2823868Z   NOT_CRAN: true
+2026-10-01T13:14:54.2824309Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:14:54.2824979Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:14:54.2825596Z   RENV_PATHS_ROOT: D:\a\_temp/renv
+2026-10-01T13:14:54.2826172Z   LMPLOT_EXPLICIT_BOOTSTRAP: 1
+2026-10-01T13:14:54.2826561Z ##[endgroup]
+2026-10-01T13:14:54.4722813Z # Bootstrapping renv 1.2.3 ---------------------------------------------------
+2026-10-01T13:14:56.0479867Z - Downloading renv ... OK
+2026-10-01T13:15:06.2615199Z - Installing renv  ... OK
+2026-10-01T13:15:06.2615692Z 
+2026-10-01T13:15:06.5859685Z - One or more packages recorded in the lockfile are not installed.
+2026-10-01T13:15:06.5860515Z - Use `renv::status()` for more details.
+2026-10-01T13:15:06.7337255Z ##[end-action id=__r-lib_actions_2.__run_2;outcome=success;conclusion=success;duration_ms=12506]
+2026-10-01T13:15:06.7341324Z ##[start-action display=Get R and OS version;id=__r-lib_actions_2.get-version]
+2026-10-01T13:15:06.7477000Z ##[group]Run cat("os-version=", sessionInfo()$running, "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
+2026-10-01T13:15:06.7480233Z [36;1mcat("os-version=", sessionInfo()$running, "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)[0m
+2026-10-01T13:15:06.7480982Z [36;1mcat("r-version=", R.Version()$version.string, "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)[0m
+2026-10-01T13:15:06.7488891Z shell: C:\R\bin\Rscript.EXE {0}
+2026-10-01T13:15:06.7489194Z env:
+2026-10-01T13:15:06.7489431Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:15:06.7489730Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:15:06.7490043Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:15:06.7490318Z   TZ: UTC
+2026-10-01T13:15:06.7490553Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:15:06.7490796Z   NOT_CRAN: true
+2026-10-01T13:15:06.7491121Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:15:06.7491562Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:15:06.7491952Z   RENV_PATHS_ROOT: D:\a\_temp/renv
+2026-10-01T13:15:06.7492272Z   LMPLOT_EXPLICIT_BOOTSTRAP: 1
+2026-10-01T13:15:06.7492547Z ##[endgroup]
+2026-10-01T13:15:07.1073120Z - One or more packages recorded in the lockfile are not installed.
+2026-10-01T13:15:07.1074537Z - Use `renv::status()` for more details.
+2026-10-01T13:15:07.1641536Z ##[end-action id=__r-lib_actions_2.get-version;outcome=success;conclusion=success;duration_ms=429]
+2026-10-01T13:15:07.1647125Z ##[start-action display=Restore Renv package cache;id=__r-lib_actions_2.__actions_cache]
+2026-10-01T13:15:07.2831680Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-10-01T13:15:07.2832110Z with:
+2026-10-01T13:15:07.2832430Z   path: D:\a\_temp/renv
+renv/library
+
+2026-10-01T13:15:07.2832990Z   key: Windows Server 2022 x64 (build 26100)-R version 4.6.0 (2026-04-24 ucrt)-v1-ac29db1134d6b0598d5813cb127ef994985e341fb6374a065bd5afa66acea931
+2026-10-01T13:15:07.2833639Z   restore-keys: Windows Server 2022 x64 (build 26100)-R version 4.6.0 (2026-04-24 ucrt)-v1-
+2026-10-01T13:15:07.2834113Z   enableCrossOsArchive: false
+2026-10-01T13:15:07.2834397Z   fail-on-cache-miss: false
+2026-10-01T13:15:07.2834668Z   lookup-only: false
+2026-10-01T13:15:07.2834942Z   save-always: false
+2026-10-01T13:15:07.2835185Z env:
+2026-10-01T13:15:07.2835503Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:15:07.2835781Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:15:07.2836048Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:15:07.2836335Z   TZ: UTC
+2026-10-01T13:15:07.2836570Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:15:07.2836845Z   NOT_CRAN: true
+2026-10-01T13:15:07.2837152Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:15:07.2837557Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:15:07.2837972Z   RENV_PATHS_ROOT: D:\a\_temp/renv
+2026-10-01T13:15:07.2838298Z   LMPLOT_EXPLICIT_BOOTSTRAP: 1
+2026-10-01T13:15:07.2838575Z ##[endgroup]
+2026-10-01T13:15:08.0077190Z Cache not found for input keys: Windows Server 2022 x64 (build 26100)-R version 4.6.0 (2026-04-24 ucrt)-v1-ac29db1134d6b0598d5813cb127ef994985e341fb6374a065bd5afa66acea931, Windows Server 2022 x64 (build 26100)-R version 4.6.0 (2026-04-24 ucrt)-v1-
+2026-10-01T13:15:08.0248948Z ##[end-action id=__r-lib_actions_2.__actions_cache;outcome=success;conclusion=success;duration_ms=860]
+2026-10-01T13:15:08.0252962Z ##[start-action display=Restore Renv package cache;id=__r-lib_actions_2.cache-packages-restore]
+2026-10-01T13:15:08.0270029Z ##[end-action id=__r-lib_actions_2.cache-packages-restore;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-01T13:15:08.0273644Z ##[start-action display=Install renv dependencies;id=__r-lib_actions_2.__run_3]
+2026-10-01T13:15:08.0423456Z ##[group]Run renv::restore()
+2026-10-01T13:15:08.0423931Z [36;1mrenv::restore()[0m
+2026-10-01T13:15:08.0433585Z shell: C:\R\bin\Rscript.EXE {0}
+2026-10-01T13:15:08.0434035Z env:
+2026-10-01T13:15:08.0434389Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:15:08.0434788Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:15:08.0435958Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:15:08.0436372Z   TZ: UTC
+2026-10-01T13:15:08.0436702Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:15:08.0437495Z   NOT_CRAN: true
+2026-10-01T13:15:08.0437953Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:15:08.0438690Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:15:08.0439291Z   RENV_PATHS_ROOT: D:\a\_temp/renv
+2026-10-01T13:15:08.0439704Z   LMPLOT_EXPLICIT_BOOTSTRAP: 1
+2026-10-01T13:15:08.0440132Z ##[endgroup]
+2026-10-01T13:15:08.3977604Z - One or more packages recorded in the lockfile are not installed.
+2026-10-01T13:15:08.3978929Z - Use `renv::status()` for more details.
+2026-10-01T13:15:08.7372944Z The following package(s) will be updated:
+2026-10-01T13:15:08.7373871Z 
+2026-10-01T13:15:08.7374624Z # Repository -----------------------------------------------------------------
+2026-10-01T13:15:08.7375566Z - MASS           [7.3-65 -> 7.3-66]
+2026-10-01T13:15:08.7376695Z - nlme           [3.1-169 -> 3.1-170]
+2026-10-01T13:15:08.7394437Z - AsioHeaders    [* -> 1.30.2-1]
+2026-10-01T13:15:08.7395290Z - askpass        [* -> 1.2.1]
+2026-10-01T13:15:08.7395927Z - backports      [* -> 1.5.1]
+2026-10-01T13:15:08.7397117Z - base64enc      [* -> 0.1-6]
+2026-10-01T13:15:08.7397682Z - brio           [* -> 1.1.5]
+2026-10-01T13:15:08.7398255Z - bslib          [* -> 0.11.0]
+2026-10-01T13:15:08.7398798Z - cachem         [* -> 1.1.0]
+2026-10-01T13:15:08.7399388Z - callr          [* -> 3.8.0]
+2026-10-01T13:15:08.7399926Z - cellranger     [* -> 1.1.0]
+2026-10-01T13:15:08.7400443Z - checkmate      [* -> 2.3.4]
+2026-10-01T13:15:08.7400980Z - chromote       [* -> 0.5.1]
+2026-10-01T13:15:08.7401479Z - cli            [* -> 3.6.6]
+2026-10-01T13:15:08.7401961Z - commonmark     [* -> 2.0.0]
+2026-10-01T13:15:08.7402517Z - cpp11          [* -> 0.5.5]
+2026-10-01T13:15:08.7403087Z - crayon         [* -> 1.5.3]
+2026-10-01T13:15:08.7403606Z - crosstalk      [* -> 1.2.2]
+2026-10-01T13:15:08.7404155Z - curl           [* -> 7.1.0]
+2026-10-01T13:15:08.7404682Z - data.table     [* -> 1.18.4]
+2026-10-01T13:15:08.7405254Z - desc           [* -> 1.4.3]
+2026-10-01T13:15:08.7405772Z - diffobj        [* -> 0.3.8]
+2026-10-01T13:15:08.7406355Z - digest         [* -> 0.6.39]
+2026-10-01T13:15:08.7406882Z - dplyr          [* -> 1.2.1]
+2026-10-01T13:15:08.7407405Z - DT             [* -> 0.34.0]
+2026-10-01T13:15:08.7407950Z - evaluate       [* -> 1.0.5]
+2026-10-01T13:15:08.7408772Z - farver         [* -> 2.1.2]
+2026-10-01T13:15:08.7423826Z - fastmap        [* -> 1.2.0]
+2026-10-01T13:15:08.7429832Z - fontawesome    [* -> 0.5.3]
+2026-10-01T13:15:08.7430570Z - fs             [* -> 2.1.0]
+2026-10-01T13:15:08.7431122Z - generics       [* -> 0.1.4]
+2026-10-01T13:15:08.7431833Z - ggfortify      [* -> 0.4.19]
+2026-10-01T13:15:08.7432424Z - ggplot2        [* -> 4.0.3]
+2026-10-01T13:15:08.7432962Z - globals        [* -> 0.19.1]
+2026-10-01T13:15:08.7433485Z - glue           [* -> 1.8.1]
+2026-10-01T13:15:08.7434055Z - gridExtra      [* -> 2.3.1]
+2026-10-01T13:15:08.7434582Z - gtable         [* -> 0.3.6]
+2026-10-01T13:15:08.7436285Z - highr          [* -> 0.12]
+2026-10-01T13:15:08.7437307Z - hms            [* -> 1.1.4]
+2026-10-01T13:15:08.7437948Z - htmltools      [* -> 0.5.9]
+2026-10-01T13:15:08.7438533Z - htmlwidgets    [* -> 1.6.4]
+2026-10-01T13:15:08.7439079Z - httpuv         [* -> 1.6.17]
+2026-10-01T13:15:08.7439598Z - httr           [* -> 1.4.8]
+2026-10-01T13:15:08.7440270Z - httr2          [* -> 1.3.0]
+2026-10-01T13:15:08.7440823Z - isoband        [* -> 0.3.0]
+2026-10-01T13:15:08.7441401Z - jquerylib      [* -> 0.1.4]
+2026-10-01T13:15:08.7444673Z - jsonlite       [* -> 2.0.0]
+2026-10-01T13:15:08.7445346Z - knitr          [* -> 1.51]
+2026-10-01T13:15:08.7445975Z - labeling       [* -> 0.4.3]
+2026-10-01T13:15:08.7446540Z - later          [* -> 1.4.8]
+2026-10-01T13:15:08.7447110Z - lazyeval       [* -> 0.2.3]
+2026-10-01T13:15:08.7447669Z - lifecycle      [* -> 1.0.5]
+2026-10-01T13:15:08.7448477Z - lme4           [* -> 2.0-6]
+2026-10-01T13:15:08.7449022Z - magrittr       [* -> 2.0.5]
+2026-10-01T13:15:08.7449530Z - memoise        [* -> 2.0.1]
+2026-10-01T13:15:08.7450095Z - mime           [* -> 0.13]
+2026-10-01T13:15:08.7450650Z - minqa          [* -> 1.2.8]
+2026-10-01T13:15:08.7451238Z - nloptr         [* -> 2.2.1]
+2026-10-01T13:15:08.7451795Z - openssl        [* -> 2.4.2]
+2026-10-01T13:15:08.7452349Z - otel           [* -> 0.2.0]
+2026-10-01T13:15:08.7452999Z - pillar         [* -> 1.11.1]
+2026-10-01T13:15:08.7453611Z - pingr          [* -> 2.0.5]
+2026-10-01T13:15:08.7454151Z - pkgbuild       [* -> 1.4.8]
+2026-10-01T13:15:08.7454715Z - pkgconfig      [* -> 2.0.3]
+2026-10-01T13:15:08.7455257Z - pkgload        [* -> 1.5.3]
+2026-10-01T13:15:08.7455788Z - plotly         [* -> 4.12.0]
+2026-10-01T13:15:08.7456358Z - praise         [* -> 1.0.0]
+2026-10-01T13:15:08.7456879Z - prettyunits    [* -> 1.2.0]
+2026-10-01T13:15:08.7457839Z - processx       [* -> 3.9.0]
+2026-10-01T13:15:08.7458399Z - progress       [* -> 1.2.3]
+2026-10-01T13:15:08.7458997Z - promises       [* -> 1.5.0]
+2026-10-01T13:15:08.7459511Z - ps             [* -> 1.9.3]
+2026-10-01T13:15:08.7460061Z - purrr          [* -> 1.2.2]
+2026-10-01T13:15:08.7460616Z - R6             [* -> 2.6.1]
+2026-10-01T13:15:08.7461131Z - rappdirs       [* -> 0.3.4]
+2026-10-01T13:15:08.7461637Z - rbibutils      [* -> 2.4.1]
+2026-10-01T13:15:08.7462191Z - RColorBrewer   [* -> 1.1-3]
+2026-10-01T13:15:08.7462712Z - Rcpp           [* -> 1.1.2]
+2026-10-01T13:15:08.7463446Z - RcppEigen      [* -> 0.3.4.0.2]
+2026-10-01T13:15:08.7463990Z - Rdpack         [* -> 2.6.6]
+2026-10-01T13:15:08.7464504Z - readxl         [* -> 1.5.0]
+2026-10-01T13:15:08.7465005Z - reformulas     [* -> 0.4.4]
+2026-10-01T13:15:08.7465511Z - rematch        [* -> 2.0.0]
+2026-10-01T13:15:08.7466091Z - rlang          [* -> 1.3.0]
+2026-10-01T13:15:08.7466673Z - rmarkdown      [* -> 2.31]
+2026-10-01T13:15:08.7467224Z - rprojroot      [* -> 2.1.1]
+2026-10-01T13:15:08.7467843Z - S7             [* -> 0.2.2]
+2026-10-01T13:15:08.7468351Z - sass           [* -> 0.4.10]
+2026-10-01T13:15:08.7468914Z - scales         [* -> 1.4.0]
+2026-10-01T13:15:08.7469422Z - shiny          [* -> 1.14.0]
+2026-10-01T13:15:08.7469981Z - shinyAce       [* -> 0.4.4]
+2026-10-01T13:15:08.7470602Z - shinytest2     [* -> 0.5.1]
+2026-10-01T13:15:08.7471165Z - shinyWidgets   [* -> 0.9.1]
+2026-10-01T13:15:08.7471726Z - sourcetools    [* -> 0.1.7-2]
+2026-10-01T13:15:08.7472259Z - stringi        [* -> 1.8.7]
+2026-10-01T13:15:08.7472867Z - stringr        [* -> 1.6.0]
+2026-10-01T13:15:08.7473437Z - sys            [* -> 3.4.3]
+2026-10-01T13:15:08.7473971Z - testthat       [* -> 3.3.2]
+2026-10-01T13:15:08.7474511Z - tibble         [* -> 3.3.1]
+2026-10-01T13:15:08.7475020Z - tidyr          [* -> 1.3.2]
+2026-10-01T13:15:08.7479580Z - tidyselect     [* -> 1.2.1]
+2026-10-01T13:15:08.7480439Z - tinytex        [* -> 0.60]
+2026-10-01T13:15:08.7481045Z - utf8           [* -> 1.2.6]
+2026-10-01T13:15:08.7482300Z - vctrs          [* -> 0.7.3]
+2026-10-01T13:15:08.7485915Z - viridisLite    [* -> 0.4.3]
+2026-10-01T13:15:08.7487283Z - waldo          [* -> 0.6.2]
+2026-10-01T13:15:08.7488108Z - webshot2       [* -> 0.1.2]
+2026-10-01T13:15:08.7488660Z - websocket      [* -> 1.4.4]
+2026-10-01T13:15:08.7489244Z - withr          [* -> 3.0.3]
+2026-10-01T13:15:08.7489828Z - xfun           [* -> 0.60]
+2026-10-01T13:15:08.7490350Z - xtable         [* -> 1.8-8]
+2026-10-01T13:15:08.7490912Z - yaml           [* -> 2.3.12]
+2026-10-01T13:15:08.7491434Z - zip            [* -> 3.0.1]
+2026-10-01T13:15:08.7491793Z 
+2026-10-01T13:15:09.5152213Z - Querying repositories for available source packages ... Done!
+2026-10-01T13:15:15.1427232Z # Downloading packages -------------------------------------------------------
+2026-10-01T13:15:19.1989940Z [32m✔[0m pkgconfig 2.0.3                          [23 kB in 0.15s]
+2026-10-01T13:15:19.2064193Z [32m✔[0m fastmap 1.2.0                            [142 kB in 0.16s]
+2026-10-01T13:15:19.2130125Z [32m✔[0m stringr 1.6.0                            [353 kB in 0.16s]
+2026-10-01T13:15:19.2171789Z [32m✔[0m otel 0.2.0                               [287 kB in 0.17s]
+2026-10-01T13:15:19.2203569Z [32m✔[0m crayon 1.5.3                             [169 kB in 0.17s]
+2026-10-01T13:15:19.2225057Z [32m✔[0m backports 1.5.1                          [126 kB in 0.17s]
+2026-10-01T13:15:19.2247295Z [32m✔[0m AsioHeaders 1.30.2-1                     [1.1 MB in 0.17s]
+2026-10-01T13:15:19.2260568Z [32m✔[0m rlang 1.3.0                              [1.6 MB in 0.19s]
+2026-10-01T13:15:19.2277521Z [32m✔[0m magrittr 2.0.5                           [230 kB in 0.19s]
+2026-10-01T13:15:19.2297815Z [32m✔[0m gridExtra 2.3.1                          [531 kB in 0.19s]
+2026-10-01T13:15:19.2370428Z [32m✔[0m labeling 0.4.3                           [64 kB in 33s]
+2026-10-01T13:15:19.2405192Z [32m✔[0m Rdpack 2.6.6                             [650 kB in 0.2s]
+2026-10-01T13:15:19.2457249Z [32m✔[0m fontawesome 0.5.3                        [1.4 MB in 46s]
+2026-10-01T13:15:19.2618410Z [32m✔[0m utf8 1.2.6                               [155 kB in 41s]
+2026-10-01T13:15:19.2829186Z [32m✔[0m callr 3.8.0                              [506 kB in 0.22s]
+2026-10-01T13:15:19.2857419Z [32m✔[0m ps 1.9.3                                 [680 kB in 53s]
+2026-10-01T13:15:19.2900516Z [32m✔[0m nloptr 2.2.1                             [907 kB in 53s]
+2026-10-01T13:15:19.2907508Z [32m✔[0m httr2 1.3.0                              [996 kB in 0.23s]
+2026-10-01T13:15:19.2978736Z [32m✔[0m testthat 3.3.2                           [2.5 MB in 0.23s]
+2026-10-01T13:15:19.3004016Z [32m✔[0m readxl 1.5.0                             [2.1 MB in 0.23s]
+2026-10-01T13:15:19.3028205Z [32m✔[0m vctrs 0.7.3                              [1.9 MB in 0.23s]
+2026-10-01T13:15:19.3106496Z [32m✔[0m tinytex 0.60                             [38 kB in 47s]
+2026-10-01T13:15:19.3107876Z [32m✔[0m shinyAce 0.4.4                           [2.0 MB in 59s]
+2026-10-01T13:15:19.3131674Z [32m✔[0m ggfortify 0.4.19                         [85 kB in 64s]
+2026-10-01T13:15:19.3160146Z [32m✔[0m purrr 1.2.2                              [571 kB in 55s]
+2026-10-01T13:15:19.3206481Z [32m✔[0m promises 1.5.0                           [1.7 MB in 81s]
+2026-10-01T13:15:19.3254337Z [32m✔[0m highr 0.12                               [45 kB in 32s]
+2026-10-01T13:15:19.3322753Z [32m✔[0m waldo 0.6.2                              [139 kB in 36s]
+2026-10-01T13:15:19.3361914Z [32m✔[0m cachem 1.1.0                             [80 kB in 36s]
+2026-10-01T13:15:19.3415745Z [32m✔[0m xfun 0.60                                [205 kB in 39s]
+2026-10-01T13:15:19.3451542Z [32m✔[0m jsonlite 2.0.0                           [1.1 MB in 36s]
+2026-10-01T13:15:19.3513711Z [32m✔[0m R6 2.6.1                                 [90 kB in 36s]
+2026-10-01T13:15:19.3521252Z [32m✔[0m progress 1.2.3                           [92 kB in 44s]
+2026-10-01T13:15:19.3582046Z [32m✔[0m later 1.4.8                              [475 kB in 47s]
+2026-10-01T13:15:19.3609669Z [32m✔[0m rmarkdown 2.31                           [2.2 MB in 0.11s]
+2026-10-01T13:15:19.3645345Z [32m✔[0m RColorBrewer 1.1-3                       [55 kB in 38s]
+2026-10-01T13:15:19.3680353Z [32m✔[0m prettyunits 1.2.0                        [159 kB in 53s]
+2026-10-01T13:15:19.3708246Z [32m✔[0m pkgload 1.5.3                            [229 kB in 37s]
+2026-10-01T13:15:19.3791841Z [32m✔[0m brio 1.1.5                               [43 kB in 38s]
+2026-10-01T13:15:19.3804116Z [32m✔[0m jquerylib 0.1.4                          [527 kB in 47s]
+2026-10-01T13:15:19.3852018Z [32m✔[0m cellranger 1.1.0                         [110 kB in 40s]
+2026-10-01T13:15:19.3853011Z [32m✔[0m base64enc 0.1-6                          [35 kB in 36s]
+2026-10-01T13:15:19.3899370Z [32m✔[0m bslib 0.11.0                             [5.8 MB in 74s]
+2026-10-01T13:15:19.3933695Z [32m✔[0m httpuv 1.6.17                            [1.1 MB in 43s]
+2026-10-01T13:15:19.3995314Z [32m✔[0m tidyselect 1.2.1                         [230 kB in 42s]
+2026-10-01T13:15:19.4016179Z [32m✔[0m Rcpp 1.1.2                               [3.0 MB in 53s]
+2026-10-01T13:15:19.4075359Z [32m✔[0m yaml 2.3.12                              [123 kB in 43s]
+2026-10-01T13:15:19.4086565Z [32m✔[0m knitr 1.51                               [483 kB in 59s]
+2026-10-01T13:15:19.4130655Z [32m✔[0m processx 3.9.0                           [782 kB in 44s]
+2026-10-01T13:15:19.4181956Z [32m✔[0m sourcetools 0.1.7-2                      [131 kB in 41s]
+2026-10-01T13:15:19.4216388Z [32m✔[0m curl 7.1.0                               [715 kB in 57s]
+2026-10-01T13:15:19.4269504Z [32m✔[0m pkgbuild 1.4.8                           [213 kB in 49s]
+2026-10-01T13:15:19.4332903Z [32m✔[0m tibble 3.3.1                             [668 kB in 48s]
+2026-10-01T13:15:19.4340454Z [32m✔[0m stringi 1.8.7                            [11.9 MB in 0.11s]
+2026-10-01T13:15:19.4351912Z [32m✔[0m withr 3.0.3                              [235 kB in 38s]
+2026-10-01T13:15:19.4372979Z [32m✔[0m askpass 1.2.1                            [75 kB in 37s]
+2026-10-01T13:15:19.4395243Z [32m✔[0m evaluate 1.0.5                           [106 kB in 41s]
+2026-10-01T13:15:19.4418950Z [32m✔[0m desc 1.4.3                               [343 kB in 41s]
+2026-10-01T13:15:19.4486653Z [32m✔[0m websocket 1.4.4                          [3.1 MB in 88s]
+2026-10-01T13:15:19.4583803Z [32m✔[0m S7 0.2.2                                 [350 kB in 58s]
+2026-10-01T13:15:19.4619800Z [32m✔[0m isoband 0.3.0                            [2.0 MB in 52s]
+2026-10-01T13:15:19.4650929Z [32m✔[0m shiny 1.14.0                             [4.6 MB in 77s]
+2026-10-01T13:15:19.4716544Z [32m✔[0m pillar 1.11.1                            [675 kB in 45s]
+2026-10-01T13:15:19.4731592Z [32m✔[0m checkmate 2.3.4                          [774 kB in 46s]
+2026-10-01T13:15:19.4840497Z [32m✔[0m reformulas 0.4.4                         [161 kB in 42s]
+2026-10-01T13:15:19.4841894Z [32m✔[0m pingr 2.0.5                              [63 kB in 42s]
+2026-10-01T13:15:19.4867129Z [32m✔[0m generics 0.1.4                           [86 kB in 51s]
+2026-10-01T13:15:19.4890885Z [32m✔[0m rprojroot 2.1.1                          [124 kB in 44s]
+2026-10-01T13:15:19.4943785Z [32m✔[0m DT 0.34.0                                [2.0 MB in 62s]
+2026-10-01T13:15:19.4978611Z [32m✔[0m RcppEigen 0.3.4.0.2                      [2.6 MB in 71s]
+2026-10-01T13:15:19.5017807Z [32m✔[0m hms 1.1.4                                [110 kB in 44s]
+2026-10-01T13:15:19.5075054Z [32m✔[0m commonmark 2.0.0                         [142 kB in 38s]
+2026-10-01T13:15:19.5081405Z [32m✔[0m plotly 4.12.0                            [4.6 MB in 76s]
+2026-10-01T13:15:19.5115557Z [32m✔[0m chromote 0.5.1                           [695 kB in 53s]
+2026-10-01T13:15:19.5141579Z [32m✔[0m scales 1.4.0                             [881 kB in 46s]
+2026-10-01T13:15:19.5187318Z [32m✔[0m minqa 1.2.8                              [456 kB in 48s]
+2026-10-01T13:15:19.5224717Z [32m✔[0m glue 1.8.1                               [191 kB in 36s]
+2026-10-01T13:15:19.5337196Z [32m✔[0m lazyeval 0.2.3                           [203 kB in 42s]
+2026-10-01T13:15:19.5398405Z [32m✔[0m xtable 1.8-8                             [761 kB in 45s]
+2026-10-01T13:15:19.5439517Z [32m✔[0m sys 3.4.3                                [47 kB in 39s]
+2026-10-01T13:15:19.5461675Z [32m✔[0m zip 3.0.1                                [447 kB in 0.13s]
+2026-10-01T13:15:19.5483612Z [32m✔[0m ggplot2 4.0.3                            [8.5 MB in 80s]
+2026-10-01T13:15:19.5527536Z [32m✔[0m globals 0.19.1                           [177 kB in 54s]
+2026-10-01T13:15:19.5566059Z [32m✔[0m webshot2 0.1.2                           [573 kB in 51s]
+2026-10-01T13:15:19.5661403Z [32m✔[0m diffobj 0.3.8                            [471 kB in 52s]
+2026-10-01T13:15:19.5663534Z [32m✔[0m fs 2.1.0                                 [426 kB in 34s]
+2026-10-01T13:15:19.5673550Z [32m✔[0m rbibutils 2.4.1                          [1.0 MB in 38s]
+2026-10-01T13:15:19.5679904Z [32m✔[0m cpp11 0.5.5                              [327 kB in 50s]
+2026-10-01T13:15:19.5705633Z [32m✔[0m tidyr 1.3.2                              [1.3 MB in 51s]
+2026-10-01T13:15:19.5707525Z [32m✔[0m crosstalk 1.2.2                          [419 kB in 47s]
+2026-10-01T13:15:19.5714920Z [32m✔[0m nlme 3.1-170                             [845 kB in 56s]
+2026-10-01T13:15:19.5737505Z [32m✔[0m cli 3.6.6                                [1.4 MB in 50s]
+2026-10-01T13:15:19.5749709Z [32m✔[0m rappdirs 0.3.4                           [54 kB in 39s]
+2026-10-01T13:15:19.5768465Z [32m✔[0m lme4 2.0-6                               [5.8 MB in 84s]
+2026-10-01T13:15:19.5784348Z [32m✔[0m viridisLite 0.4.3                        [1.3 MB in 50s]
+2026-10-01T13:15:19.5797496Z [32m✔[0m gtable 0.3.6                             [253 kB in 38s]
+2026-10-01T13:15:19.5810431Z [32m✔[0m digest 0.6.39                            [226 kB in 38s]
+2026-10-01T13:15:19.5821641Z [32m✔[0m data.table 1.18.4                        [6.0 MB in 0.11s]
+2026-10-01T13:15:19.5833020Z [32m✔[0m rematch 2.0.0                            [21 kB in 47s]
+2026-10-01T13:15:19.5843594Z [32m✔[0m praise 1.0.0                             [20 kB in 48s]
+2026-10-01T13:15:19.5853923Z [32m✔[0m dplyr 1.2.1                              [1.6 MB in 59s]
+2026-10-01T13:15:19.5864818Z [32m✔[0m htmlwidgets 1.6.4                        [814 kB in 53s]
+2026-10-01T13:15:19.5874521Z [32m✔[0m memoise 2.0.1                            [54 kB in 35s]
+2026-10-01T13:15:19.5884049Z [32m✔[0m farver 2.1.2                             [1.5 MB in 48s]
+2026-10-01T13:15:19.5893306Z [32m✔[0m htmltools 0.5.9                          [364 kB in 49s]
+2026-10-01T13:15:19.5903432Z [32m✔[0m httr 1.4.8                               [114 kB in 44s]
+2026-10-01T13:15:19.5911767Z [32m✔[0m lifecycle 1.0.5                          [151 kB in 47s]
+2026-10-01T13:15:19.5919258Z [32m✔[0m sass 0.4.10                              [2.6 MB in 91s]
+2026-10-01T13:15:19.5926620Z [32m✔[0m shinyWidgets 0.9.1                       [1.7 MB in 57s]
+2026-10-01T13:15:19.5933639Z [32m✔[0m mime 0.13                                [53 kB in 45s]
+2026-10-01T13:15:19.5940383Z [32m✔[0m MASS 7.3-66                              [1.2 MB in 49s]
+2026-10-01T13:15:19.5946388Z [32m✔[0m openssl 2.4.2                            [3.6 MB in 60s]
+2026-10-01T13:15:19.5960648Z [32m✔[0m shinytest2 0.5.1                         [3.2 MB in 62s]
+2026-10-01T13:15:20.2966505Z Successfully downloaded 113 packages in 1.8 seconds.
+2026-10-01T13:15:20.2967219Z 
+2026-10-01T13:15:20.2968070Z # Installing packages --------------------------------------------------------
+2026-10-01T13:15:24.4526980Z [32m✔[0m AsioHeaders 1.30.2-1                     [installed binary in 0.97s]
+2026-10-01T13:15:24.6285792Z [32m✔[0m backports 1.5.1                          [installed binary]
+2026-10-01T13:15:24.9220879Z [32m✔[0m base64enc 0.1-6                          [installed binary]
+2026-10-01T13:15:25.1839478Z [32m✔[0m brio 1.1.5                               [installed binary]
+2026-10-01T13:15:25.5059807Z [32m✔[0m cli 3.6.6                                [installed binary]
+2026-10-01T13:15:25.7931271Z [32m✔[0m commonmark 2.0.0                         [installed binary]
+2026-10-01T13:15:26.0960645Z [32m✔[0m cpp11 0.5.5                              [installed binary]
+2026-10-01T13:15:26.3821474Z [32m✔[0m crayon 1.5.3                             [installed binary]
+2026-10-01T13:15:27.1174683Z [32m✔[0m digest 0.6.39                            [installed binary in 0.63s]
+2026-10-01T13:15:27.4683884Z [32m✔[0m evaluate 1.0.5                           [installed binary]
+2026-10-01T13:15:27.8208005Z [32m✔[0m farver 2.1.2                             [installed binary]
+2026-10-01T13:15:28.0096670Z [32m✔[0m fastmap 1.2.0                            [installed binary]
+2026-10-01T13:15:28.2279957Z [32m✔[0m fs 2.1.0                                 [installed binary]
+2026-10-01T13:15:28.4138761Z [32m✔[0m generics 0.1.4                           [installed binary]
+2026-10-01T13:15:28.8198979Z [32m✔[0m globals 0.19.1                           [installed binary]
+2026-10-01T13:15:29.1456398Z [32m✔[0m glue 1.8.1                               [installed binary]
+2026-10-01T13:15:30.1193496Z [32m✔[0m jsonlite 2.0.0                           [installed binary]
+2026-10-01T13:15:30.1255425Z [32m✔[0m labeling 0.4.3                           [installed binary]
+2026-10-01T13:15:31.6410820Z [32m✔[0m magrittr 2.0.5                           [installed binary]
+2026-10-01T13:15:31.6411863Z [32m✔[0m MASS 7.3-66                              [installed binary]
+2026-10-01T13:15:31.6412674Z [32m✔[0m mime 0.13                                [installed binary]
+2026-10-01T13:15:31.6413391Z [32m✔[0m nloptr 2.2.1                             [installed binary]
+2026-10-01T13:15:31.6414158Z [32m✔[0m otel 0.2.0                               [installed binary]
+2026-10-01T13:15:31.7830337Z [32m✔[0m pkgconfig 2.0.3                          [installed binary]
+2026-10-01T13:15:32.1424350Z [32m✔[0m praise 1.0.0                             [installed binary]
+2026-10-01T13:15:32.3639490Z [32m✔[0m prettyunits 1.2.0                        [installed binary]
+2026-10-01T13:15:33.6718774Z [32m✔[0m ps 1.9.3                                 [installed binary]
+2026-10-01T13:15:33.6719804Z [32m✔[0m R6 2.6.1                                 [installed binary]
+2026-10-01T13:15:33.6720631Z [32m✔[0m rappdirs 0.3.4                           [installed binary]
+2026-10-01T13:15:33.8923907Z [32m✔[0m rbibutils 2.4.1                          [installed binary]
+2026-10-01T13:15:34.1768516Z [32m✔[0m RColorBrewer 1.1-3                       [installed binary]
+2026-10-01T13:15:37.1504313Z [32m✔[0m Rcpp 1.1.2                               [installed binary in 0.96s]
+2026-10-01T13:15:37.4849044Z [32m✔[0m rematch 2.0.0                            [installed binary]
+2026-10-01T13:15:37.8402345Z [32m✔[0m rlang 1.3.0                              [installed binary]
+2026-10-01T13:15:38.1610047Z [32m✔[0m rprojroot 2.1.1                          [installed binary]
+2026-10-01T13:15:38.4077247Z [32m✔[0m S7 0.2.2                                 [installed binary]
+2026-10-01T13:15:38.9077862Z [32m✔[0m sourcetools 0.1.7-2                      [installed binary]
+2026-10-01T13:15:39.3582737Z [32m✔[0m sys 3.4.3                                [installed binary]
+2026-10-01T13:15:39.8588720Z [32m✔[0m utf8 1.2.6                               [installed binary]
+2026-10-01T13:15:40.1064084Z [32m✔[0m viridisLite 0.4.3                        [installed binary]
+2026-10-01T13:15:40.5422801Z [32m✔[0m withr 3.0.3                              [installed binary]
+2026-10-01T13:16:33.2614776Z [32m✔[0m nlme 3.1-170                             [built from source in 1.0m]
+2026-10-01T13:16:36.9942909Z [32m✔[0m xtable 1.8-8                             [installed binary in 3.6s]
+2026-10-01T13:16:37.6782832Z [32m✔[0m yaml 2.3.12                              [installed binary in 0.59s]
+2026-10-01T13:16:38.1975688Z [32m✔[0m checkmate 2.3.4                          [installed binary]
+2026-10-01T13:16:38.2539734Z [32m✔[0m curl 7.1.0                               [built from source in 1.2m]
+2026-10-01T13:16:56.9389000Z [32m✔[0m xfun 0.60                                [built from source in 24s]
+2026-10-01T13:16:59.6914331Z [32m✔[0m desc 1.4.3                               [installed binary in 2.6s]
+2026-10-01T13:17:02.2962413Z [32m✔[0m processx 3.9.0                           [installed binary in 2.5s]
+2026-10-01T13:17:04.5813115Z [32m✔[0m Rdpack 2.6.6                             [installed binary in 2.1s]
+2026-10-01T13:17:09.3039544Z [32m✔[0m minqa 1.2.8                              [installed binary in 4.6s]
+2026-10-01T13:17:33.0530608Z [32m✔[0m RcppEigen 0.3.4.0.2                      [installed binary in 23s]
+2026-10-01T13:17:33.4000623Z [32m✔[0m cachem 1.1.0                             [installed binary]
+2026-10-01T13:17:34.2608733Z [32m✔[0m htmltools 0.5.9                          [installed binary in 0.71s]
+2026-10-01T13:17:35.4511663Z [32m✔[0m isoband 0.3.0                            [installed binary in 1.0s]
+2026-10-01T13:17:39.7254687Z [32m✔[0m later 1.4.8                              [installed binary]
+2026-10-01T13:17:39.7255535Z [32m✔[0m lazyeval 0.2.3                           [installed binary]
+2026-10-01T13:17:39.7256471Z [32m✔[0m lifecycle 1.0.5                          [installed binary in 0.75s]
+2026-10-01T13:17:39.7257335Z [32m✔[0m askpass 1.2.1                            [installed binary in 0.72s]
+2026-10-01T13:17:39.7258148Z [32m✔[0m highr 0.12                               [installed binary]
+2026-10-01T13:17:39.7258915Z [32m✔[0m data.table 1.18.4                        [built from source in 2.2m]
+2026-10-01T13:17:41.7578403Z [32m✔[0m callr 3.8.0                              [installed binary in 3.0s]
+2026-10-01T13:17:42.6283405Z [32m✔[0m pingr 2.0.5                              [installed binary in 0.75s]
+2026-10-01T13:17:43.4863069Z [32m✔[0m reformulas 0.4.4                         [installed binary in 0.75s]
+2026-10-01T13:17:43.6871535Z [32m✔[0m memoise 2.0.1                            [installed binary]
+2026-10-01T13:17:44.0776163Z [32m✔[0m fontawesome 0.5.3                        [installed binary]
+2026-10-01T13:17:44.3328733Z [32m✔[0m jquerylib 0.1.4                          [installed binary]
+2026-10-01T13:17:44.7733349Z [32m✔[0m sass 0.4.10                              [installed binary]
+2026-10-01T13:17:45.1837705Z [32m✔[0m websocket 1.4.4                          [installed binary]
+2026-10-01T13:17:45.6769497Z [32m✔[0m crosstalk 1.2.2                          [installed binary]
+2026-10-01T13:17:46.0215828Z [32m✔[0m gtable 0.3.6                             [installed binary]
+2026-10-01T13:17:46.4934097Z [32m✔[0m promises 1.5.0                           [installed binary]
+2026-10-01T13:17:46.7479477Z [32m✔[0m scales 1.4.0                             [installed binary]
+2026-10-01T13:17:47.2278646Z [32m✔[0m vctrs 0.7.3                              [installed binary]
+2026-10-01T13:17:47.6596990Z [32m✔[0m openssl 2.4.2                            [installed binary]
+2026-10-01T13:17:47.6914071Z [32m✔[0m diffobj 0.3.8                            [built from source in 51s]
+2026-10-01T13:17:47.9402117Z [32m✔[0m pkgbuild 1.4.8                           [installed binary]
+2026-10-01T13:17:49.8484637Z [32m✔[0m lme4 2.0-6                               [installed binary in 1.7s]
+2026-10-01T13:17:49.9168271Z [32m✔[0m zip 3.0.1                                [built from source in 1.2m]
+2026-10-01T13:17:51.3551488Z [32m✔[0m gridExtra 2.3.1                          [installed binary in 1.3s]
+2026-10-01T13:17:54.1590704Z [32m✔[0m httpuv 1.6.17                            [installed binary in 2.4s]
+2026-10-01T13:17:56.1682088Z [32m✔[0m ggplot2 4.0.3                            [installed binary in 1.7s]
+2026-10-01T13:17:57.2549594Z [32m✔[0m hms 1.1.4                                [installed binary in 0.96s]
+2026-10-01T13:17:59.6075346Z [32m✔[0m pillar 1.11.1                            [installed binary in 2.2s]
+2026-10-01T13:18:00.3129617Z [32m✔[0m purrr 1.2.2                              [installed binary in 0.6s]
+2026-10-01T13:18:02.3684449Z [32m✔[0m tidyselect 1.2.1                         [installed binary in 2.0s]
+2026-10-01T13:18:02.4097937Z [32m✔[0m tinytex 0.60                             [built from source in 24s]
+2026-10-01T13:18:06.0274278Z [32m✔[0m httr2 1.3.0                              [installed binary in 3.5s]
+2026-10-01T13:18:06.3492191Z [32m✔[0m waldo 0.6.2                              [installed binary]
+2026-10-01T13:18:06.8867033Z [32m✔[0m pkgload 1.5.3                            [installed binary]
+2026-10-01T13:18:08.1249940Z [32m✔[0m chromote 0.5.1                           [installed binary in 1.1s]
+2026-10-01T13:18:08.8892420Z [32m✔[0m progress 1.2.3                           [installed binary in 0.69s]
+2026-10-01T13:18:11.4587622Z [32m✔[0m tibble 3.3.1                             [installed binary in 0.97s]
+2026-10-01T13:18:11.9892064Z [32m✔[0m testthat 3.3.2                           [installed binary in 0.59s]
+2026-10-01T13:18:11.9893183Z [32m✔[0m webshot2 0.1.2                           [installed binary]
+2026-10-01T13:18:12.0086189Z [32m✔[0m cellranger 1.1.0                         [installed binary]
+2026-10-01T13:18:12.0116824Z [32m✔[0m dplyr 1.2.1                              [installed binary]
+2026-10-01T13:18:12.0324354Z [32m✔[0m knitr 1.51                               [built from source in 24s]
+2026-10-01T13:18:12.0486066Z [32m✔[0m bslib 0.11.0                             [built from source in 22s]
+2026-10-01T13:18:33.0542311Z [32m✔[0m shiny 1.14.0                             [installed binary in 21s]
+2026-10-01T13:18:38.4294911Z [32m✔[0m shinyAce 0.4.4                           [installed binary in 4.9s]
+2026-10-01T13:18:40.7621896Z [32m✔[0m shinyWidgets 0.9.1                       [installed binary in 1.4s]
+2026-10-01T13:18:40.7995792Z [32m✔[0m httr 1.4.8                               [built from source in 38s]
+2026-10-01T13:18:40.8477769Z [32m✔[0m rmarkdown 2.31                           [built from source in 29s]
+2026-10-01T13:18:41.0983331Z [32m✔[0m htmlwidgets 1.6.4                        [installed binary]
+2026-10-01T13:18:42.0782471Z [32m✔[0m shinytest2 0.5.1                         [installed binary in 0.77s]
+2026-10-01T13:18:44.0640558Z [32m✔[0m DT 0.34.0                                [installed binary in 1.4s]
+2026-10-01T13:18:44.0952563Z [32m✔[0m readxl 1.5.0                             [built from source in 32s]
+2026-10-01T13:26:48.3889425Z [32m✔[0m stringi 1.8.7                            [built from source in 11m]
+2026-10-01T13:26:48.7885278Z [32m✔[0m stringr 1.6.0                            [installed binary]
+2026-10-01T13:26:49.2939972Z [32m✔[0m tidyr 1.3.2                              [installed binary]
+2026-10-01T13:27:02.0819729Z [32m✔[0m ggfortify 0.4.19                         [built from source in 13s]
+2026-10-01T13:27:03.8324215Z [32m✔[0m plotly 4.12.0                            [built from source in 14s]
+2026-10-01T13:27:04.0762146Z Successfully installed 113 packages in 700 seconds.
+2026-10-01T13:27:12.1843107Z ##[end-action id=__r-lib_actions_2.__run_3;outcome=success;conclusion=success;duration_ms=724162]
+2026-10-01T13:27:12.1971726Z ##[start-action display=Don't use tar 1.30 from Rtools35 to store the cache;id=__r-lib_actions_2.__run_4]
+2026-10-01T13:27:12.3420830Z ##[group]Run if command -v /c/Rtools/bin/tar && /c/Rtools/bin/tar --version | grep -q 'tar (GNU tar) 1.30'
+2026-10-01T13:27:12.3421577Z [36;1mif command -v /c/Rtools/bin/tar && /c/Rtools/bin/tar --version | grep -q 'tar (GNU tar) 1.30'[0m
+2026-10-01T13:27:12.3422085Z [36;1m  then echo 'C:/Program Files/Git/usr/bin' >> $GITHUB_PATH[0m
+2026-10-01T13:27:12.3422645Z [36;1mfi[0m
+2026-10-01T13:27:12.3873542Z shell: C:\rtools45\usr\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-01T13:27:12.3874113Z env:
+2026-10-01T13:27:12.3874449Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:27:12.3875123Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:27:12.3875608Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:27:12.3875949Z   TZ: UTC
+2026-10-01T13:27:12.3876224Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:27:12.3876567Z   NOT_CRAN: true
+2026-10-01T13:27:12.3876950Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:27:12.3877471Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:27:12.3877992Z   RENV_PATHS_ROOT: D:\a\_temp/renv
+2026-10-01T13:27:12.3878327Z   LMPLOT_EXPLICIT_BOOTSTRAP: 1
+2026-10-01T13:27:12.3878658Z ##[endgroup]
+2026-10-01T13:27:12.5306509Z ##[end-action id=__r-lib_actions_2.__run_4;outcome=success;conclusion=success;duration_ms=333]
+2026-10-01T13:27:12.5313751Z ##[start-action display=Save Renv package cache;id=__r-lib_actions_2.__actions_cache_2]
+2026-10-01T13:27:12.5735349Z ##[end-action id=__r-lib_actions_2.__actions_cache_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-01T13:27:12.7905196Z ##[group]Run if ($env:RUNNER_OS -eq 'Windows') {
+2026-10-01T13:27:12.7906403Z [36;1mif ($env:RUNNER_OS -eq 'Windows') {[0m
+2026-10-01T13:27:12.7906935Z [36;1m  $chrome = Join-Path $env:ProgramFiles 'Google\Chrome\Application\chrome.exe'[0m
+2026-10-01T13:27:12.7907595Z [36;1m  if (!(Test-Path -LiteralPath $chrome)) { throw "Chrome was not found: $chrome" }[0m
+2026-10-01T13:27:12.7908316Z [36;1m} else {[0m
+2026-10-01T13:27:12.7908885Z [36;1m  $chrome = (Get-Command google-chrome -ErrorAction Stop).Source[0m
+2026-10-01T13:27:12.7909423Z [36;1m}[0m
+2026-10-01T13:27:12.7909887Z [36;1m"CHROMOTE_CHROME=$chrome" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append[0m
+2026-10-01T13:27:12.8996840Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-01T13:27:12.8997661Z env:
+2026-10-01T13:27:12.8998104Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:27:12.8998592Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:27:12.8999240Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:27:12.8999751Z   TZ: UTC
+2026-10-01T13:27:12.9000122Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:27:12.9000652Z   NOT_CRAN: true
+2026-10-01T13:27:12.9001210Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:27:12.9002369Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:27:12.9003136Z   RENV_PATHS_ROOT: D:\a\_temp/renv
+2026-10-01T13:27:12.9003633Z ##[endgroup]
+2026-10-01T13:27:17.2038331Z ##[group]Run $checks = @'
+2026-10-01T13:27:17.2038774Z [36;1m$checks = @'[0m
+2026-10-01T13:27:17.2039070Z [36;1mstopifnot(getRversion() == "4.6.0")[0m
+2026-10-01T13:27:17.2039493Z [36;1mstopifnot(isTRUE(renv::status()$synchronized))[0m
+2026-10-01T13:27:17.2039919Z [36;1mrequired <- c("renv", "shiny", "plotly", "bslib", "DT", "ggplot2",[0m
+2026-10-01T13:27:17.2040374Z [36;1m  "ggfortify", "lme4", "jsonlite", "shinyWidgets", "shinyAce",[0m
+2026-10-01T13:27:17.2040790Z [36;1m  "testthat", "shinytest2", "chromote", "yaml")[0m
+2026-10-01T13:27:17.2041238Z [36;1mstopifnot(all(vapply(required, requireNamespace, logical(1), quietly = TRUE)))[0m
+2026-10-01T13:27:17.2041684Z [36;1mpackages <- installed.packages()[0m
+2026-10-01T13:27:17.2042276Z [36;1mprint(packages[intersect(required, rownames(packages)), c("Package", "Version", "Built"), drop = FALSE])[0m
+2026-10-01T13:27:17.2042988Z [36;1mstopifnot(file.exists(Sys.getenv("CHROMOTE_CHROME")))[0m
+2026-10-01T13:27:17.2043538Z [36;1mlocal({[0m
+2026-10-01T13:27:17.2043833Z [36;1m  browser <- chromote::ChromoteSession$new()[0m
+2026-10-01T13:27:17.2044201Z [36;1m  on.exit(browser$close())[0m
+2026-10-01T13:27:17.2044532Z [36;1m  print(browser$Browser$getVersion())[0m
+2026-10-01T13:27:17.2044868Z [36;1m})[0m
+2026-10-01T13:27:17.2045107Z [36;1m'@[0m
+2026-10-01T13:27:17.2045642Z [36;1m# The Windows bin/Rscript.exe dispatcher truncates multiline -e input.[0m
+2026-10-01T13:27:17.2046208Z [36;1m$checksPath = Join-Path $env:RUNNER_TEMP 'lmplot-ci-checks.R'[0m
+2026-10-01T13:27:17.2046722Z [36;1m$checks | Set-Content -LiteralPath $checksPath -Encoding utf8[0m
+2026-10-01T13:27:17.2047137Z [36;1mRscript $checksPath[0m
+2026-10-01T13:27:17.2047474Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-01T13:27:17.2149009Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-01T13:27:17.2149631Z env:
+2026-10-01T13:27:17.2150403Z   _R_INSTALL_TIME_PATCHES_: no
+2026-10-01T13:27:17.2150954Z   RTOOLS45_HOME: C:\rtools45
+2026-10-01T13:27:17.2151413Z   R_LIBS_USER: D:\a\_temp\Library
+2026-10-01T13:27:17.2151906Z   TZ: UTC
+2026-10-01T13:27:17.2152284Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+2026-10-01T13:27:17.2152782Z   NOT_CRAN: true
+2026-10-01T13:27:17.2153296Z   RSPM: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:27:17.2154014Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+2026-10-01T13:27:17.2154711Z   RENV_PATHS_ROOT: D:\a\_temp/renv
+2026-10-01T13:27:17.2155316Z   CHROMOTE_CHROME: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-10-01T13:27:17.2155886Z ##[endgroup]
+2026-10-01T13:27:21.8886451Z No issues found -- the project is in a consistent state.
+2026-10-01T13:27:24.8396683Z              Package        Version 
+2026-10-01T13:27:24.8397652Z renv         "renv"         "1.2.3" 
+2026-10-01T13:27:24.8398479Z shiny        "shiny"        "1.14.0"
+2026-10-01T13:27:24.8399148Z plotly       "plotly"       "4.12.0"
+2026-10-01T13:27:24.8400004Z bslib        "bslib"        "0.11.0"
+2026-10-01T13:27:24.8400625Z DT           "DT"           "0.34.0"
+2026-10-01T13:27:24.8401214Z ggplot2      "ggplot2"      "4.0.3" 
+2026-10-01T13:27:24.8401838Z ggfortify    "ggfortify"    "0.4.19"
+2026-10-01T13:27:24.8403379Z lme4         "lme4"         "2.0-6" 
+2026-10-01T13:27:24.8403975Z jsonlite     "jsonlite"     "2.0.0" 
+2026-10-01T13:27:24.8404587Z shinyWidgets "shinyWidgets" "0.9.1" 
+2026-10-01T13:27:24.8405149Z shinyAce     "shinyAce"     "0.4.4" 
+2026-10-01T13:27:24.8405711Z testthat     "testthat"     "3.3.2" 
+2026-10-01T13:27:24.8406368Z shinytest2   "shinytest2"   "0.5.1" 
+2026-10-01T13:27:24.8406978Z chromote     "chromote"     "0.5.1" 
+2026-10-01T13:27:24.8407574Z yaml         "yaml"         "2.3.12"
+2026-10-01T13:27:24.8408246Z              Built                                                          
+2026-10-01T13:27:24.8409026Z renv         "R 4.6.0; ; 2026-10-01 13:14:57 UTC; windows"                  
+2026-10-01T13:27:24.8412478Z shiny        "R 4.6.0; ; 2026-06-22 05:40:43 UTC; windows"                  
+2026-10-01T13:27:24.8413525Z plotly       "R 4.6.0; ; 2026-10-01 13:26:51 UTC; windows"                  
+2026-10-01T13:27:24.8414567Z bslib        "R 4.6.0; ; 2026-10-01 13:17:52 UTC; windows"                  
+2026-10-01T13:27:24.8415358Z DT           "R 4.6.0; ; 2026-04-23 23:28:03 UTC; windows"                  
+2026-10-01T13:27:24.8416154Z ggplot2      "R 4.6.0; ; 2026-04-23 23:02:08 UTC; windows"                  
+2026-10-01T13:27:24.8416999Z ggfortify    "R 4.6.0; ; 2026-10-01 13:26:50 UTC; windows"                  
+2026-10-01T13:27:24.8417835Z lme4         "R 4.6.0; x86_64-w64-mingw32; 2026-07-25 06:12:31 UTC; windows"
+2026-10-01T13:27:24.8418744Z jsonlite     "R 4.6.0; x86_64-w64-mingw32; 2026-04-23 22:39:43 UTC; windows"
+2026-10-01T13:27:24.8419602Z shinyWidgets "R 4.6.0; ; 2026-04-23 23:21:35 UTC; windows"                  
+2026-10-01T13:27:24.8420529Z shinyAce     "R 4.6.0; ; 2026-04-24 18:36:25 UTC; windows"                  
+2026-10-01T13:27:24.8421339Z testthat     "R 4.6.0; x86_64-w64-mingw32; 2026-04-23 23:21:46 UTC; windows"
+2026-10-01T13:27:24.8422146Z shinytest2   "R 4.6.0; x86_64-w64-mingw32; 2026-05-07 07:31:51 UTC; windows"
+2026-10-01T13:27:24.8423512Z chromote     "R 4.6.0; ; 2026-04-23 23:04:13 UTC; windows"                  
+2026-10-01T13:27:24.8424654Z yaml         "R 4.6.0; x86_64-w64-mingw32; 2026-04-23 22:45:39 UTC; windows"
+2026-10-01T13:27:35.2808062Z Error in `startup()`:
+2026-10-01T13:27:35.2809152Z ! Chrome debugging port not open after 10 seconds.
+2026-10-01T13:27:35.2810591Z Backtrace:
+2026-10-01T13:27:35.2811230Z      ▆
+2026-10-01T13:27:35.2812376Z   1. ├─base::local(...)
+2026-10-01T13:27:35.2813458Z   2. │ └─base::eval.parent(substitute(eval(quote(expr), envir)))
+2026-10-01T13:27:35.2814447Z   3. │   └─base::eval(expr, p)
+2026-10-01T13:27:35.2815172Z   4. │     └─base::eval(expr, p)
+2026-10-01T13:27:35.2815704Z   5. └─base::eval(...)
+2026-10-01T13:27:35.2816259Z   6.   └─base::eval(...)
+2026-10-01T13:27:35.2816875Z   7.     └─chromote::ChromoteSession$new()
+2026-10-01T13:27:35.2817631Z   8.       └─chromote (local) initialize(...)
+2026-10-01T13:27:35.2818479Z   9.         └─chromote::default_chromote_object()
+2026-10-01T13:27:35.2819302Z  10.           ├─chromote::set_default_chromote_object(Chromote$new())
+2026-10-01T13:27:35.2819961Z  11.           └─Chromote$new()
+2026-10-01T13:27:35.2820553Z  12.             └─chromote (local) initialize(...)
+2026-10-01T13:27:35.2821241Z  13.               └─Chrome$new()
+2026-10-01T13:27:35.2822062Z  14.                 └─chromote (local) initialize(...)
+2026-10-01T13:27:35.2822823Z  15.                   └─chromote:::launch_chrome(path, args)
+2026-10-01T13:27:35.2823519Z  16.                     └─chromote:::with_random_port(...)
+2026-10-01T13:27:35.2824102Z  17.                       ├─base::tryCatch(...)
+2026-10-01T13:27:35.2824898Z  18.                       │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+2026-10-01T13:27:35.2825740Z  19.                       │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+2026-10-01T13:27:35.2826571Z  20.                       │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+2026-10-01T13:27:35.2827370Z  21.                       └─chromote (local) startup(port = port, ...)
+2026-10-01T13:27:35.2828042Z  22.                         └─rlang::abort(...)
+2026-10-01T13:27:35.2917036Z Execution halted
+2026-10-01T13:27:35.3896599Z ##[error]Process completed with exit code 1.
+2026-10-01T13:27:35.5086542Z Post job cleanup.
+2026-10-01T13:27:35.5107894Z ##[start-action display=Restore Renv package cache;id=__40ddbfec-f08e-479e-abf8-a9d473776b4c.__actions_cache]
+2026-10-01T13:27:35.5333132Z ##[end-action id=__40ddbfec-f08e-479e-abf8-a9d473776b4c.__actions_cache;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-01T13:27:35.5615429Z Post job cleanup.
+2026-10-01T13:27:41.1599030Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-01T13:27:41.8052097Z git version 2.55.0.windows.5
+2026-10-01T13:27:41.9452261Z Temporarily overriding HOME='D:\a\_temp\4b165631-6277-4fc5-aa07-00376092b608' before making global git config changes
+2026-10-01T13:27:41.9455512Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-01T13:27:41.9636582Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\lmplot\lmplot
+2026-10-01T13:27:42.0746921Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-01T13:27:42.1062346Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-01T13:27:43.4906088Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-01T13:27:43.5172399Z http.https://github.com/.extraheader
+2026-10-01T13:27:43.5217794Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-10-01T13:27:43.5506675Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-01T13:27:44.1059922Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-01T13:27:44.1325113Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-01T13:27:44.8152161Z Cleaning up orphan processes
+2026-10-01T13:27:47.6435964Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -7,7 +7,8 @@
 - [x] Public Shiny boundary, CLI schemas, Model Brain, and isolated Docker image
 - [x] Windows/Linux R 4.6.0 CI workflow and release documentation
 - [ ] Release gate: hosted Windows/Linux CI execution
-- [ ] Release gate: human scientific copy review and assistive-technology checks
+- [ ] Release gate: documented scientific copy review (human or identified agent)
+  and manual assistive-technology checks; see the approval policy in CHANGELOG.md
 - [ ] Release gate: deployment-owner external ingress and WebSocket staging smoke
 - [ ] Post-beta: uploaded datasets and formula builder
 - [ ] Post-beta: random slopes and generalized mixed models

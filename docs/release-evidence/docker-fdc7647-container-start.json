@@ -1,0 +1,241 @@
+[
+    {
+        "Id": "b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee",
+        "Created": "2026-10-01T15:35:11.267345489Z",
+        "Path": "/usr/bin/shiny-server",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 606,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-01T15:35:12.444893547Z",
+            "FinishedAt": "0001-01-01T00:00:00Z",
+            "Health": {
+                "Status": "starting",
+                "FailingStreak": 0,
+                "Log": []
+            }
+        },
+        "Image": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+        "ResolvConfPath": "/var/lib/docker/containers/b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee/hostname",
+        "HostsPath": "/var/lib/docker/containers/b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee/hosts",
+        "LogPath": "/var/lib/docker/containers/b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee/b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee-json.log",
+        "Name": "/lmplot-health-fdc7647-20261001",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "none",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": [
+                "ALL"
+            ],
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": true,
+            "SecurityOpt": [
+                "no-new-privileges:true"
+            ],
+            "Tmpfs": {
+                "/tmp": "mode=1777",
+                "/var/lib/shiny-server": "uid=997,gid=997,mode=0770",
+                "/var/log/shiny-server": "uid=997,gid=997,mode=0770",
+                "/var/run/shiny-server": "uid=997,gid=997,mode=0770",
+                "/var/shiny-server/sockets": "uid=997,gid=997,mode=0770"
+            },
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 1073741824,
+            "NanoCpus": 2000000000,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 536870912,
+            "MemorySwap": 2147483648,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": 256,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "b9c8c7b51d28",
+            "Domainname": "",
+            "User": "shiny",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "3838/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "R_VERSION=4.6.0",
+                "R_HOME=/usr/local/lib/R",
+                "TZ=Etc/UTC",
+                "CRAN=https://p3m.dev/cran/__linux__/noble/2026-06-23",
+                "LANG=en_US.UTF-8",
+                "S6_VERSION=v2.1.0.2",
+                "SHINY_SERVER_VERSION=latest",
+                "PANDOC_VERSION=default",
+                "DEBIAN_FRONTEND=noninteractive",
+                "RENV_CONFIG_PAK_ENABLED=FALSE",
+                "RENV_CONFIG_CACHE_ENABLED=FALSE",
+                "RENV_CONFIG_AUTO_SNAPSHOT=FALSE"
+            ],
+            "Cmd": [
+                "/usr/bin/shiny-server"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "wget --quiet --tries=1 --timeout=60 --output-document=/dev/null http://127.0.0.1:3838/ || exit 1"
+                ],
+                "Interval": 10000000000,
+                "Timeout": 65000000000,
+                "StartPeriod": 90000000000,
+                "Retries": 3
+            },
+            "Image": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+            "Volumes": null,
+            "WorkingDir": "/srv/shiny-server/lmplot",
+            "Entrypoint": null,
+            "Labels": {
+                "org.opencontainers.image.authors": "Carl Boettiger \u003ccboettig@ropensci.org\u003e",
+                "org.opencontainers.image.base.name": "docker.io/library/ubuntu:noble",
+                "org.opencontainers.image.description": "Shiny Server on versioned Rocker image.",
+                "org.opencontainers.image.licenses": "GPL-2.0-or-later",
+                "org.opencontainers.image.revision": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+                "org.opencontainers.image.source": "https://github.com/rocker-org/rocker-versioned2",
+                "org.opencontainers.image.title": "rocker/shiny",
+                "org.opencontainers.image.vendor": "Rocker Project",
+                "org.opencontainers.image.version": "R-4.6.0"
+            }
+        },
+        "NetworkSettings": {
+            "SandboxID": "6715fa373ca768c9490845b413d76f3e0e00c970205256899bdceeea86825668",
+            "SandboxKey": "/var/run/docker/netns/6715fa373ca7",
+            "Ports": {},
+            "Networks": {
+                "none": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "a59286c638b7e0fd10200e847c1cd962024e286e5f126fffa1bb70eed6a83f66",
+                    "EndpointID": "470ac7b1795ac71bace3e8b29e64c34a2e16633aa58bd8528cc16cf45e0721cb",
+                    "Gateway": "",
+                    "IPAddress": "",
+                    "MacAddress": "",
+                    "IPPrefixLen": 0,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:3d262349aa01d6234e6bb6308c27c1ce48e4d40835737127c40142aed6e36ff2",
+            "size": 4857,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]

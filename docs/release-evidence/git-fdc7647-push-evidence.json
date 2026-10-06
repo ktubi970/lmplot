@@ -1,0 +1,19 @@
+{
+  "ObservedUtc": "2026-10-01T15:42:18.5140779Z",
+  "Head": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+  "RemoteMaster": "fdc7647bc73fc4e9574135895f119608ede4ae16\trefs/heads/master",
+  "LeftRightCount": "0\t0",
+  "TrackedUnstaged": [],
+  "Staged": [],
+  "Status": [
+    "## master...origin/master",
+    "?? docs/release-evidence/"
+  ],
+  "AuthorizedPushCommand": "git -c push.followTags=false push --porcelain origin master:master",
+  "PushResultFromCapturedOutput": "refs/heads/master:refs/heads/master 42e70f3..fdc7647; Done",
+  "PushExitCodeFromCapturedOutput": 0,
+  "PrePushRemote": "42e70f36788bfaeac880251a29195de2713ceb4c",
+  "PrePushLeftRightCount": "0 2",
+  "PrePushAncestorExitCode": 0,
+  "Authorization": "Human user oui received before this push; no force push, Git tag or release action"
+}

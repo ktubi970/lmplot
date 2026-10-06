@@ -1,5 +1,14 @@
 # LM Plot Explorer 0.10.0-beta.1
 
+[![CI](https://github.com/ktubi970/lmplot/actions/workflows/ci.yml/badge.svg)](https://github.com/ktubi970/lmplot/actions/workflows/ci.yml)
+[![R 4.6.0](https://img.shields.io/badge/R-4.6.0-blue.svg)](https://www.r-project.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Release](https://img.shields.io/badge/release-0.10.0--beta.1-orange.svg)](CHANGELOG.md)
+
+<p align="center">
+  <img src="lmplot.png" alt="LM Plot Explorer Interface" width="650" />
+</p>
+
 An English educational Shiny application for anonymous exploration of linear,
 generalized linear, and Gaussian random-intercept models. The public workflow
 uses bundled scientific examples and deterministic simulation. This is a beta
@@ -281,8 +290,12 @@ git diff --check
 exact R 4.6.0, checks synchronization and required packages, reports installed
 package build versions, and runs the full suite with real Chrome and no skips.
 The Linux Docker job runs only after both R jobs pass. Hosted CI execution,
-human scientific review, manual assistive-technology checks, and external
-ingress/WebSocket staging are release gates, not implied by local tests.
+documented scientific review by a human or an explicitly identified agent,
+manual assistive-technology checks, and external ingress/WebSocket staging
+are release gates, not implied by local tests. The [scientific approval
+policy](CHANGELOG.md#release-gates-and-evidence) requires traceable evidence,
+an explicit decision on findings, and an approve/block conclusion; a separate
+human scientific sign-off is not required.
 
 ## Architecture
 
@@ -298,6 +311,13 @@ ordinary R values. This keeps headless scientific tests independent of UI
 state. Existing functions provide the needed boundaries; a new library or a
 long file alone does not justify another abstraction. Agent conventions live
 in [AGENTS.md](AGENTS.md).
+
+## Contributing & community
+
+Contributions, bug reports, and statistical insights are welcome!
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for environment prerequisites, architecture rules, and pull request procedures.
+- Please review our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
+- Review our [Security Policy](SECURITY.md) to report vulnerabilities privately.
 
 ## License
 

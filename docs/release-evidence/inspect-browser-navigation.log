@@ -1,0 +1,243 @@
+R: R version 4.6.0 (2026-04-24 ucrt) 
+shinytest2 0.5.1 
+chromote 0.5.1 
+shiny 1.14.0 
+callr 3.8.0 
+processx 3.9.0 
+SHINYTEST2 INITIALIZE
+function (self, private, app_dir = testthat::test_path("../../"), 
+    ..., load_timeout = missing_arg(), timeout = missing_arg(), 
+    wait = TRUE, expect_values_screenshot_args = TRUE, screenshot_args = missing_arg(), 
+    check_names = TRUE, name = NULL, variant = missing_arg(), 
+    view = missing_arg(), height = NULL, width = NULL, seed = NULL, 
+    clean_logs = TRUE, shiny_args = list(), render_args = NULL, 
+    options = list()) 
+{
+    ckm8_assert_app_driver(self, private)
+    rlang::check_dots_empty()
+    gc()
+    private$default_expect_values_screenshot_args <- maybe_missing_value(expect_values_screenshot_args, 
+        missing_value())
+    private$default_screenshot_args <- maybe_missing_value(screenshot_args, 
+        missing_value())
+    app_set_variant(self, private, variant)
+    private$counter <- Count$new()
+    private$shiny_url <- Url$new()
+    app_init_timeouts(self, private, load_timeout = load_timeout, 
+        timeout = timeout)
+    private$save_dir <- st2_temp_file()
+    if (fs::dir_exists(private$save_dir)) {
+        unlink(private$save_dir, recursive = TRUE)
+    }
+    dir.create(private$save_dir, recursive = TRUE)
+    private$name <- name
+    private$clean_logs <- isTRUE(clean_logs)
+    self$log_message("Start AppDriver initialization")
+    private$state <- "initialize"
+    if (shiny::is.shiny.appobj(app_dir)) {
+        app_dir <- app_save(app_dir)
+    }
+    if (length(app_dir) == 1 && is.character(app_dir) && grepl("^http(s?)://", 
+        app_dir)) {
+        private$shiny_url$set(app_dir)
+        app_set_dir(self, private, ".")
+    }
+    else {
+        "!DEBUG starting shiny app from path"
+        self$log_message("Starting Shiny app")
+        app_set_dir(self, private, app_dir)
+        app_start_shiny(self, private, seed = seed, load_timeout = private$load_timeout, 
+            shiny_args = shiny_args, render_args = render_args, 
+            options = options)
+    }
+    js_file <- system.file("internal", "js", "shiny-tracer.js", 
+        package = "shinytest2")
+    js_content <- read_utf8(js_file)
+    "!DEBUG create new phantomjs session"
+    self$log_message("Creating new ChromoteSession")
+    private$chromote_session <- chromote::default_chromote_object()$new_session()
+    if (isTRUE(view)) {
+        self$view()
+    }
+    app_init_browser_log(self, private, options = options)
+    "!DEBUG navigate to Shiny app"
+    if (!is.null(height) || !is.null(width)) {
+        ckm8_assert_single_number(height, lower = 1)
+        ckm8_assert_single_number(width, lower = 1)
+        self$log_message(paste0("Setting window size: ", height, 
+            "x", width))
+        self$set_window_size(width = width, height = height, 
+            wait = FALSE)
+    }
+    self$log_message("Navigating to Shiny app")
+    self$get_chromote_session()$Page$navigate(private$shiny_url$get())
+    "!DEBUG inject shiny-tracer.js to load before all other scripts"
+    self$log_message("Injecting shiny-tracer.js")
+    utils::capture.output({
+        chromote_eval(self$get_chromote_session(), js_content)
+    })
+    "!DEBUG waiting for Shiny to become stable"
+    self$log_message("Waiting for Shiny to become ready")
+    withCallingHandlers({
+        self$wait_for_js("window.shinytest2 && window.shinytest2.ready === true", 
+            timeout = private$load_timeout)
+        if (isTRUE(wait)) {
+            self$wait_for_idle(duration = 200, timeout = private$load_timeout)
+        }
+    }, error = function(e) {
+        app_abort(self, private, paste0("Shiny app did not become stable in ", 
+            private$load_timeout, "ms.\n", "Message: ", conditionMessage(e)), 
+            parent = e)
+    })
+    "!DEBUG shiny started"
+    self$log_message("Shiny app started")
+    private$state <- "running"
+    private$shiny_worker_id <- chromote_eval(self$get_chromote_session(), 
+        "Shiny.shinyapp.config.workerId")$result$value
+    if (identical(private$shiny_worker_id, "")) {
+        private$shiny_worker_id <- NA_character_
+    }
+    private$shiny_test_url <- chromote_eval(self$get_chromote_session(), 
+        "Shiny.shinyapp.getTestSnapshotBaseUrl ? Shiny.shinyapp.getTestSnapshotBaseUrl({fullUrl:true}) : null")$result$value
+    if (check_names) {
+        app_check_unique_names(self, private)
+    }
+    invisible(self)
+}
+<bytecode: 0x0000025d63e1c778>
+<environment: namespace:shinytest2>
+CHROMOTE SESSION INITIALIZE
+function (parent = default_chromote_object(), width = 992, height = 1323, 
+    targetId = NULL, wait_ = TRUE, auto_events = NULL, mobile = FALSE) 
+{
+    check_number_whole(width)
+    check_number_whole(height)
+    check_logical(auto_events, allow_null = TRUE)
+    check_logical(mobile)
+    check_logical(wait_)
+    self$parent <- parent
+    lockBinding("parent", self)
+    self$default_timeout <- parent$default_timeout
+    if (is.null(targetId)) {
+        p <- parent$Target$createTarget("about:blank", wait_ = FALSE)$then(function(value) {
+            private$target_id <- value$targetId
+            parent$Target$attachToTarget(value$targetId, flatten = TRUE, 
+                wait_ = FALSE)
+        })
+    }
+    else {
+        private$target_id <- targetId
+        p <- parent$Target$attachToTarget(targetId, flatten = TRUE, 
+            wait_ = FALSE)
+    }
+    p <- p$then(function(value) {
+        private$session_id <- value$sessionId
+        self$parent$register_session(self)
+    })
+    self$protocol <- protocol_reassign_envs(parent$protocol, 
+        env = self$.__enclos_env__)
+    lockBinding("protocol", self)
+    list2env(self$protocol, self)
+    private$auto_events <- auto_events
+    private$event_manager <- EventManager$new(self)
+    private$session_is_active <- TRUE
+    private$target_is_active <- TRUE
+    p <- p$then(function(value) {
+        private$get_pixel_ratio()
+    })
+    if (is.null(targetId)) {
+        p <- p$then(function(value) {
+            self$Emulation$setDeviceMetricsOverride(width = width, 
+                height = height, deviceScaleFactor = private$pixel_ratio, 
+                mobile = mobile, wait_ = FALSE)
+        })
+    }
+    if (!is.null(self$Inspector$targetCrashed)) {
+        p <- p$then(function(value) {
+            self$Inspector$targetCrashed(timeout_ = NULL, wait_ = FALSE, 
+                function(value) {
+                  warning("Chromote has received a Inspector.targetCrashed event. This means that the ChromoteSession has probably crashed.")
+                  self$mark_closed(TRUE)
+                })
+        })
+    }
+    if (wait_) {
+        self$wait_for(p)
+    }
+    else {
+        private$init_promise_ <- p$then(function(value) self)
+    }
+}
+<bytecode: 0x0000025d63468d58>
+<environment: namespace:chromote>
+CHROMOTE SESSION SEND COMMAND
+function (msg, callback = NULL, error = NULL, timeout = NULL) 
+{
+    self$check_active()
+    self$parent$send_command(msg, callback, error, timeout, sessionId = private$session_id)
+}
+<bytecode: 0x0000025d634ae5f0>
+<environment: namespace:chromote>
+CHROMOTE INITIALIZE
+function (browser = Chrome$new(), multi_session = TRUE, auto_events = TRUE) 
+{
+    private$browser <- browser
+    private$auto_events <- auto_events
+    private$multi_session <- multi_session
+    private$command_callbacks <- fastmap()
+    private$child_loop <- create_loop(parent = current_loop())
+    p <- self$connect(multi_session = multi_session, wait_ = FALSE)
+    protocol_spec <- jsonlite::fromJSON(self$url("/json/protocol"), 
+        simplifyVector = FALSE)
+    self$protocol <- process_protocol(protocol_spec, self$.__enclos_env__)
+    lockBinding("protocol", self)
+    list2env(self$protocol, self)
+    private$event_manager <- EventManager$new(self)
+    self$wait_for(p)
+    private$register_default_event_listeners()
+}
+<bytecode: 0x0000025d63682e70>
+<environment: namespace:chromote>
+SHINY RUN APP
+function (appDir = getwd(), port = getOption("shiny.port"), launch.browser = getOption("shiny.launch.browser", 
+    interactive()), host = getOption("shiny.host", "127.0.0.1"), 
+    workerId = "", quiet = FALSE, display.mode = c("auto", "normal", 
+        "showcase"), test.mode = getOption("shiny.testmode", 
+        FALSE)) 
+{
+    promises::local_otel_promise_domain()
+    if (isRunning() && is.null(.globals$runningHandle)) {
+        stop("Can't call `runApp()` from within `runApp()`. If your ", 
+            "application code contains `runApp()`, please remove it.")
+    }
+    ops <- options(warn = max(1, getOption("warn", default = 1)), 
+        pool.scheduler = scheduleTask)
+    setupComplete <- FALSE
+    on.exit(if (!setupComplete) {
+        options(ops)
+        .globals$onStopCallbacks$invoke()
+        .globals$onStopCallbacks <- Callbacks$new()
+    }, add = TRUE)
+    require(shiny)
+    appParts <- as.shiny.appobj(appDir)
+    result <- .setupShinyApp(appDir, appParts, port, launch.browser, 
+        host, workerId, quiet, display.mode, test.mode, ops = ops)
+    setupComplete <- TRUE
+    on.exit(result$cleanup(), add = TRUE)
+    ..stacktraceoff..(captureStackTraces({
+        while (!.globals$stopped) {
+            ..stacktracefloor..(serviceApp())
+        }
+    }))
+    if (isTRUE(.globals$reterror)) {
+        stop(.globals$retval)
+    }
+    else if (.globals$retval$visible) {
+        .globals$retval$value
+    }
+    else {
+        invisible(.globals$retval$value)
+    }
+}
+<bytecode: 0x0000025d68a2ddc8>
+<environment: namespace:shiny>

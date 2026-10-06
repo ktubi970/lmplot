@@ -1,0 +1,44 @@
+No issues found -- the project is in a consistent state.
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+data_provenance_browser: .....................................................................1.................................
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+resized columns X {"column":0,"x":361,"y":983.6719,"width":156.5,"height":36.5,"viewport":[1100,900],"visibleWidth":156.5,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("resized columns") at test_data_provenance_browser.R:135:3
+ 2.   └─check_focus_visible(paste(stage, "X")) at test_data_provenance_browser.R:72:5
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                            file
+1 test_data_provenance_browser.R
+                                                                     test
+1 Data filters remain operable without focusing or exposing sizing copies
+  failed error warning skipped passed
+1      1 FALSE       0   FALSE    102
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted

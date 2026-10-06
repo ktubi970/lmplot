@@ -1,0 +1,75 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile:
+#1 transferring dockerfile: 2.49kB 0.1s done
+#1 DONE 0.9s
+
+#2 [internal] load metadata for docker.io/rocker/shiny:4.6.0@sha256:95a0d826be0bfc9bd41300385b35cf0ec074fc6b82cfaa92fddd7c6f6f2fd0dd
+#2 DONE 2.2s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 241B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [ 1/13] FROM docker.io/rocker/shiny:4.6.0@sha256:95a0d826be0bfc9bd41300385b35cf0ec074fc6b82cfaa92fddd7c6f6f2fd0dd
+#5 resolve docker.io/rocker/shiny:4.6.0@sha256:95a0d826be0bfc9bd41300385b35cf0ec074fc6b82cfaa92fddd7c6f6f2fd0dd 0.1s done
+#5 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 8.47kB 0.1s done
+#4 DONE 0.1s
+
+#6 [ 7/13] RUN R --vanilla -s -e "Sys.setenv(LMPLOT_EXPLICIT_BOOTSTRAP='1'); source('renv/activate.R'); renv::restore(prompt = FALSE, clean = TRUE)"
+#6 CACHED
+
+#7 [ 2/13] RUN apt-get update  && apt-get install -y --no-install-recommends       build-essential gfortran wget       libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev libicu-dev       libnlopt-dev libglpk-dev       libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev       libpng-dev libjpeg-dev libtiff-dev  && rm -rf /var/lib/apt/lists/*
+#7 CACHED
+
+#8 [ 3/13] RUN apt-get update  && apt-get install -y --no-install-recommends libuv1-dev curl  && rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [ 4/13] WORKDIR /srv/shiny-server/lmplot
+#9 CACHED
+
+#10 [ 5/13] COPY renv.lock .Rprofile ./
+#10 CACHED
+
+#11 [ 6/13] COPY renv/activate.R ./renv/activate.R
+#11 CACHED
+
+#12 [ 8/13] COPY app.R ./
+#12 CACHED
+
+#13 [ 9/13] COPY R/ ./R/
+#13 DONE 0.8s
+
+#14 [10/13] COPY data/real/ ./data/real/
+#14 DONE 0.5s
+
+#15 [11/13] COPY www/style.css ./www/style.css
+#15 DONE 0.5s
+
+#16 [12/13] RUN printf '%s\n'       'run_as shiny;'       'server {'       '  listen 3838;'       '  location / {'       '    app_dir /srv/shiny-server/lmplot;'       '    log_dir /var/log/shiny-server;'       '  }'       '}' > /etc/shiny-server/shiny-server.conf  && chown shiny:shiny /srv/shiny-server/lmplot  && install -d -o shiny -g shiny       /var/log/shiny-server /var/lib/shiny-server /var/run/shiny-server       /var/shiny-server/sockets
+#16 DONE 2.0s
+
+#17 [13/13] RUN printf '\nR_USER_CACHE_DIR=/tmp/R-cache\n' >> /usr/local/lib/R/etc/Renviron.site
+#17 DONE 0.9s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 2.7s done
+#18 exporting manifest sha256:3d262349aa01d6234e6bb6308c27c1ce48e4d40835737127c40142aed6e36ff2 0.1s done
+#18 exporting config sha256:941066b220bae25255cead01a53a274bf71b01908ca6a6bd739d72bad8dc50a8
+#18 exporting config sha256:941066b220bae25255cead01a53a274bf71b01908ca6a6bd739d72bad8dc50a8 0.1s done
+#18 exporting attestation manifest sha256:bd37e183227c1826aa125daee494ec281ccc26190176e3bd78c219445fb93e8a
+#18 exporting attestation manifest sha256:bd37e183227c1826aa125daee494ec281ccc26190176e3bd78c219445fb93e8a 0.2s done
+#18 exporting manifest list sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc 0.1s done
+#18 naming to moby-dangling@sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc
+#18 naming to moby-dangling@sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc 0.0s done
+#18 unpacking to moby-dangling@sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc
+#18 unpacking to moby-dangling@sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc 0.8s done
+#18 DONE 4.2s

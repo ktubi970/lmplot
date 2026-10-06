@@ -1,0 +1,36 @@
+{"elapsed":0.49,"kind":"runtime","value":{"R":"R version 4.6.0 (2026-04-24 ucrt)","commit":"","chromote":"0.5.1","shinytest2":"0.5.1","chrome_path":"","startup_timeout":10,"sass_cache":"C:\\Users\\ktubi\\AppData\\Local\\Temp\\RtmpgHOX1j\\lmplot-diagnostic-sass-bd0c6ce1e3c"}} 
+Tracing function "app_init_browser_log" in package
+"namespace:shinytest2"
+Running "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless \
+  "--remote-debugging-port=14153" \
+  "--remote-allow-origins=http://127.0.0.1:14153" \
+  "--crash-dumps-dir=C:\Users\ktubi\AppData\Local\Temp\RtmpgHOX1j\chrome-bd0c81e56e-crashpad" \
+  --disable-gpu --no-sandbox --disable-dev-shm-usage \
+  "--force-color-profile=srgb" --disable-extensions --mute-audio
+{"elapsed":6.27,"kind":"session","value":{"default_timeout":10}} 
+{"elapsed":6.32,"kind":"request","value":{"id":"D0AB4E435F2E6242B03DB13AB3882173","type":"Document","url":"http://127.0.0.1:6268/","timestamp":929630.4294}} 
+{"elapsed":16.36,"kind":"error","value":{"message":"Chromote: timed out waiting for response to command Page.navigate\n\n\nℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`\nℹ AppDriver logs:\n{shinytest2} R info   16:33:13.41 Start AppDriver initialization\n{shinytest2} R info   16:33:13.82 Starting Shiny app\n{shinytest2} R info   16:33:16.58 Creating new ChromoteSession\n{shinytest2} R info   16:33:18.66 Navigating to Shiny app\n{shinytest2} R info   16:33:28.66 Error while initializing AppDriver:\n                                  Chromote: timed out waiting for response to command Page.navigate\n{shiny}      R stderr ----------- Loading required package: shiny\n{shiny}      R stderr ----------- Warning: package 'shiny' was built under R version 4.6.1\n{shiny}      R stderr ----------- Running application in test mode.\n{shiny}      R stderr ----------- \n{shiny}      R stderr ----------- Listening on http://127.0.0.1:6268\n\n\nCaused by error:\n! Chromote: timed out waiting for response to command Page.navigate"}} 
+{shinytest2} R info   16:33:13.41 Start AppDriver initialization
+{shinytest2} R info   16:33:13.82 Starting Shiny app
+{shinytest2} R info   16:33:16.58 Creating new ChromoteSession
+{shinytest2} R info   16:33:18.66 Navigating to Shiny app
+{shinytest2} R info   16:33:28.66 Error while initializing AppDriver:
+                                  Chromote: timed out waiting for response to command Page.navigate
+{shiny}      R stderr ----------- Loading required package: shiny
+{shiny}      R stderr ----------- Warning: package 'shiny' was built under R version 4.6.1
+{shiny}      R stderr ----------- Running application in test mode.
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:6268CHROME_LOG chrome-bd0c81e56e-stderr.log 
+
+DevTools listening on ws://127.0.0.1:14153/devtools/browser/dbd33f8b-f123-49a5-9870-7f2118c532dc
+[54424:23124:1001/163320.802:ERROR:services\device\usb\usb_descriptors.cc:145] Failed to read length for configuration 1.
+[54424:23124:1001/163320.803:ERROR:services\device\usb\usb_descriptors.cc:104] Failed to read all configuration descriptors. Expected 2, got 1.
+[54424:23124:1001/163320.803:ERROR:components\device_event_log\device_event_log_impl.cc:211] [16:33:20.803] USB: usb_device_win.cc:95 Failed to read descriptors from \\?\usb#vid_0bda&pid_8153#000001000000#{a5dcbf10-6530-11d2-901f-00c04fb951ed}.
+[54424:51008:1001/163321.505:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+CHROME_LOG chrome-bd0c81e56e-stdout.log 
+
+{"elapsed":16.4,"kind":"cleanup_start","value":[]} 
+{"elapsed":17.49,"kind":"diagnostic_complete","value":{"success":false}} 
+FAULT_INJECTION_EXIT 1 
+OWNED_R_CHROME_PROCESSES_OBSERVED 14 STILL_RUNNING 0 
+FAULT_INJECTION_VERIFIED: error exit, navigation failure evidence, logs, cleanup

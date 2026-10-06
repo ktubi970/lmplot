@@ -1,0 +1,9 @@
+{"PowerShell":"7.6.5","OS":"Microsoft Windows 10.0.26200","NativeArgumentMode":"Windows","RRoot":"C:/Program Files/R/R-4.6.0","Lines":["stopifnot(getRversion() == \"4.6.0\")","cat(\"SECOND_LINE_REACHED\\n\")","stop(\"THIRD_LINE_STOP\")"]}
+{"invocation":"inline -e","binary":"dispatcher","separator":"LF","output":[],"exit":0}
+{"invocation":"inline -e","binary":"dispatcher","separator":"CRLF","output":[],"exit":0}
+{"invocation":"inline -e","binary":"x64","separator":"LF","output":["SECOND_LINE_REACHED","Error: THIRD_LINE_STOP","Execution halted"],"exit":1}
+{"invocation":"inline -e","binary":"x64","separator":"CRLF","output":["Error: unexpected invalid token in \"stopifnot(getRversion() == \"4.6.0\")","\"","Execution halted"],"exit":1}
+{"invocation":"file","binary":"dispatcher","separator":"LF","output":["SECOND_LINE_REACHED","Error: THIRD_LINE_STOP","Execution halted"],"exit":1}
+{"invocation":"file","binary":"dispatcher","separator":"CRLF","output":["SECOND_LINE_REACHED","Error: THIRD_LINE_STOP","Execution halted"],"exit":1}
+{"invocation":"file","binary":"x64","separator":"LF","output":["SECOND_LINE_REACHED","Error: THIRD_LINE_STOP","Execution halted"],"exit":1}
+{"invocation":"file","binary":"x64","separator":"CRLF","output":["SECOND_LINE_REACHED","Error: THIRD_LINE_STOP","Execution halted"],"exit":1}

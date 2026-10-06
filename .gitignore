@@ -14,3 +14,7 @@ tests/shinytest2/_screenshots/
 graphify-out/
 Rplots.pdf
 .agents/
+*.Rprof
+*.dockerbuild
+__pycache__/
+*.py[cod]

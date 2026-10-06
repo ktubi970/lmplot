@@ -1,0 +1,2 @@
+"file","test","failed","error","warning","skipped","passed"
+"test_ci_scripts.R","both CI R steps execute later lines and propagate their failure on Windows",4,FALSE,0,FALSE,12

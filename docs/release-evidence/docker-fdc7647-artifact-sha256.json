@@ -1,0 +1,142 @@
+[
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-2026-10-01.md",
+    "Hash": "E347EE2A197241B9DBE522AE995E8118585B920AB251808024E67CC465BC96DF"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-build-command.json",
+    "Hash": "FDCBB678F938D7DDA924D046A81E1E99EE15E4EE040C507B829A706230347572"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-build-result.json",
+    "Hash": "CA1C82FED04DE1BC3D0CCBA66049C50E94C00F0C7347839C6943231D89818746"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-build.log",
+    "Hash": "84A14779A15E2EF5CFFA29F9C17F7CA3090F2E60EDFF48BB2C06BC1A2832DBFD"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-candidate-input-checks.json",
+    "Hash": "783E8EE1A4B664B18F12E4F060CFBB0F513317AF56F97281F7CB52FE270A3105"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-candidate-proof.json",
+    "Hash": "2A0C96084535704CBCD0D3506E3831CC97CF97BE9432CC99141B2935C951405E"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-candidate.txt",
+    "Hash": "A22FEFE1E18919F86A61D32D946D2A3698EAE968B199189A1843E5EEB0A4E137"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-cleanup-checks.json",
+    "Hash": "A802EB031FC36618B3E33E3EB35365B1B7AC76A72C5506E66144443FA1FD6D04"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-cleanup-result.json",
+    "Hash": "3C264C1DFED1087DD9ED0B4C08F6290EEE728CC03A1315DAD5978B59E2CE8191"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-cleanup.log",
+    "Hash": "10ED83F06E5324E4CC311074DAE7F6DC0E1C47CB4F0313710B8F7C70E8A61B87"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-compose-checks.json",
+    "Hash": "9F18D6683AB1F4CAD4E167A798B409372C384791B95729A40BE5251491B98FBD"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-compose-quiet.log",
+    "Hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-compose-version.txt",
+    "Hash": "41440248FBEF87879F9FEDC84D6C4C8487887DC11A0E6288C6B2686CB02C09E5"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-compose.json",
+    "Hash": "59C24C45FA0B32255DBA00A31E96CA282F637512A49FBF8D59ACC63FA051951E"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-container-checks.json",
+    "Hash": "6530F2318172267C2252A8754819EDC8E1327CEF0C56CF096F19DAE0C6188720"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-container-final.json",
+    "Hash": "786EC2C2315D0917000FE4BC9FCDD4D2AD00C8264DE3A040EBF3398A8BDC8080"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-container-id.txt",
+    "Hash": "10ED83F06E5324E4CC311074DAE7F6DC0E1C47CB4F0313710B8F7C70E8A61B87"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-container-start.json",
+    "Hash": "7E53337330E78DBA7B018C79D3EB81E83FC25148AA4321455020EA15541475F9"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-container.log",
+    "Hash": "90CBD738B3219A6BB7D1EA0F596A75C874F17E103C48D6F52373BC2A6479AAB0"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-containers-after.jsonl",
+    "Hash": "90BCCF406F6BB740745BE9E0401E7079D03B68D7BA2A39BE692CD8553871C55D"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-containers-before.jsonl",
+    "Hash": "90BCCF406F6BB740745BE9E0401E7079D03B68D7BA2A39BE692CD8553871C55D"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-health-polls.jsonl",
+    "Hash": "D256E467D40928D48F270A2FF1D089E215EBBFBC15AA0FB0A00016EB3A927206"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-health-result.json",
+    "Hash": "FD1C6035C6C83E4D7A1BC9B2FEF9ADA42F176CC14D917B926852828E1497764D"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-iid.txt",
+    "Hash": "EE90524C28E6E3FD9086C27EDB6A25020BC3CAC55188E97EAD898DC4139C1258"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-image.json",
+    "Hash": "88CC88AAF39DEBC3636E7512081CD3F6710B92FFFFD7447990A182A75C84A05A"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-root-checks.json",
+    "Hash": "F1FD220D2A762BB4941A6C22D6B34F40AD7093FDE46555C1DF80B50403475944"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-root-stderr.log",
+    "Hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-root.html",
+    "Hash": "0F4CCED7D8B00C81FFD2F1A74D34E0AFB13720681E6949CCD925AA227BCC9954"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-run-args.json",
+    "Hash": "017177E47422DB71A2446C4D3D46A302F6183FE28B9DCFB312B02E4E56672B7A"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-run-stderr.log",
+    "Hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-runtime-uid.txt",
+    "Hash": "813484CB979541691E275E46660189FDDFF1A773641DDEBBB1E09D471BA9B956"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-source-sha256.json",
+    "Hash": "CDC30BE9D94B656D8F47BC1659888B15B7E6F0CE9A8F78906160A0EE0414FCAA"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-source-status.txt",
+    "Hash": "6AF364694046F5F933EE504B764A06C08C10B63C9FD25C26D915E8DE1A3BEE6A"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-summary.json",
+    "Hash": "9E076226A59AB1794A97D892DEBA981D9DE3C2023AC03478191984CE109F00A7"
+  },
+  {
+    "Path": "D:\\projet\\lmplot\\docs\\release-evidence\\docker-fdc7647-version.txt",
+    "Hash": "6BF5F852FE016F957BFEA75492D794746B4233A7BCFA392A6953A6E7BA040022"
+  }
+]

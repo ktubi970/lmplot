@@ -1,0 +1,1018 @@
+PACKAGE chromote 0.5.1 
+PACKAGE shinytest2 0.5.1 
+
+CHROMOTE FUNCTION launch_chrome 
+function (path = find_chrome(), args = get_chrome_args()) 
+{
+    if (is.null(path)) {
+        stop("Invalid path to Chrome")
+    }
+    res <- with_random_port(launch_chrome_impl, path = path, 
+        args = args)
+    res
+}
+<bytecode: 0x0000017aa6340eb0>
+<environment: namespace:chromote>
+
+CHROMOTE FUNCTION launch_chrome_impl 
+function (path, args, port) 
+{
+    tmp_session <- tempfile("chrome-", fileext = "%s")
+    path_dir_crash <- sprintf(tmp_session, "-crashpad")
+    path_stdout <- sprintf(tmp_session, "-stdout.log")
+    path_stderr <- sprintf(tmp_session, "-stderr.log")
+    p <- process$new(command = path, args = c(chrome_headless_mode(), 
+        paste0("--remote-debugging-port=", port), paste0("--remote-allow-origins=http://127.0.0.1:", 
+            port), paste0("--crash-dumps-dir=", path_dir_crash), 
+        args), supervise = TRUE, stdout = path_stdout, stderr = path_stderr, 
+        echo_cmd = getOption("chromote.launch.echo_cmd", FALSE))
+    connected <- FALSE
+    timeout <- getOption("chromote.timeout", 10)
+    end <- Sys.time() + timeout
+    while (!connected && Sys.time() < end) {
+        if (!p$is_alive()) {
+            error_logs_path <- p$get_error_file()
+            error_logs <- paste(readLines(error_logs_path), collapse = "\n")
+            stdout_file <- p$get_output_file()
+            verify <- chrome_verify()
+            stop("Failed to start chrome. ", if (verify$status == 
+                0) {
+                "Chrome is available on your system, so this error may be a configuration issue. "
+            }
+            else {
+                "Chrome does not appear to be runnable on your system. "
+            }, "Try `chromote_info()` to check and verify your settings. ", 
+                if (nzchar(error_logs)) {
+                  sprintf("\nLog file: %s\nError:\n%s", error_logs_path, 
+                    trimws(error_logs))
+                }
+                else {
+                  "No error messages were logged."
+                }, if (file.info(stdout_file)$size > 0) {
+                  paste0("\nThe following log file may contain more information:\n", 
+                    stdout_file)
+                })
+        }
+        tryCatch({
+            output <- readLines(p$get_error_file())
+            output <- output[grepl("^DevTools listening on ws://", 
+                output)]
+            if (length(output) != 1) 
+                stop()
+            output_port <- sub("^DevTools listening on ws://[0-9\\.]+:(\\d+)/.*", 
+                "\\1", output)
+            output_port <- as.integer(output_port)
+            if (is.na(output_port) || output_port != port) 
+                stop()
+            con <- url(paste0("http://127.0.0.1:", port, "/json/protocol"), 
+                "rb")
+            if (!isOpen(con)) 
+                break
+            connected <- TRUE
+            close(con)
+        }, warning = function(e) {
+        }, error = function(e) {
+        })
+        Sys.sleep(0.1)
+    }
+    if (!connected) {
+        rlang::abort(paste("Chrome debugging port not open after", 
+            timeout, "seconds."), class = "error_stop_port_search")
+    }
+    list(process = p, port = port)
+}
+<bytecode: 0x0000017aa632e698>
+<environment: namespace:chromote>
+
+CHROMOTE FUNCTION default_chrome_args 
+function () 
+{
+    c(if (is_windows()) "--disable-gpu", if (is_inside_ci() || 
+        is_missing_linux_user() || is_inside_docker()) {
+        "--no-sandbox"
+    }, if (is_inside_ci() || is_inside_docker()) {
+        "--disable-dev-shm-usage"
+    }, "--force-color-profile=srgb", c("--disable-extensions", 
+        "--mute-audio"))
+}
+<bytecode: 0x0000017aa633e190>
+<environment: namespace:chromote>
+
+CHROMOTE FUNCTION get_chrome_args 
+function () 
+{
+    if (!exists("chrome_args", envir = globals)) {
+        set_chrome_args(default_chrome_args())
+    }
+    globals$chrome_args
+}
+<bytecode: 0x0000017aa6339508>
+<environment: namespace:chromote>
+
+CHROMOTE FUNCTION get_chromote_timeout 
+
+CHROMOTE FUNCTION get_chromote_launch_timeout 
+
+CHROMOTE FUNCTION default_chromote_object 
+function () 
+{
+    if (!has_default_chromote_object()) {
+        set_default_chromote_object(Chromote$new())
+    }
+    globals$default_chromote
+}
+<bytecode: 0x0000017aa629f548>
+<environment: namespace:chromote>
+
+CHROME INITIALIZE
+function (path = find_chrome(), args = get_chrome_args()) 
+{
+    if (is.null(path)) {
+        stop("Invalid path to Chrome")
+    }
+    res <- launch_chrome(path, args)
+    private$host <- "127.0.0.1"
+    private$process <- res$process
+    private$port <- res$port
+    private$path <- path
+}
+<bytecode: 0x0000017aa59d5708>
+<environment: namespace:chromote>
+
+CHROMOTE INITIALIZE
+function (browser = Chrome$new(), multi_session = TRUE, auto_events = TRUE) 
+{
+    private$browser <- browser
+    private$auto_events <- auto_events
+    private$multi_session <- multi_session
+    private$command_callbacks <- fastmap()
+    private$child_loop <- create_loop(parent = current_loop())
+    p <- self$connect(multi_session = multi_session, wait_ = FALSE)
+    protocol_spec <- jsonlite::fromJSON(self$url("/json/protocol"), 
+        simplifyVector = FALSE)
+    self$protocol <- process_protocol(protocol_spec, self$.__enclos_env__)
+    lockBinding("protocol", self)
+    list2env(self$protocol, self)
+    private$event_manager <- EventManager$new(self)
+    self$wait_for(p)
+    private$register_default_event_listeners()
+}
+<bytecode: 0x0000017aa517ec78>
+<environment: namespace:chromote>
+
+APPDRIVER INITIALIZE
+function (app_dir = testthat::test_path("../../"), ..., name = NULL, 
+    variant = missing_arg(), seed = NULL, load_timeout = missing_arg(), 
+    timeout = missing_arg(), wait = TRUE, screenshot_args = missing_arg(), 
+    expect_values_screenshot_args = TRUE, check_names = TRUE, 
+    view = missing_arg(), height = NULL, width = NULL, clean_logs = TRUE, 
+    shiny_args = list(), render_args = NULL, options = list()) 
+{
+    app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, 
+        timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, 
+        screenshot_args = screenshot_args, check_names = check_names, 
+        name = name, variant = variant, view = view, height = height, 
+        width = width, seed = seed, clean_logs = clean_logs, 
+        shiny_args = shiny_args, render_args = render_args, options = options)
+}
+<bytecode: 0x0000017aa74880b0>
+<environment: namespace:shinytest2>
+
+SHINYTEST2 CHROME FUNCTIONS
+
+FUNCTION app_click 
+function (self, private, input = missing_arg(), output = missing_arg(), 
+    selector = missing_arg(), ...) 
+{
+    ckm8_assert_app_driver(self, private)
+    node_id <- app_find_node_id(self, private, input = input, 
+        output = output, selector = selector)
+    if (!rlang::is_missing(input)) {
+        self$set_inputs(`:=`(!!input, "click"), ...)
+    }
+    else {
+        rlang::check_dots_empty()
+        self$log_message(paste0("Clicking HTML element with selector: ", 
+            node_id_css_selector(self, private, input = input, 
+                output = output, selector = selector)))
+        click_script <- "\n      function() {\n        this.click()\n      }\n    "
+        chromote_call_js_on_node(self$get_chromote_session(), 
+            node_id, click_script)
+    }
+    invisible(self)
+}
+<bytecode: 0x0000017aa7ea36c8>
+<environment: namespace:shinytest2>
+
+FUNCTION app_download 
+function (self, private, output, name = NULL, save_dir = tempdir(), 
+    use_counter = FALSE) 
+{
+    ckm8_assert_app_driver(self, private)
+    self$log_message(paste0("Downloading file for output id: ", 
+        output))
+    sub_url <- chromote_eval(self$get_chromote_session(), paste0("$('#", 
+        output, "').attr('href')"))$result$value
+    if (identical(sub_url, "")) {
+        app_abort(self, private, paste0("Download from '#", output, 
+            "' failed"))
+    }
+    full_url <- paste0(private$shiny_url$get(), sub_url)
+    req <- app_httr2_get(self, private, full_url)
+    content_dispo <- httr2::resp_headers(req)[["content-disposition"]]
+    filename_header <- NULL
+    if (length(content_dispo) == 1 && is.character(content_dispo) && 
+        nzchar(content_dispo)) {
+        vals <- strsplit(content_dispo, "filename=")[[1]]
+        if (length(vals) > 1) {
+            filename_header <- gsub("\"", "", vals[2], fixed = TRUE)
+            self$log_message(paste0("Content disposition file name: ", 
+                filename_header))
+        }
+    }
+    include_dash <- TRUE
+    filename <- if (!is.null(name)) {
+        name
+    }
+    else if (!is.null(filename_header)) {
+        filename_header
+    }
+    else {
+        if (use_counter) {
+            include_dash <- FALSE
+            ".download"
+        }
+        else {
+            fs::path_file(tempfile(fileext = ".download"))
+        }
+    }
+    if (use_counter) {
+        dash <- if (include_dash) 
+            "-"
+        else ""
+        filename <- sprintf("%03d%s%s", private$counter$increment(), 
+            dash, filename)
+    }
+    download_path <- fs::path(save_dir, fs::path_sanitize(filename, 
+        "_"))
+    writeBin(httr2::resp_body_raw(req), download_path)
+    list(download_path = download_path, filename_header = filename_header)
+}
+<bytecode: 0x0000017aa7f19268>
+<environment: namespace:shinytest2>
+
+FUNCTION app_find_node_id 
+function (self, private, ..., input = missing_arg(), output = missing_arg(), 
+    selector = missing_arg()) 
+{
+    ckm8_assert_app_driver(self, private)
+    rlang::check_dots_empty()
+    "!DEBUG finding a nodeID"
+    css_selector <- node_id_css_selector(self, private, input = input, 
+        output = output, selector = selector)
+    el_node_ids <- chromote_find_elements(self$get_chromote_session(), 
+        css_selector)
+    if (length(el_node_ids) == 0) {
+        app_abort(self, private, paste0("Cannot find HTML element with selector ", 
+            css_selector))
+    }
+    else if (length(el_node_ids) > 1) {
+        app_warn(self, private, paste0("Multiple HTML elements found with selector ", 
+            css_selector))
+    }
+    node_id <- el_node_ids[[1]]
+    node_id
+}
+<bytecode: 0x0000017aa7fa9658>
+<environment: namespace:shinytest2>
+
+FUNCTION app_get_chromote_session 
+function (self, private) 
+{
+    ckm8_assert_app_driver(self, private)
+    private$chromote_session
+}
+<bytecode: 0x0000017aa7fba6d0>
+<environment: namespace:shinytest2>
+
+FUNCTION app_get_js 
+function (self, private, script, ..., file = missing_arg(), timeout = missing_arg()) 
+{
+    ckm8_assert_app_driver(self, private)
+    rlang::check_dots_empty()
+    timeout <- app_get_timeout(self, private, timeout = timeout)
+    "!DEBUG app_get_js()"
+    chromote_eval(self$get_chromote_session(), app_js_script_helper(self, 
+        private, script, file), timeout = timeout, awaitPromise = TRUE, 
+        returnByValue = TRUE)$result$value
+}
+<bytecode: 0x0000017aa7fbeb30>
+<environment: namespace:shinytest2>
+
+FUNCTION app_get_screenshot 
+function (self, private, file = NULL, ..., screenshot_args = missing_arg(), 
+    delay = missing_arg(), selector = missing_arg()) 
+{
+    "!DEBUG app_get_screenshot()"
+    ckm8_assert_app_driver(self, private)
+    rlang::check_dots_empty()
+    screenshot_args <- default_screenshot_args(maybe_missing_value(screenshot_args, 
+        private$default_screenshot_args))
+    if (is_false(screenshot_args)) {
+        app_warn(self, private, "`screenshot_args` can not be `FALSE` when calling `app$get_screenshot()`. Setting to `list()`")
+        screenshot_args <- list()
+    }
+    checkmate::assert_list(screenshot_args)
+    screenshot_args$delay <- maybe_missing_value(delay, screenshot_args$delay) %||% 
+        0
+    checkmate::assert_number(screenshot_args$delay, lower = 0, 
+        finite = TRUE, null.ok = TRUE)
+    screenshot_args$selector <- maybe_missing_value(selector, 
+        screenshot_args$selector) %||% "scrollable_area"
+    screenshot_args <- handle_custom_selector(self, private, 
+        screenshot_args)
+    if (is.null(file)) {
+        self$log_message("Taking screenshot")
+    }
+    else {
+        self$log_message(paste0("Taking screenshot: ", file))
+    }
+    path <- st2_temp_file(".png")
+    screenshot_args$filename <- path
+    do.call(self$get_chromote_session()$screenshot, screenshot_args)
+    if (is_windows()) {
+        normalize_png_res_header(self, private, path)
+    }
+    if (is.null(file)) {
+        rlang::check_installed("showimage")
+        withr::with_par(list(bg = "grey90"), {
+            showimage::show_image(path)
+        })
+    }
+    else {
+        fs::file_copy(path, file)
+    }
+    invisible(self)
+}
+<bytecode: 0x0000017aa80099d8>
+<environment: namespace:shinytest2>
+
+FUNCTION app_get_window_size 
+function (self, private) 
+{
+    "!DEBUG app_get_window_size()"
+    ckm8_assert_app_driver(self, private)
+    viewport <- self$get_chromote_session()$Page$getLayoutMetrics()$cssLayoutViewport
+    list(width = viewport$clientWidth, height = viewport$clientHeight)
+}
+<bytecode: 0x0000017aa80457e8>
+<environment: namespace:shinytest2>
+
+FUNCTION app_init_browser_log 
+function (self, private, options) 
+{
+    ckm8_assert_app_driver(self, private)
+    self$get_chromote_session()$Runtime$consoleAPICalled(function(info) {
+        msg <- console_api_to_msg(info, private$shiny_url$get())
+        app_add_log_entry(self, private, location = "chromote", 
+            level = info$type, message = msg)
+    })
+    self$get_chromote_session()$Runtime$exceptionThrown(function(info) {
+        msg <- exception_thrown_to_msg(info, private$shiny_url$get())
+        app_add_log_entry(self, private, location = "chromote", 
+            level = "throw", message = msg)
+    })
+    if (isTRUE(options$shiny.trace)) {
+        paste_and_shorten_base64 <- function(method, txt) {
+            txt <- gsub("(?m)base64,[a-zA-Z0-9+/=]+", "[base64 data]", 
+                txt, perl = TRUE)
+            paste0(method, " ", txt)
+        }
+        self$get_chromote_session()$Network$webSocketFrameSent(function(info) {
+            app_add_log_entry(self, private, location = "chromote", 
+                level = "websocket", message = paste_and_shorten_base64("send", 
+                  info$response$payloadData))
+        })
+        self$get_chromote_session()$Network$webSocketFrameReceived(function(info) {
+            app_add_log_entry(self, private, location = "chromote", 
+                level = "websocket", message = paste_and_shorten_base64("recv", 
+                  info$response$payloadData))
+        })
+    }
+}
+<bytecode: 0x0000017aa809b310>
+<environment: namespace:shinytest2>
+
+FUNCTION app_initialize 
+function (self, private, ..., view = missing_arg()) 
+{
+    ckm8_assert_app_driver(self, private)
+    env_test_on_cran <- Sys.getenv("SHINYTEST2_APP_DRIVER_TEST_ON_CRAN", 
+        "false")
+    should_skip_on_cran <- !tolower(env_test_on_cran) %in% c("true", 
+        "1")
+    if (should_skip_on_cran) {
+        testthat::skip_on_cran()
+    }
+    if (testthat::is_testing()) {
+        try_chromote <- function(silent = FALSE) {
+            try(silent = silent, {
+                chromote::default_chromote_object()$new_session()
+            })
+        }
+        if (on_ci() && is_windows()) {
+            try_chromote(silent = TRUE)
+        }
+        chromote_can_be_started <- try_chromote(silent = FALSE)
+        if (inherits(chromote_can_be_started, "try-error")) {
+            testthat::skip("`shinytest2::AppDriver` can not be initialized as {chromote} can not be started")
+        }
+    }
+    withCallingHandlers(app_initialize_(self, private, ..., view = view), 
+        error = function(e) {
+            tryCatch(self$log_message(paste0("Error while initializing AppDriver:\n", 
+                conditionMessage(e))), error = function(ee) {
+                app_inform(self, private, paste0("Could not log error message. Error: ", 
+                  conditionMessage(ee)))
+            })
+            tryCatch({
+                view_val <- rlang::maybe_missing(view, NULL)
+                if (rlang::is_interactive() && inherits(self$get_chromote_session(), 
+                  "ChromoteSession") && !isTRUE(view_val) && 
+                  !is_false(view_val)) {
+                  app_inform(self, private, "`$view()`ing chromote session for debugging purposes")
+                  self$log_message("Viewing chromote session for debugging purposes")
+                  self$view()
+                }
+            }, error = function(ee) {
+                app_inform(self, private, c(`!` = paste0("Could not open chromote session. Error: ", 
+                  conditionMessage(ee))))
+            })
+            logs <- tryCatch(format(self$get_logs()), error = function(e) "(Error retrieving logs)")
+            app_abort(self, private, c(conditionMessage(e), "\n", 
+                i = cli::col_silver("You can inspect the failed AppDriver object via `rlang::last_error()$app`"), 
+                i = paste0("AppDriver logs:\n", logs), "\n"), 
+                parent = e)
+        })
+}
+<bytecode: 0x0000017aa80b9c78>
+<environment: namespace:shinytest2>
+
+FUNCTION app_initialize_ 
+function (self, private, app_dir = testthat::test_path("../../"), 
+    ..., load_timeout = missing_arg(), timeout = missing_arg(), 
+    wait = TRUE, expect_values_screenshot_args = TRUE, screenshot_args = missing_arg(), 
+    check_names = TRUE, name = NULL, variant = missing_arg(), 
+    view = missing_arg(), height = NULL, width = NULL, seed = NULL, 
+    clean_logs = TRUE, shiny_args = list(), render_args = NULL, 
+    options = list()) 
+{
+    ckm8_assert_app_driver(self, private)
+    rlang::check_dots_empty()
+    gc()
+    private$default_expect_values_screenshot_args <- maybe_missing_value(expect_values_screenshot_args, 
+        missing_value())
+    private$default_screenshot_args <- maybe_missing_value(screenshot_args, 
+        missing_value())
+    app_set_variant(self, private, variant)
+    private$counter <- Count$new()
+    private$shiny_url <- Url$new()
+    app_init_timeouts(self, private, load_timeout = load_timeout, 
+        timeout = timeout)
+    private$save_dir <- st2_temp_file()
+    if (fs::dir_exists(private$save_dir)) {
+        unlink(private$save_dir, recursive = TRUE)
+    }
+    dir.create(private$save_dir, recursive = TRUE)
+    private$name <- name
+    private$clean_logs <- isTRUE(clean_logs)
+    self$log_message("Start AppDriver initialization")
+    private$state <- "initialize"
+    if (shiny::is.shiny.appobj(app_dir)) {
+        app_dir <- app_save(app_dir)
+    }
+    if (length(app_dir) == 1 && is.character(app_dir) && grepl("^http(s?)://", 
+        app_dir)) {
+        private$shiny_url$set(app_dir)
+        app_set_dir(self, private, ".")
+    }
+    else {
+        "!DEBUG starting shiny app from path"
+        self$log_message("Starting Shiny app")
+        app_set_dir(self, private, app_dir)
+        app_start_shiny(self, private, seed = seed, load_timeout = private$load_timeout, 
+            shiny_args = shiny_args, render_args = render_args, 
+            options = options)
+    }
+    js_file <- system.file("internal", "js", "shiny-tracer.js", 
+        package = "shinytest2")
+    js_content <- read_utf8(js_file)
+    "!DEBUG create new phantomjs session"
+    self$log_message("Creating new ChromoteSession")
+    private$chromote_session <- chromote::default_chromote_object()$new_session()
+    if (isTRUE(view)) {
+        self$view()
+    }
+    app_init_browser_log(self, private, options = options)
+    "!DEBUG navigate to Shiny app"
+    if (!is.null(height) || !is.null(width)) {
+        ckm8_assert_single_number(height, lower = 1)
+        ckm8_assert_single_number(width, lower = 1)
+        self$log_message(paste0("Setting window size: ", height, 
+            "x", width))
+        self$set_window_size(width = width, height = height, 
+            wait = FALSE)
+    }
+    self$log_message("Navigating to Shiny app")
+    self$get_chromote_session()$Page$navigate(private$shiny_url$get())
+    "!DEBUG inject shiny-tracer.js to load before all other scripts"
+    self$log_message("Injecting shiny-tracer.js")
+    utils::capture.output({
+        chromote_eval(self$get_chromote_session(), js_content)
+    })
+    "!DEBUG waiting for Shiny to become stable"
+    self$log_message("Waiting for Shiny to become ready")
+    withCallingHandlers({
+        self$wait_for_js("window.shinytest2 && window.shinytest2.ready === true", 
+            timeout = private$load_timeout)
+        if (isTRUE(wait)) {
+            self$wait_for_idle(duration = 200, timeout = private$load_timeout)
+        }
+    }, error = function(e) {
+        app_abort(self, private, paste0("Shiny app did not become stable in ", 
+            private$load_timeout, "ms.\n", "Message: ", conditionMessage(e)), 
+            parent = e)
+    })
+    "!DEBUG shiny started"
+    self$log_message("Shiny app started")
+    private$state <- "running"
+    private$shiny_worker_id <- chromote_eval(self$get_chromote_session(), 
+        "Shiny.shinyapp.config.workerId")$result$value
+    if (identical(private$shiny_worker_id, "")) {
+        private$shiny_worker_id <- NA_character_
+    }
+    private$shiny_test_url <- chromote_eval(self$get_chromote_session(), 
+        "Shiny.shinyapp.getTestSnapshotBaseUrl ? Shiny.shinyapp.getTestSnapshotBaseUrl({fullUrl:true}) : null")$result$value
+    if (check_names) {
+        app_check_unique_names(self, private)
+    }
+    invisible(self)
+}
+<bytecode: 0x0000017aa80c0040>
+<environment: namespace:shinytest2>
+
+FUNCTION app_list_component_names 
+function (self, private) 
+{
+    "!DEBUG app_list_component_names()"
+    ckm8_assert_app_driver(self, private)
+    res <- chromote_eval(self$get_chromote_session(), "shinytest2.listComponents()")$result$value
+    lapply(res, function(vals) {
+        sort_c(unlist(vals))
+    })
+}
+<bytecode: 0x0000017aa811b348>
+<environment: namespace:shinytest2>
+
+FUNCTION app_run_js 
+function (self, private, script, ..., file = missing_arg(), timeout = missing_arg()) 
+{
+    ckm8_assert_app_driver(self, private)
+    rlang::check_dots_empty()
+    timeout <- app_get_timeout(self, private, timeout = timeout)
+    "!DEBUG app_run_js()"
+    chromote_eval(self$get_chromote_session(), app_js_script_helper(self, 
+        private, script, file), timeout = timeout, awaitPromise = FALSE, 
+        returnByValue = FALSE, allow_no_response = TRUE)
+    invisible(self)
+}
+<bytecode: 0x0000017aa8164000>
+<environment: namespace:shinytest2>
+
+FUNCTION app_set_window_size 
+function (self, private, width, height, wait = TRUE) 
+{
+    "!DEBUG app_set_window_size() `width`x`height`"
+    ckm8_assert_app_driver(self, private)
+    self$log_message(paste0("Setting window size to `", width, 
+        "`x`", height, "`"))
+    chromote_set_window_size(self$get_chromote_session(), width = width, 
+        height = height)
+    if (isTRUE(wait)) {
+        self$wait_for_idle()
+    }
+    invisible(self)
+}
+<bytecode: 0x0000017aa82520a8>
+<environment: namespace:shinytest2>
+
+FUNCTION app_stop 
+function (self, private, signal_timeout = missing_arg()) 
+{
+    "!DEBUG AppDriver$stop"
+    ckm8_assert_app_driver(self, private)
+    signal_timeout <- resolve_signal_timeout(signal_timeout)
+    if (private$state == "stopped") {
+        return(invisible(private$shiny_proc_value))
+    }
+    self$log_message("Closing chromote session")
+    tryCatch(self$get_chromote_session()$close(), error = function(e) {
+        self$log_message(paste0("Error closing chromote session!\n", 
+            conditionMessage(e)))
+    })
+    if (!is.null(private$shiny_process)) {
+        if (private$shiny_process$is_alive()) {
+            self$log_message("Ending Shiny process. Ignoring Shiny process result")
+            tryCatch({
+                private$shiny_process$interrupt()
+                private$shiny_process$wait(signal_timeout)
+                private$shiny_process$signal(tools::SIGTERM)
+                private$shiny_process$wait(signal_timeout)
+                private$shiny_process$kill()
+            }, error = function(e) {
+                self$log_message(paste0("Error closing Shiny process!\n", 
+                  conditionMessage(e)))
+            })
+        }
+        else {
+            self$log_message("Getting Shiny process result")
+            tryCatch(private$shiny_proc_value <- private$shiny_process$get_result(), 
+                error = function(e) {
+                  self$log_message(paste0("Error getting Shiny process result!\n", 
+                    conditionMessage(e)))
+                })
+        }
+    }
+    private$state <- "stopped"
+    invisible(private$shiny_proc_value)
+}
+<bytecode: 0x0000017aa8355cb8>
+<environment: namespace:shinytest2>
+
+FUNCTION app_upload_file 
+function (self, private, ..., wait_ = TRUE, timeout_ = 3000) 
+{
+    ckm8_assert_app_driver(self, private)
+    timeout_ <- app_get_timeout(self, private, timeout = timeout_)
+    inputs <- list2(...)
+    if (length(inputs) != 1 || !rlang::is_named(inputs)) {
+        app_abort(self, private, "Can only upload file to exactly one input, and input must be named")
+    }
+    self$run_js(paste0("shinytest2.outputValuesWaiter.start(", 
+        toJSON_atomic(timeout_), ", 2);"))
+    filename <- inputs[[1]]
+    self$log_message(paste0("Uploading file(s) for id: ", paste(filename, 
+        collapse = ", ")))
+    node_id <- app_find_node_id(self, private, input = names(inputs)[1])
+    withCallingHandlers(filename <- fs::path_real(filename), 
+        error = function(e) {
+            app_abort(self, private, c(paste0("Error finding upload file at path: ", 
+                filename), i = paste0("`input` id: ", filename)), 
+                parent = e)
+        })
+    self$get_chromote_session()$DOM$setFileInputFiles(files = as.list(fs::path_real(filename)), 
+        nodeId = node_id)
+    self$get_js(paste0("\n    new Promise((resolve, reject) => {\n      shinytest2.outputValuesWaiter.finish(", 
+        toJSON_atomic(wait_), ", resolve);\n    });\n    "))
+    Sys.sleep(0.6)
+    self$log_message("Finished uploading file")
+    invisible()
+}
+<bytecode: 0x0000017aa83a87b0>
+<environment: namespace:shinytest2>
+
+FUNCTION app_view 
+function (self, private) 
+{
+    ckm8_assert_app_driver(self, private)
+    self$log_message("Viewing chromote session")
+    self$get_chromote_session()$view()
+}
+<bytecode: 0x0000017aa83bea50>
+<environment: namespace:shinytest2>
+
+FUNCTION app_wait_for_idle 
+function (self, private, duration = 500, timeout = missing_arg()) 
+{
+    ckm8_assert_app_driver(self, private)
+    timeout <- app_get_timeout(self, private, timeout = timeout)
+    checkmate::assert_number(duration, lower = 0, finite = TRUE)
+    self$log_message(paste0("Waiting for Shiny to become idle for ", 
+        duration, "ms within ", timeout, "ms"))
+    stable_js <- paste0("\n  let duration = ", duration, "; // time needed to be idle\n  let timeout = ", 
+        timeout, "; // max total time\n\n  new Promise((resolve, reject) => {\n\n    window.shinytest2.log('Waiting for Shiny to be stable');\n\n    const cleanup = () => {\n      $(document).off('shiny:busy', busyFn);\n      $(document).off('shiny:idle', idleFn);\n      clearTimeout(timeoutId);\n      clearTimeout(idleId);\n    }\n\n    let timeoutId = setTimeout(() => {\n      cleanup();\n      reject('Shiny did not become stable within ' + timeout + 'ms');\n    }, +timeout); // make sure timeout is number\n\n    let idleId = null;\n    const busyFn = () => {\n      // clear timeout. Calling with `null` is ok.\n      clearTimeout(idleId);\n    };\n    const idleFn = () => {\n      const fn = () => {\n        // Made it through the required duration\n        // Remove event listeners\n        cleanup();\n        window.shinytest2.log('Shiny has been idle for ' + duration + 'ms');\n        // Resolve the promise\n        resolve();\n      };\n\n      // delay the callback wrapper function\n      idleId = setTimeout(fn, +duration);\n    };\n\n    // set up individual listeners for this function.\n    $(document).on('shiny:busy', busyFn);\n    $(document).on('shiny:idle', idleFn);\n\n    // if already idle, call `idleFn` to kick things off.\n    if (window.shinytest2.busy !== true) {\n      idleFn();\n    }\n  })\n  ")
+    ret <- chromote_eval(self$get_chromote_session(), stable_js, 
+        timeout = timeout * 2)
+    if (identical(ret$result$subtype, "error") || length(ret$exceptionDetails) > 
+        0) {
+        app_abort(self, private, "An error occurred while waiting for Shiny to be stable")
+    }
+    invisible(self)
+}
+<bytecode: 0x0000017aa8390740>
+<environment: namespace:shinytest2>
+
+FUNCTION app_wait_for_js 
+function (self, private, script, timeout = missing_arg(), interval = 100) 
+{
+    "!DEBUG app_wait_for_js()"
+    ckm8_assert_app_driver(self, private)
+    timeout <- app_get_timeout(self, private, timeout = timeout)
+    chromote_wait_for_condition(self$get_chromote_session(), 
+        script, timeout = timeout, interval = interval)
+    invisible(self)
+}
+<bytecode: 0x0000017aa838a9a8>
+<environment: namespace:shinytest2>
+
+FUNCTION assert_chromote_session 
+function (chromote_session) 
+{
+    checkmate::assert_class(chromote_session, c("ChromoteSession", 
+        "R6"))
+}
+<bytecode: 0x0000017aa8395508>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_call_js_on_node 
+function (chromote_session, node_id, fn_js, ...) 
+{
+    object_id <- chromote_node_id_to_object_id(chromote_session, 
+        node_id)
+    chromote_call_js_on_object(chromote_session, object_id, fn_js, 
+        ...)
+}
+<bytecode: 0x0000017aa84721f8>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_call_js_on_object 
+function (chromote_session, object_id, fn_js, ..., returnByValue = TRUE) 
+{
+    assert_chromote_session(chromote_session)
+    checkmate::assert_character(object_id, any.missing = FALSE, 
+        len = 1)
+    checkmate::assert_character(fn_js, any.missing = FALSE, len = 1)
+    chromote_session$Runtime$callFunctionOn(fn_js, objectId = object_id, 
+        ..., returnByValue = returnByValue)
+}
+<bytecode: 0x0000017aa844dac0>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_eval 
+function (chromote_session, js, ..., timeout = 4 * 1000, timeout_ = missing_arg(), 
+    awaitPromise = TRUE, returnByValue = TRUE, allow_no_response = FALSE) 
+{
+    assert_chromote_session(chromote_session)
+    js <- as.character(js)
+    checkmate::assert_character(js, any.missing = FALSE, len = 1)
+    if (isTRUE(allow_no_response)) {
+        checkmate::assert_false(awaitPromise)
+        checkmate::assert_false(returnByValue)
+    }
+    else {
+        checkmate::assert_true(awaitPromise)
+        checkmate::assert_true(returnByValue)
+    }
+    js <- paste0("{\n", js, "\n}")
+    result <- tryCatch({
+        chromote_session$Runtime$evaluate(js, ..., timeout = timeout, 
+            timeout_ = timeout_, awaitPromise = awaitPromise, 
+            returnByValue = returnByValue, wait_ = TRUE)
+    }, error = function(e) {
+        list(results = list(type = "object", subtype = "error", 
+            className = "Error", description = paste0("Error found while trying to evaluate script: ", 
+                as.character(e))))
+    })
+    result
+}
+<bytecode: 0x0000017aa84a5770>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_find_element 
+function (chromote_session, css, root_id = chromote_root_node_id(chromote_session)) 
+{
+    assert_chromote_session(chromote_session)
+    checkmate::assert_character(css, any.missing = FALSE, len = 1)
+    node_id <- chromote_session$DOM$querySelector(root_id, css)$nodeId
+    if (node_id == 0L) 
+        return(NULL)
+    node_id
+}
+<bytecode: 0x0000017aa84972a0>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_find_elements 
+function (chromote_session, css, root_id = chromote_root_node_id(chromote_session)) 
+{
+    assert_chromote_session(chromote_session)
+    checkmate::assert_character(css, any.missing = FALSE, len = 1)
+    unlist(chromote_session$DOM$querySelectorAll(root_id, css)$nodeIds)
+}
+<bytecode: 0x0000017aa84a07b0>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_node_id_to_object_id 
+function (chromote_session, node_id) 
+{
+    assert_chromote_session(chromote_session)
+    checkmate::assert_integer(node_id, lower = 0)
+    chromote_session$DOM$resolveNode(node_id)$object$objectId
+}
+<bytecode: 0x0000017aa84b3bd0>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_root_node_id 
+function (chromote_session) 
+{
+    assert_chromote_session(chromote_session)
+    chromote_session$DOM$getDocument()$root$nodeId
+}
+<bytecode: 0x0000017aa84b7540>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_set_device_metrics 
+function (chromote_session, ..., width = NULL, height = NULL) 
+{
+    assert_chromote_session(chromote_session)
+    rlang::check_dots_empty()
+    chromote_session$Emulation$setDeviceMetricsOverride(width = width, 
+        height = height, deviceScaleFactor = 0, mobile = FALSE)
+}
+<bytecode: 0x0000017aa8490e40>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_set_window_size 
+function (chromote_session, width, height) 
+{
+    assert_chromote_session(chromote_session)
+    chromote_set_device_metrics(chromote_session, width = width, 
+        height = height)
+}
+<bytecode: 0x0000017aa849c2a8>
+<environment: namespace:shinytest2>
+
+FUNCTION chromote_wait_for_condition 
+function (chromote_session, condition_js, ..., timeout = 15 * 
+    1000, interval = 100) 
+{
+    rlang::check_dots_empty()
+    condition_js <- as.character(condition_js)
+    checkmate::assert_character(condition_js, any.missing = FALSE, 
+        len = 1)
+    checkmate::assert_number(timeout, lower = 0)
+    checkmate::assert_number(interval, lower = 0)
+    escaped_condition_js <- paste0(deparse(condition_js, width.cutoff = 500L), 
+        collapse = " ")
+    script <- paste0("new Promise((resolve, reject) => {\n  let start = Date.now();\n  const condition = () => {\n    return eval(", 
+        escaped_condition_js, ");\n  };\n", "chromote_wait_for_condition = () => {\n    let diffTime = new Date() - (+start + ", 
+        timeout, ");\n    if (diffTime > 0) {\n      return reject('Timed out waiting for JavaScript script to return `true`');\n    }\n    try {\n      if (condition()) {\n        return resolve();\n      }\n    } catch (e) {\n      reject(e);\n    }\n    setTimeout(chromote_wait_for_condition, ", 
+        interval, ");\n  }\n  chromote_wait_for_condition();\n});")
+    ret <- chromote_eval(chromote_session, script, timeout = timeout * 
+        2)
+    if (length(ret$exceptionDetails) > 0) {
+        exception <- ret$exceptionDetails$exception
+        if (exception$type == "string" && length(exception$value) == 
+            1 && isTRUE(grepl("Timed out waiting for JavaScript script", 
+            exception$value, fixed = TRUE))) {
+            rlang::abort(c("Timed out waiting for JavaScript script to return `true`", 
+                i = paste0("`timeout`: ", timeout), i = paste0("`script`:\n", 
+                  condition_js)))
+        }
+        rlang::abort(c("Error found while waiting for JavaScript script to return `true`.", 
+            i = paste0("`script`:\n", condition_js), i = paste0("Error:\n", 
+                obj_to_string(exception))))
+    }
+    invisible(chromote_session)
+}
+<bytecode: 0x0000017aa84c3a10>
+<environment: namespace:shinytest2>
+
+FUNCTION format.shinytest2_log 
+function (x, ...) 
+{
+    get_color <- function(location, level) {
+        switch(as.character(location), shiny = switch(level, 
+            stderr = col_magenta, force), chromote = switch(level, 
+            throw = col_red, error = col_red, col_cyan), shinytest2 = switch(level, 
+            col_green))
+    }
+    location_name <- c(chromote = "{chromote}", shinytest2 = "{shinytest2}", 
+        shiny = "{shiny}")
+    language <- c(chromote = "JS", shinytest2 = "R", shiny = "R")
+    x_name <- location_name[x$location]
+    x_language <- language[x$location]
+    x_identifier <- paste0(format(x_name), " ", format(x_language), 
+        " ", format(x$level))
+    x_timestamp <- ifelse(is.na(x$timestamp), "-----------", 
+        format(x$timestamp, "%H:%M:%OS2"))
+    x_msg <- Map(x$message, Map(x$location, x$level, f = get_color), 
+        f = function(msg, color) {
+            if (grepl("\n", msg, fixed = TRUE)) {
+                paste0(vapply(strsplit(msg, "\n", fixed = TRUE)[[1]], 
+                  color, character(1)), collapse = "\n")
+            }
+            else {
+                color(msg)
+            }
+        })
+    first_part <- paste0(x_identifier, " ", x_timestamp, " ")
+    first_part_char_len <- nchar(first_part[1])
+    first_spaces <- paste0("\n", paste0(rep(" ", first_part_char_len), 
+        collapse = ""))
+    x_msg_w_spaces <- gsub("\n", first_spaces, x_msg, fixed = TRUE)
+    paste0(first_part, x_msg_w_spaces, collapse = "\n")
+}
+<bytecode: 0x0000017aa6b49510>
+<environment: namespace:shinytest2>
+
+FUNCTION m__driver_new 
+function (expr, info_env) 
+{
+    post_fn <- function(expr_list, ...) {
+        if (!is_driver_init(expr_list)) {
+            return(as.call(expr_list))
+        }
+        expr_args <- rlang::call_args(rlang::call_match(as.call(expr_list), 
+            shinytest::ShinyDriver$public_methods$initialize, 
+            defaults = FALSE))
+        expr_args_names <- names(expr_args)
+        init_args <- list()
+        if ("path" %in% expr_args_names) {
+            if (fs::path_rel(expr_args$path) != "../..") 
+                init_args[[1]] <- expr_args$path
+        }
+        init_args$variant <- rlang::maybe_missing(info_env$suffix, 
+            NULL)
+        for (name_info in list(list(from = "loadTimeout", to = "load_timeout"), 
+            list(from = "checkNames", to = "check_names"), list(from = "seed", 
+                to = "seed"), list(from = "cleanLogs", to = "clean_logs"), 
+            list(from = "shinyOptions", to = "shiny_args"), list(from = "renderArgs", 
+                to = "render_args"), list(from = "options", to = "options"))) {
+            if (name_info$from %in% expr_args_names) {
+                init_args[[name_info$to]] <- expr_args[[name_info$from]]
+            }
+        }
+        if ("debug" %in% expr_args_names) {
+            if (info_env$verbose) 
+                rlang::inform("`ShinyDriver$new(debug=)` is not supported by `AppDriver`. All debugging messages are always recorded.")
+        }
+        if ("phantomTimeout" %in% expr_args_names) {
+            if (info_env$verbose) 
+                rlang::inform("`ShinyDriver$new(phantomTimeout=)` is not supported by `AppDriver`. `{chromote}` does not have a timeout parameter.")
+        }
+        ret_expr <- rlang::call2(rlang::expr(AppDriver$new), 
+            !!!init_args)
+        info_env$match_found <- TRUE
+        ret_expr
+    }
+    expr_recurse(expr, post_fn = post_fn)
+}
+<bytecode: 0x0000017aa6917850>
+<environment: namespace:shinytest2>
+
+FUNCTION with_external_shiny_browser 
+function (code) 
+{
+    is_rstudio_server <- rstudio_is_available() && rstudioapi::versionInfo()$mode == 
+        "server"
+    is_rstudio_desktop <- rstudio_is_available() && rstudioapi::versionInfo()$mode != 
+        "server"
+    if (!is_rstudio_server) {
+        browser <- chromote::default_chromote_object()$get_browser()
+        if (inherits(browser, "Chrome")) {
+            browser_path <- browser$get_path()
+            if (!is_windows()) 
+                browser_path <- shQuote(browser_path)
+            open_chrome <- function(url) {
+                utils::browseURL(url, browser_path)
+            }
+            old_options <- options(shiny.launch.browser = open_chrome)
+            withr::defer({
+                options(old_options)
+            })
+        }
+        else if (is_rstudio_desktop) {
+            if (rstudioapi::isAvailable("1.3.387")) {
+                shiny_viewer_type <- rstudioapi::readRStudioPreference("shiny_viewer_type", 
+                  "window")
+                withr::defer({
+                  rstudioapi::writeRStudioPreference("shiny_viewer_type", 
+                    shiny_viewer_type)
+                })
+                rstudioapi::writeRStudioPreference("shiny_viewer_type", 
+                  "browser")
+            }
+            else {
+                open_external <- get(".rs.invokeShinyWindowExternal", 
+                  envir = as.environment("tools:rstudio"))
+                old_option <- options(shiny.launch.browser = open_external)
+                withr::defer({
+                  options(old_option)
+                })
+            }
+        }
+    }
+    force(code)
+}
+<bytecode: 0x0000017aa2c8ed28>
+<environment: namespace:shinytest2>

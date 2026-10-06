@@ -1,0 +1,8 @@
+{
+  "OneLmplotService": true,
+  "NoTrustedLocalEnvironment": true,
+  "NoPublishedPorts": true,
+  "ReadOnly": true,
+  "HasNetworks": true,
+  "AllNetworksInternal": true
+}

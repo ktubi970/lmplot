@@ -1,0 +1,29 @@
+No issues found -- the project is in a consistent state.
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+data_provenance_browser: ............................................................................................................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🐝 Your tests are the bee's knees 🐝
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                            file
+1 test_data_provenance_browser.R
+                                                                     test
+1 Data filters remain operable without focusing or exposing sizing copies
+  failed error warning skipped passed
+1      0 FALSE       0   FALSE    108

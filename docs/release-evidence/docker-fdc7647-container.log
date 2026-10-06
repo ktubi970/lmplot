@@ -1,0 +1,5 @@
+[2026-10-01T15:35:15.897] [INFO] shiny-server - Shiny Server v1.5.24.1035 (Node.js v20.17.0)
+[2026-10-01T15:35:16.026] [INFO] shiny-server - Using config file "/etc/shiny-server/shiny-server.conf"
+[2026-10-01T15:35:16.103] [INFO] shiny-server - Starting listener on http://[::]:3838
+[2026-10-01T15:35:18.435] [INFO] shiny-server - created bookmark state directory: /var/lib/shiny-server/bookmarks
+[2026-10-01T15:35:18.436] [INFO] shiny-server - created user bookmark state directory: /var/lib/shiny-server/bookmarks/shiny

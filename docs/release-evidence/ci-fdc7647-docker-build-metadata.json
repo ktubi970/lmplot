@@ -1,0 +1,297 @@
+{
+  "buildx.build.provenance": {
+    "builder": {
+      "id": ""
+    },
+    "buildType": "https://mobyproject.org/buildkit@v1",
+    "materials": [
+      {
+        "uri": "pkg:docker/rocker/shiny@4.6.0?digest=sha256:95a0d826be0bfc9bd41300385b35cf0ec074fc6b82cfaa92fddd7c6f6f2fd0dd&platform=linux%2Famd64",
+        "digest": {
+          "sha256": "95a0d826be0bfc9bd41300385b35cf0ec074fc6b82cfaa92fddd7c6f6f2fd0dd"
+        }
+      }
+    ],
+    "invocation": {
+      "configSource": {
+        "entryPoint": "Dockerfile"
+      },
+      "parameters": {
+        "frontend": "dockerfile.v0",
+        "locals": [
+          {
+            "name": "context"
+          },
+          {
+            "name": "dockerfile"
+          }
+        ],
+        "root": {
+          "configSource": {
+            "path": "Dockerfile"
+          },
+          "request": {
+            "args": {
+              "vcs:localdir:context": ".",
+              "vcs:localdir:dockerfile": ".",
+              "vcs:revision": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+              "vcs:source": "https://github.com/ktubi970/lmplot"
+            }
+          }
+        },
+        "compatibilityVersion": 30
+      },
+      "environment": {
+        "dockerfileVersion": "1.27.0",
+        "github_actor": "ktubi970",
+        "github_actor_id": "248550354",
+        "github_event_name": "push",
+        "github_event_payload": {
+          "after": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+          "base_ref": null,
+          "before": "42e70f36788bfaeac880251a29195de2713ceb4c",
+          "commits": [
+            {
+              "author": {
+                "email": "krikor.tchepidjian@gmail.com",
+                "name": "ktubi970",
+                "username": "ktubi970"
+              },
+              "committer": {
+                "email": "krikor.tchepidjian@gmail.com",
+                "name": "ktubi970",
+                "username": "ktubi970"
+              },
+              "distinct": true,
+              "id": "bf1018cfc423a72fa9c5a59c069ebce8ad5eacfb",
+              "message": "fix(ci): preserve failure evidence and browser diagnostics",
+              "timestamp": "2026-10-01T16:35:39+02:00",
+              "tree_id": "6d7679eade68b26de6f9ffc3fd807ad5eb091b52",
+              "url": "https://github.com/ktubi970/lmplot/commit/bf1018cfc423a72fa9c5a59c069ebce8ad5eacfb"
+            },
+            {
+              "author": {
+                "email": "krikor.tchepidjian@gmail.com",
+                "name": "ktubi970",
+                "username": "ktubi970"
+              },
+              "committer": {
+                "email": "krikor.tchepidjian@gmail.com",
+                "name": "ktubi970",
+                "username": "ktubi970"
+              },
+              "distinct": true,
+              "id": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+              "message": "fix(a11y): keep data table keyboard focus visible",
+              "timestamp": "2026-10-01T17:29:06+02:00",
+              "tree_id": "091be9be821793e6a51c6f06d33e976485f5b5de",
+              "url": "https://github.com/ktubi970/lmplot/commit/fdc7647bc73fc4e9574135895f119608ede4ae16"
+            }
+          ],
+          "compare": "https://github.com/ktubi970/lmplot/compare/42e70f36788b...fdc7647bc73f",
+          "created": false,
+          "deleted": false,
+          "forced": false,
+          "head_commit": {
+            "author": {
+              "email": "krikor.tchepidjian@gmail.com",
+              "name": "ktubi970",
+              "username": "ktubi970"
+            },
+            "committer": {
+              "email": "krikor.tchepidjian@gmail.com",
+              "name": "ktubi970",
+              "username": "ktubi970"
+            },
+            "distinct": true,
+            "id": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+            "message": "fix(a11y): keep data table keyboard focus visible",
+            "timestamp": "2026-10-01T17:29:06+02:00",
+            "tree_id": "091be9be821793e6a51c6f06d33e976485f5b5de",
+            "url": "https://github.com/ktubi970/lmplot/commit/fdc7647bc73fc4e9574135895f119608ede4ae16"
+          },
+          "pusher": {
+            "email": "krikor.tchepidjian@gmail.com",
+            "name": "ktubi970"
+          },
+          "ref": "refs/heads/master",
+          "repository": {
+            "allow_forking": true,
+            "archive_url": "https://api.github.com/repos/ktubi970/lmplot/{archive_format}{/ref}",
+            "archived": false,
+            "assignees_url": "https://api.github.com/repos/ktubi970/lmplot/assignees{/user}",
+            "blobs_url": "https://api.github.com/repos/ktubi970/lmplot/git/blobs{/sha}",
+            "branches_url": "https://api.github.com/repos/ktubi970/lmplot/branches{/branch}",
+            "clone_url": "https://github.com/ktubi970/lmplot.git",
+            "collaborators_url": "https://api.github.com/repos/ktubi970/lmplot/collaborators{/collaborator}",
+            "comments_url": "https://api.github.com/repos/ktubi970/lmplot/comments{/number}",
+            "commits_url": "https://api.github.com/repos/ktubi970/lmplot/commits{/sha}",
+            "compare_url": "https://api.github.com/repos/ktubi970/lmplot/compare/{base}...{head}",
+            "contents_url": "https://api.github.com/repos/ktubi970/lmplot/contents/{+path}",
+            "contributors_url": "https://api.github.com/repos/ktubi970/lmplot/contributors",
+            "created_at": 1777638811,
+            "default_branch": "master",
+            "deployments_url": "https://api.github.com/repos/ktubi970/lmplot/deployments",
+            "description": null,
+            "disabled": false,
+            "downloads_url": "https://api.github.com/repos/ktubi970/lmplot/downloads",
+            "events_url": "https://api.github.com/repos/ktubi970/lmplot/events",
+            "fork": false,
+            "forks": 0,
+            "forks_count": 0,
+            "forks_url": "https://api.github.com/repos/ktubi970/lmplot/forks",
+            "full_name": "ktubi970/lmplot",
+            "git_commits_url": "https://api.github.com/repos/ktubi970/lmplot/git/commits{/sha}",
+            "git_refs_url": "https://api.github.com/repos/ktubi970/lmplot/git/refs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/ktubi970/lmplot/git/tags{/sha}",
+            "git_url": "git://github.com/ktubi970/lmplot.git",
+            "has_discussions": false,
+            "has_downloads": true,
+            "has_issues": true,
+            "has_pages": false,
+            "has_projects": true,
+            "has_pull_requests": true,
+            "has_wiki": true,
+            "homepage": null,
+            "hooks_url": "https://api.github.com/repos/ktubi970/lmplot/hooks",
+            "html_url": "https://github.com/ktubi970/lmplot",
+            "id": 1226461431,
+            "is_template": false,
+            "issue_comment_url": "https://api.github.com/repos/ktubi970/lmplot/issues/comments{/number}",
+            "issue_events_url": "https://api.github.com/repos/ktubi970/lmplot/issues/events{/number}",
+            "issues_url": "https://api.github.com/repos/ktubi970/lmplot/issues{/number}",
+            "keys_url": "https://api.github.com/repos/ktubi970/lmplot/keys{/key_id}",
+            "labels_url": "https://api.github.com/repos/ktubi970/lmplot/labels{/name}",
+            "language": "R",
+            "languages_url": "https://api.github.com/repos/ktubi970/lmplot/languages",
+            "license": {
+              "key": "mit",
+              "name": "MIT License",
+              "node_id": "MDc6TGljZW5zZTEz",
+              "spdx_id": "MIT",
+              "url": "https://api.github.com/licenses/mit"
+            },
+            "master_branch": "master",
+            "merges_url": "https://api.github.com/repos/ktubi970/lmplot/merges",
+            "milestones_url": "https://api.github.com/repos/ktubi970/lmplot/milestones{/number}",
+            "mirror_url": null,
+            "name": "lmplot",
+            "node_id": "R_kgDOSRpQ9w",
+            "notifications_url": "https://api.github.com/repos/ktubi970/lmplot/notifications{?since,all,participating}",
+            "open_issues": 0,
+            "open_issues_count": 0,
+            "owner": {
+              "avatar_url": "https://avatars.githubusercontent.com/u/248550354?v=4",
+              "email": "krikor.tchepidjian@gmail.com",
+              "events_url": "https://api.github.com/users/ktubi970/events{/privacy}",
+              "followers_url": "https://api.github.com/users/ktubi970/followers",
+              "following_url": "https://api.github.com/users/ktubi970/following{/other_user}",
+              "gists_url": "https://api.github.com/users/ktubi970/gists{/gist_id}",
+              "gravatar_id": "",
+              "html_url": "https://github.com/ktubi970",
+              "id": 248550354,
+              "login": "ktubi970",
+              "name": "ktubi970",
+              "node_id": "U_kgDODtCT0g",
+              "organizations_url": "https://api.github.com/users/ktubi970/orgs",
+              "received_events_url": "https://api.github.com/users/ktubi970/received_events",
+              "repos_url": "https://api.github.com/users/ktubi970/repos",
+              "site_admin": false,
+              "starred_url": "https://api.github.com/users/ktubi970/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/ktubi970/subscriptions",
+              "type": "User",
+              "url": "https://api.github.com/users/ktubi970",
+              "user_view_type": "public"
+            },
+            "private": true,
+            "pull_request_creation_policy": "all",
+            "pulls_url": "https://api.github.com/repos/ktubi970/lmplot/pulls{/number}",
+            "pushed_at": 1790868974,
+            "releases_url": "https://api.github.com/repos/ktubi970/lmplot/releases{/id}",
+            "size": 3548,
+            "ssh_url": "git@github.com:ktubi970/lmplot.git",
+            "stargazers": 0,
+            "stargazers_count": 0,
+            "stargazers_url": "https://api.github.com/repos/ktubi970/lmplot/stargazers",
+            "statuses_url": "https://api.github.com/repos/ktubi970/lmplot/statuses/{sha}",
+            "subscribers_url": "https://api.github.com/repos/ktubi970/lmplot/subscribers",
+            "subscription_url": "https://api.github.com/repos/ktubi970/lmplot/subscription",
+            "svn_url": "https://github.com/ktubi970/lmplot",
+            "tags_url": "https://api.github.com/repos/ktubi970/lmplot/tags",
+            "teams_url": "https://api.github.com/repos/ktubi970/lmplot/teams",
+            "topics": [],
+            "trees_url": "https://api.github.com/repos/ktubi970/lmplot/git/trees{/sha}",
+            "updated_at": "2026-10-01T13:14:10Z",
+            "url": "https://api.github.com/repos/ktubi970/lmplot",
+            "visibility": "private",
+            "watchers": 0,
+            "watchers_count": 0,
+            "web_commit_signoff_required": false
+          },
+          "sender": {
+            "avatar_url": "https://avatars.githubusercontent.com/u/248550354?v=4",
+            "events_url": "https://api.github.com/users/ktubi970/events{/privacy}",
+            "followers_url": "https://api.github.com/users/ktubi970/followers",
+            "following_url": "https://api.github.com/users/ktubi970/following{/other_user}",
+            "gists_url": "https://api.github.com/users/ktubi970/gists{/gist_id}",
+            "gravatar_id": "",
+            "html_url": "https://github.com/ktubi970",
+            "id": 248550354,
+            "login": "ktubi970",
+            "node_id": "U_kgDODtCT0g",
+            "organizations_url": "https://api.github.com/users/ktubi970/orgs",
+            "received_events_url": "https://api.github.com/users/ktubi970/received_events",
+            "repos_url": "https://api.github.com/users/ktubi970/repos",
+            "site_admin": false,
+            "starred_url": "https://api.github.com/users/ktubi970/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/ktubi970/subscriptions",
+            "type": "User",
+            "url": "https://api.github.com/users/ktubi970",
+            "user_view_type": "public"
+          }
+        },
+        "github_job": "docker-health",
+        "github_ref": "refs/heads/master",
+        "github_ref_name": "master",
+        "github_ref_protected": "false",
+        "github_ref_type": "branch",
+        "github_repository": "ktubi970/lmplot",
+        "github_repository_id": "1226461431",
+        "github_repository_owner": "ktubi970",
+        "github_repository_owner_id": "248550354",
+        "github_run_attempt": "1",
+        "github_run_id": "36885551520",
+        "github_run_number": "3",
+        "github_runner_arch": "X64",
+        "github_runner_environment": "github-hosted",
+        "github_runner_image_os": "ubuntu24",
+        "github_runner_image_version": "20260927.320.1",
+        "github_runner_name": "GitHub Actions 1000000036",
+        "github_runner_os": "Linux",
+        "github_runner_tracking_id": "github_582774fa-fa24-4d06-8d9e-4322c30b8352",
+        "github_server_url": "https://github.com",
+        "github_triggering_actor": "ktubi970",
+        "github_workflow": "CI",
+        "github_workflow_ref": "ktubi970/lmplot/.github/workflows/ci.yml@refs/heads/master",
+        "github_workflow_sha": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+        "platform": "linux/amd64"
+      }
+    }
+  },
+  "buildx.build.ref": "builder-b5ebfe01-dc69-44ec-a0f5-ed74a6f60de7/builder-b5ebfe01-dc69-44ec-a0f5-ed74a6f60de70/yblev3we3pr8abrud6oqi5q8d",
+  "containerimage.config.digest": "sha256:fe1516fe4047d176330f133e7dc86fa592439ed9f82e306c95ac516dfc28c51c",
+  "containerimage.descriptor": {
+    "mediaType": "application/vnd.oci.image.manifest.v1+json",
+    "digest": "sha256:97f2f40544475cac4abe4b9ec505c810bba2a9cb335cc1b3ce427c24e9828802",
+    "size": 4857,
+    "annotations": {
+      "org.opencontainers.image.created": "2026-10-01T16:23:54Z"
+    },
+    "platform": {
+      "architecture": "amd64",
+      "os": "linux"
+    }
+  },
+  "containerimage.digest": "sha256:97f2f40544475cac4abe4b9ec505c810bba2a9cb335cc1b3ce427c24e9828802",
+  "image.name": "docker.io/library/lmplot:0.10.0-beta.1"
+}

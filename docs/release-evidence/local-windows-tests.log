@@ -1,0 +1,295 @@
+During startup - Warning messages:
+1: Setting LC_COLLATE=C.UTF-8 failed 
+2: Setting LC_CTYPE=C.UTF-8 failed 
+3: Setting LC_MONETARY=C.UTF-8 failed 
+4: Setting LC_TIME=C.UTF-8 failed 
+No issues found -- the project is in a consistent state.
+             Package        Version 
+renv         "renv"         "1.2.3" 
+shiny        "shiny"        "1.14.0"
+plotly       "plotly"       "4.12.0"
+bslib        "bslib"        "0.11.0"
+DT           "DT"           "0.34.0"
+ggplot2      "ggplot2"      "4.0.3" 
+ggfortify    "ggfortify"    "0.4.19"
+lme4         "lme4"         "2.0-6" 
+jsonlite     "jsonlite"     "2.0.0" 
+shinyWidgets "shinyWidgets" "0.9.1" 
+shinyAce     "shinyAce"     "0.4.4" 
+testthat     "testthat"     "3.3.2" 
+shinytest2   "shinytest2"   "0.5.1" 
+chromote     "chromote"     "0.5.1" 
+yaml         "yaml"         "2.3.12"
+             Built                                                          
+renv         "R 4.6.0; ; 2026-08-10 11:01:10 UTC; windows"                  
+shiny        "R 4.6.1; ; 2026-08-07 02:38:32 UTC; windows"                  
+plotly       "R 4.6.1; ; 2026-07-04 03:47:58 UTC; windows"                  
+bslib        "R 4.6.0; ; 2026-08-10 11:04:04 UTC; windows"                  
+DT           "R 4.6.1; ; 2026-08-07 03:20:20 UTC; windows"                  
+ggplot2      "R 4.6.1; ; 2026-08-07 02:17:28 UTC; windows"                  
+ggfortify    "R 4.6.1; ; 2026-07-16 03:37:08 UTC; windows"                  
+lme4         "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 02:17:34 UTC; windows"
+jsonlite     "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 00:42:43 UTC; windows"
+shinyWidgets "R 4.6.1; ; 2026-08-07 02:59:01 UTC; windows"                  
+shinyAce     "R 4.6.1; ; 2026-08-07 02:59:13 UTC; windows"                  
+testthat     "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 02:59:00 UTC; windows"
+shinytest2   "R 4.6.1; x86_64-w64-mingw32; 2026-07-16 03:12:39 UTC; windows"
+chromote     "R 4.6.1; ; 2026-07-16 02:22:39 UTC; windows"                  
+yaml         "R 4.6.1; x86_64-w64-mingw32; 2026-08-07 00:42:43 UTC; windows"
+acceptance: .........................................................................................................................
+accessibility: .................................
+analysis_request: ..............................................................................................................................................................................................................
+app: .......123
+app_structure: ............
+cli_contract: ....................................................................................................................................................................................................
+config: ..
+deployment: ...............................................................................
+eli5: ....................................................................................................
+example_manifest: ............
+example_sources: ............
+examples: ................................................................................................
+link_browser: 4
+model: ....................................................................................................................................................
+model_brain: ....................................................................................................................................................................................................................................................................
+model_brain_contract: .........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+MODEL_BRAIN_BUDGET elapsed=1.400 seconds bytes=33598128
+.....
+model_brain_ui: ..................................................................................................................................................................W.......................
+model_diagnostics: .......................................................................
+model_fitting: ....
+pipeline: .........................................................................................................................................................
+production_entrypoints: .........
+real_data_acceptance: ..................................................
+release: .........................................................................................................................................
+scientific_copy: .....................................................................................................................
+scientific_copy_tables: ................
+scientific_metadata: ...............................................................................................................................................................................................................
+server: .....................................................................................................................................................
+shiny_modules: .................................................
+simulation: ..............................................................................................
+visualization: ........................................................................................................................
+
+══ Warnings ════════════════════════════════════════════════════════════════════
+1. selection is shared, generation guarded and navigation never recomputes analysis ('test_model_brain_ui.R:84:3') - package 'shiny' was built under R version 4.6.1
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test_app.R:110:3'): the public modular app completes its browser s
+Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Chromote: timed out waiting for response to command Page.navigate
+
+
+ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
+ℹ AppDriver logs:
+{shinytest2} R info   19:55:56.34 Start AppDriver initialization
+{shinytest2} R info   19:55:56.35 Starting Shiny app
+{shinytest2} R info   19:56:40.48 Creating new ChromoteSession
+{shinytest2} R info   19:56:41.02 Navigating to Shiny app
+{shinytest2} R info   19:56:51.04 Error while initializing AppDriver:
+                                  Chromote: timed out waiting for response to command Page.navigate
+{shiny}      R stderr ----------- During startup - Warning messages:
+{shiny}      R stderr ----------- 1: Setting LC_COLLATE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 2: Setting LC_CTYPE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 3: Setting LC_MONETARY=C.UTF-8 failed 
+{shiny}      R stderr ----------- 4: Setting LC_TIME=C.UTF-8 failed 
+{shiny}      R stderr ----------- Loading required package: shiny
+{shiny}      R stderr ----------- Warning: package 'shiny' was built under R version 4.6.1
+{shiny}      R stderr ----------- Running application in test mode.
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:6268
+{shiny}      R stdout ----------- 
+{shiny}      R stdout ----------- NOTE: Dependency discovery took XXXX seconds during snapshot using current .renvignore specifications.
+{shiny}      R stdout ----------- Consider modifying .renvignore or switching to explicit snapshots.
+{shiny}      R stdout ----------- See `?renv::dependencies` for more information.
+{shiny}      R stdout ----------- 
+
+
+Caused by error:
+! Chromote: timed out waiting for response to command Page.navigate
+Backtrace:
+     ▆
+  1. ├─shinytest2::AppDriver$new(...) at test_app.R:110:3
+  2. │ └─shinytest2 (local) initialize(...)
+  3. │   └─shinytest2:::app_initialize(...)
+  4. │     ├─base::withCallingHandlers(...)
+  5. │     └─shinytest2:::app_initialize_(self, private, ..., view = view)
+  6. │       └─self$get_chromote_session()$Page$navigate(private$shiny_url$get())
+  7. │         └─self$wait_for(p)
+  8. │           └─self$parent$wait_for(p)
+  9. │             └─chromote:::synchronize(p, loop = private$child_loop)
+ 10. │               ├─promises::with_promise_domain(...)
+ 11. │               │ └─domain$wrapSync(expr)
+ 12. │               │   └─base::force(expr)
+ 13. │               ├─base::tryCatch(...)
+ 14. │               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 15. │               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 16. │               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 17. │               └─base::stop(value)
+ 18. └─shinytest2 (local) `<fn>`(`<smplErrr>`)
+ 19.   └─shinytest2:::app_abort(...)
+ 20.     └─rlang::abort(..., app = self, call = call)
+
+── 2. Error ('test_app.R:168:3'): browser service failure retains plot and downl
+Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Chromote: timed out waiting for response to command Page.navigate
+
+
+ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
+ℹ AppDriver logs:
+{shinytest2} R info   19:56:53.29 Start AppDriver initialization
+{shinytest2} R info   19:56:53.30 Starting Shiny app
+{shinytest2} R info   19:57:05.64 Creating new ChromoteSession
+{shinytest2} R info   19:57:05.94 Navigating to Shiny app
+{shinytest2} R info   19:57:15.95 Error while initializing AppDriver:
+                                  Chromote: timed out waiting for response to command Page.navigate
+{shiny}      R stderr ----------- During startup - Warning messages:
+{shiny}      R stderr ----------- 1: Setting LC_COLLATE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 2: Setting LC_CTYPE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 3: Setting LC_MONETARY=C.UTF-8 failed 
+{shiny}      R stderr ----------- 4: Setting LC_TIME=C.UTF-8 failed 
+{shiny}      R stderr ----------- Loading required package: shiny
+{shiny}      R stderr ----------- Warning: package 'shiny' was built under R version 4.6.1
+{shiny}      R stderr ----------- Running application in test mode.
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:4155
+
+
+Caused by error:
+! Chromote: timed out waiting for response to command Page.navigate
+Backtrace:
+     ▆
+  1. ├─shinytest2::AppDriver$new(...) at test_app.R:168:3
+  2. │ └─shinytest2 (local) initialize(...)
+  3. │   └─shinytest2:::app_initialize(...)
+  4. │     ├─base::withCallingHandlers(...)
+  5. │     └─shinytest2:::app_initialize_(self, private, ..., view = view)
+  6. │       └─self$get_chromote_session()$Page$navigate(private$shiny_url$get())
+  7. │         └─self$wait_for(p)
+  8. │           └─self$parent$wait_for(p)
+  9. │             └─chromote:::synchronize(p, loop = private$child_loop)
+ 10. │               ├─promises::with_promise_domain(...)
+ 11. │               │ └─domain$wrapSync(expr)
+ 12. │               │   └─base::force(expr)
+ 13. │               ├─base::tryCatch(...)
+ 14. │               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 15. │               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 16. │               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 17. │               └─base::stop(value)
+ 18. └─shinytest2 (local) `<fn>`(`<smplErrr>`)
+ 19.   └─shinytest2:::app_abort(...)
+ 20.     └─rlang::abort(..., app = self, call = call)
+
+── 3. Error ('test_app.R:194:3'): keyboard workflow and observed Plotly clicks s
+Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Chromote: timed out waiting for response to command Page.navigate
+
+
+ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
+ℹ AppDriver logs:
+{shinytest2} R info   19:57:17.58 Start AppDriver initialization
+{shinytest2} R info   19:57:17.61 Starting Shiny app
+{shinytest2} R info   19:57:48.62 Creating new ChromoteSession
+{shinytest2} R info   19:57:48.95 Setting window size: 1000x1440
+{shinytest2} R info   19:57:48.96 Setting window size to `1440`x`1000`
+{shinytest2} R info   19:57:49.05 Navigating to Shiny app
+{shinytest2} R info   19:57:59.07 Error while initializing AppDriver:
+                                  Chromote: timed out waiting for response to command Page.navigate
+{shiny}      R stderr ----------- During startup - Warning messages:
+{shiny}      R stderr ----------- 1: Setting LC_COLLATE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 2: Setting LC_CTYPE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 3: Setting LC_MONETARY=C.UTF-8 failed 
+{shiny}      R stderr ----------- 4: Setting LC_TIME=C.UTF-8 failed 
+{shiny}      R stderr ----------- Loading required package: shiny
+{shiny}      R stderr ----------- Warning: package 'shiny' was built under R version 4.6.1
+{shiny}      R stderr ----------- Running application in test mode.
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:6051
+{shiny}      R stdout ----------- 
+{shiny}      R stdout ----------- NOTE: Dependency discovery took XXXX seconds during snapshot using current .renvignore specifications.
+{shiny}      R stdout ----------- Consider modifying .renvignore or switching to explicit snapshots.
+{shiny}      R stdout ----------- See `?renv::dependencies` for more information.
+{shiny}      R stdout ----------- 
+
+
+Caused by error:
+! Chromote: timed out waiting for response to command Page.navigate
+Backtrace:
+     ▆
+  1. ├─shinytest2::AppDriver$new(...) at test_app.R:194:3
+  2. │ └─shinytest2 (local) initialize(...)
+  3. │   └─shinytest2:::app_initialize(...)
+  4. │     ├─base::withCallingHandlers(...)
+  5. │     └─shinytest2:::app_initialize_(self, private, ..., view = view)
+  6. │       └─self$get_chromote_session()$Page$navigate(private$shiny_url$get())
+  7. │         └─self$wait_for(p)
+  8. │           └─self$parent$wait_for(p)
+  9. │             └─chromote:::synchronize(p, loop = private$child_loop)
+ 10. │               ├─promises::with_promise_domain(...)
+ 11. │               │ └─domain$wrapSync(expr)
+ 12. │               │   └─base::force(expr)
+ 13. │               ├─base::tryCatch(...)
+ 14. │               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 15. │               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 16. │               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 17. │               └─base::stop(value)
+ 18. └─shinytest2 (local) `<fn>`(`<smplErrr>`)
+ 19.   └─shinytest2:::app_abort(...)
+ 20.     └─rlang::abort(..., app = self, call = call)
+
+── 4. Error ('test_link_browser.R:5:3'): same-default model switch fits the link
+Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Chromote: timed out waiting for response to command Page.navigate
+
+
+ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
+ℹ AppDriver logs:
+{shinytest2} R info   20:00:22.04 Start AppDriver initialization
+{shinytest2} R info   20:00:22.04 Starting Shiny app
+{shinytest2} R info   20:00:51.74 Creating new ChromoteSession
+{shinytest2} R info   20:00:52.05 Navigating to Shiny app
+{shinytest2} R info   20:01:02.06 Error while initializing AppDriver:
+                                  Chromote: timed out waiting for response to command Page.navigate
+{shiny}      R stderr ----------- During startup - Warning messages:
+{shiny}      R stderr ----------- 1: Setting LC_COLLATE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 2: Setting LC_CTYPE=C.UTF-8 failed 
+{shiny}      R stderr ----------- 3: Setting LC_MONETARY=C.UTF-8 failed 
+{shiny}      R stderr ----------- 4: Setting LC_TIME=C.UTF-8 failed 
+{shiny}      R stderr ----------- Loading required package: shiny
+{shiny}      R stderr ----------- Warning: package 'shiny' was built under R version 4.6.1
+{shiny}      R stderr ----------- Running application in test mode.
+{shiny}      R stderr ----------- createTcpServer: address already in use
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:5711
+{shiny}      R stdout ----------- 
+{shiny}      R stdout ----------- NOTE: Dependency discovery took XXXX seconds during snapshot using current .renvignore specifications.
+{shiny}      R stdout ----------- Consider modifying .renvignore or switching to explicit snapshots.
+{shiny}      R stdout ----------- See `?renv::dependencies` for more information.
+{shiny}      R stdout ----------- 
+
+
+Caused by error:
+! Chromote: timed out waiting for response to command Page.navigate
+Backtrace:
+     ▆
+  1. ├─shinytest2::AppDriver$new(...) at test_link_browser.R:5:3
+  2. │ └─shinytest2 (local) initialize(...)
+  3. │   └─shinytest2:::app_initialize(...)
+  4. │     ├─base::withCallingHandlers(...)
+  5. │     └─shinytest2:::app_initialize_(self, private, ..., view = view)
+  6. │       └─self$get_chromote_session()$Page$navigate(private$shiny_url$get())
+  7. │         └─self$wait_for(p)
+  8. │           └─self$parent$wait_for(p)
+  9. │             └─chromote:::synchronize(p, loop = private$child_loop)
+ 10. │               ├─promises::with_promise_domain(...)
+ 11. │               │ └─domain$wrapSync(expr)
+ 12. │               │   └─base::force(expr)
+ 13. │               ├─base::tryCatch(...)
+ 14. │               │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 15. │               │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 16. │               │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 17. │               └─base::stop(value)
+ 18. └─shinytest2 (local) `<fn>`(`<smplErrr>`)
+ 19.   └─shinytest2:::app_abort(...)
+ 20.     └─rlang::abort(..., app = self, call = call)
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Error:
+! Test failures.
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+Execution halted

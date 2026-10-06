@@ -1,0 +1,5 @@
+{
+  "Command": "docker build --platform linux/amd64 --iidfile docs/release-evidence/docker-fdc7647-iid.txt --label org.opencontainers.image.revision=fdc7647bc73fc4e9574135895f119608ede4ae16 --progress=plain .",
+  "Commit": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+  "StartedUtc": "2026-10-01T15:32:44.0927918Z"
+}

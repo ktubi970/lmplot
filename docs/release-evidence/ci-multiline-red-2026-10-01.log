@@ -1,0 +1,40 @@
+ci_scripts: ...........12.34
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test_ci_scripts.R:43:5'): both CI R steps execute later lines an
+Expected `any(grepl("CI_LATER_LINE_FAILURE", output, fixed = TRUE))` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+Verify locked runtime, packages and browser
+CI_FIRST_LINE
+
+── 2. Failure ('test_ci_scripts.R:44:5'): both CI R steps execute later lines an
+Expected `as.integer(attr(output, "status"))` to be identical to 1L.
+Differences:
+Lengths differ: 0 is not 1
+Verify locked runtime, packages and browser
+CI_FIRST_LINE
+
+── 3. Failure ('test_ci_scripts.R:43:5'): both CI R steps execute later lines an
+Expected `any(grepl("CI_LATER_LINE_FAILURE", output, fixed = TRUE))` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+Run the complete R, CLI, and real-browser suite
+CI_FIRST_LINE
+
+── 4. Failure ('test_ci_scripts.R:44:5'): both CI R steps execute later lines an
+Expected `as.integer(attr(output, "status"))` to be identical to 1L.
+Differences:
+Lengths differ: 0 is not 1
+Run the complete R, CLI, and real-browser suite
+CI_FIRST_LINE
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted

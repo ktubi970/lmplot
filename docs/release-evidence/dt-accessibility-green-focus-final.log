@@ -1,0 +1,91 @@
+No issues found -- the project is in a consistent state.
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+data_provenance_browser: ...........1.............2...........3..........4...........5
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test_data_provenance_browser.R:65:5'): Data filters remain opera
+Expected `app$get_js(...)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial Shift+Tab did not return to X
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:75:3
+ 2.   └─testthat::expect_true(...) at test_data_provenance_browser.R:65:5
+
+── 2. Failure ('test_data_provenance_browser.R:65:5'): Data filters remain opera
+Expected `app$get_js(...)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+filtered redraw Shift+Tab did not return to X
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:86:3
+ 2.   └─testthat::expect_true(...) at test_data_provenance_browser.R:65:5
+
+── 3. Failure ('test_data_provenance_browser.R:65:5'): Data filters remain opera
+Expected `app$get_js(...)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+sorted and paginated redraw Shift+Tab did not return to X
+Backtrace:
+    ▆
+ 1. └─check_filters("sorted and paginated redraw") at test_data_provenance_browser.R:98:3
+ 2.   └─testthat::expect_true(...) at test_data_provenance_browser.R:65:5
+
+── 4. Failure ('test_data_provenance_browser.R:65:5'): Data filters remain opera
+Expected `app$get_js(...)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+resized columns Shift+Tab did not return to X
+Backtrace:
+    ▆
+ 1. └─check_filters("resized columns") at test_data_provenance_browser.R:101:3
+ 2.   └─testthat::expect_true(...) at test_data_provenance_browser.R:65:5
+
+── 5. Failure ('test_data_provenance_browser.R:65:5'): Data filters remain opera
+Expected `app$get_js(...)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+new analysis with Y Shift+Tab did not return to X
+Backtrace:
+    ▆
+ 1. └─check_filters("new analysis with Y", active_count = 5L) at test_data_provenance_browser.R:109:3
+ 2.   └─testthat::expect_true(...) at test_data_provenance_browser.R:65:5
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                            file
+1 test_data_provenance_browser.R
+                                                                     test
+1 Data filters remain operable without focusing or exposing sizing copies
+  failed error warning skipped passed
+1      5 FALSE       0   FALSE     56
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted

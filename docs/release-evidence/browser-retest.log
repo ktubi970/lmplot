@@ -1,0 +1,40 @@
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+app: .........................................................
+link_browser: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                 file
+1          test_app.R
+2          test_app.R
+3          test_app.R
+4          test_app.R
+5 test_link_browser.R
+                                                                    test failed
+1        browser log classification uses strict levels and warning pairs      0
+2            the public modular app completes its browser smoke workflow      0
+3        browser service failure retains plot and download then recovers      0
+4 keyboard workflow and observed Plotly clicks share the Brain selection      0
+5        same-default model switch fits the link selected in the browser      0
+  error warning skipped passed
+1 FALSE       0   FALSE      7
+2 FALSE       0   FALSE     18
+3 FALSE       0   FALSE      8
+4 FALSE       0   FALSE     24
+5 FALSE       0   FALSE      2

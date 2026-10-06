@@ -1,0 +1,40 @@
+{
+  "FinalHealth": {
+    "Status": "healthy",
+    "FailingStreak": 0,
+    "Log": [
+      {
+        "Start": "2026-10-01T15:35:17.893396974Z",
+        "End": "2026-10-01T15:35:39.408267322Z",
+        "ExitCode": 0,
+        "Output": ""
+      }
+    ]
+  },
+  "ImageRepoDigests": [],
+  "HealthExit": 0,
+  "ConfigUser": "shiny",
+  "ImageInspectId": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+  "RootHtmlSha256": "0F4CCED7D8B00C81FFD2F1A74D34E0AFB13720681E6949CCD925AA227BCC9954",
+  "ContainerImage": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+  "BuildExit": 0,
+  "RootChecks": {
+    "HealthStatus": "healthy",
+    "ImageReference": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+    "VersionPresent": true,
+    "ContainerID": "b9c8c7b51d28ec3cca7927a59da56d9cbab1efe49633a07ffdf0de3bce196cee",
+    "UID": 997,
+    "NoWorkerError": true,
+    "Attempt": 13,
+    "RootFetchExitCode": 0,
+    "TitlePresent": true
+  },
+  "ImageRepoTags": [],
+  "CleanupChecks": {
+    "OwnedContainerAbsent": true,
+    "PreexistingContainerIdentitiesImagesStatesUnchanged": true,
+    "PreexistingContainerCount": 6,
+    "FinalContainerCount": 6,
+    "CheckedUtc": "2026-10-01T15:36:35.7450089Z"
+  }
+}

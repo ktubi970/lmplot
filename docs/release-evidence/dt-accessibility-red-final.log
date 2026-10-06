@@ -1,0 +1,141 @@
+No issues found -- the project is in a consistent state.
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+data_provenance_browser: ..1.2.3.4..5.67.....8.9.a.b..c.de...f.g.h.i..j.kl..m.n.o.p..q.rs..t.u.v.w.x..y.zA.
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test_data_provenance_browser.R:28:7'): Data filters identify the
+Expected `name` to match string "X".
+Actual text:
+✖ │ All
+initial filter 1 computed AX name: All
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:78:3
+ 2.   └─testthat::expect_match(...) at test_data_provenance_browser.R:28:7
+
+── 2. Failure ('test_data_provenance_browser.R:28:7'): Data filters identify the
+Expected `name` to match string "Z".
+Actual text:
+✖ │ All
+initial filter 2 computed AX name: All
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:78:3
+ 2.   └─testthat::expect_match(...) at test_data_provenance_browser.R:28:7
+
+── 3. Failure ('test_data_provenance_browser.R:28:7'): Data filters identify the
+Expected `name` to match string ".fitted".
+Actual text:
+✖ │ All
+initial filter 3 computed AX name: All
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:78:3
+ 2.   └─testthat::expect_match(...) at test_data_provenance_browser.R:28:7
+
+── 4. Failure ('test_data_provenance_browser.R:28:7'): Data filters identify the
+Expected `name` to match string ".residual".
+Actual text:
+✖ │ All
+initial filter 4 computed AX name: All
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:78:3
+ 2.   └─testthat::expect_match(...) at test_data_provenance_browser.R:28:7
+
+── 5. Failure ('test_data_provenance_browser.R:47:7'): Data filters identify the
+Expected `all(ignored)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial sizing copies exposed in AX
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:78:3
+ 2.   └─testthat::expect_true(all(ignored), info = paste(stage, "sizing copies exposed in AX")) at test_data_provenance_browser.R:47:7
+
+── 6. Failure ('test_data_provenance_browser.R:61:5'): Data filters identify the
+Expected `any(visited_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+initial Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:78:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:61:5
+
+── 7. Failure ('test_data_provenance_browser.R:67:5'): Data filters identify the
+Expected `any(visited_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+initial Shift+Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:78:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:67:5
+
+── 8. Failure ('test_data_provenance_browser.R:28:7'): Data filters identify the
+Expected `name` to match string "X".
+Actual text:
+✖ │ -0.000000000672168 ... 0.988539553247393
+filtered redraw filter 1 computed AX name: -0.000000000672168 ... 0.988539553247393
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:89:3
+ 2.   └─testthat::expect_match(...) at test_data_provenance_browser.R:28:7
+
+── 9. Failure ('test_data_provenance_browser.R:28:7'): Data filters identify the
+Expected `name` to match string "Z".
+Actual text:
+✖ │ All
+filtered redraw filter 2 computed AX name: All
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:89:3
+ 2.   └─testthat::expect_match(...) at test_data_provenance_browser.R:28:7
+
+── 10. Failure ('test_data_provenance_browser.R:28:7'): Data filters identify th
+Expected `name` to match string ".fitted".
+Actual text:
+✖ │ All
+filtered redraw filter 3 computed AX name: All
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:89:3
+ 2.   └─testthat::expect_match(...) at test_data_provenance_browser.R:28:7
+  ... and 26 more
+
+
+Maximum number of 10 failures reached, some test results may be missing.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                            file
+1 test_data_provenance_browser.R
+                                                                              test
+1 Data filters identify their columns and keep keyboard focus out of sizing copies
+  failed error warning skipped passed
+1     36 FALSE       0   FALSE     46
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted

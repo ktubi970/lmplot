@@ -1,0 +1,15 @@
+ci_scripts: ..1
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test_ci_scripts.R:12:5'): both CI R steps execute later lines and 
+Error in `expect_length(opening, 1L, info = step$name)`: unused argument (info = step$name)
+Backtrace:
+    ▆
+ 1. └─base::lapply(...) at test_ci_scripts.R:7:3
+ 2.   └─FUN(X[[i]], ...)
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted

@@ -54,7 +54,8 @@ Complete the release gates below before tagging or deploying publicly.
 - Observed outcomes are distinguished from predicted means/probabilities in
   chart and Model Brain copy. Known example units propagate through the
   analysis boundary; unknown units remain unspecified.
-- Human scientific copy review remains a release gate.
+- Documented scientific copy review by a human or an explicitly identified
+  agent remains a release gate.
 
 ### Security and deployment
 
@@ -121,7 +122,8 @@ conformance. Manual assistive-technology and visual reviews remain open.
   tests. Package build versions and warnings must be retained in the evidence.
 - [ ] Hosted Docker build and constrained no-egress health job passes after both
   R matrix legs.
-- [ ] Human scientific copy review approves the public UI and documentation.
+- [ ] Documented scientific copy review approves the public UI and
+  documentation; the reviewer may be a human or an explicitly identified agent.
 - [ ] Manual accessibility checklist above is completed with assistive-technology
   evidence; no conformance claim is made solely from automated checks.
 - [ ] Deployment-owned staging proves ingress and WebSocket operation, public
@@ -129,3 +131,12 @@ conformance. Manual assistive-technology and visual reviews remain open.
   error recovery, and no runtime egress requirement.
 - [ ] Release owner records tested commit/image digest, approval evidence, and
   rollback target before publication.
+
+Scientific approval evidence records the reviewer's identity and type (human
+or agent), review date, reviewed commit and scope, sources and checks, findings
+and their severity, limitations, and an explicit approve/block decision.
+Blocking findings must be resolved and verified before approval; non-blocking
+findings require a recorded disposition. A separate human scientific sign-off
+is not required. Passing automated tests alone does not constitute scientific
+copy review. This policy does not waive actual manual accessibility checks or
+external ingress/WebSocket staging evidence.

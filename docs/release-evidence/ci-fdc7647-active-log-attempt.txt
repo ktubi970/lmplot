@@ -1,0 +1,5 @@
+CollectedUTC: 2026-10-01T15:52:37.6766707+00:00
+Job: 110447833749 (Windows, active)
+Command: gh run view 36885551520 --repo ktubi970/lmplot --job 110447833749 --log
+Exit: 1
+job 110447833749 is still in progress; logs will be available when it is complete

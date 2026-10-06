@@ -1,0 +1,165 @@
+No issues found -- the project is in a consistent state.
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+data_provenance_browser: .........1..2..3456................7..89ab..............c..defg...................................h..i......
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial X {"column":0,"x":49,"y":859.0781,"width":158.7188,"height":36.5,"viewport":[517,672],"visibleWidth":158.7188,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:117:3
+ 2.   └─check_focus_visible(paste(stage, "X")) at test_data_provenance_browser.R:80:5
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 2. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial Tab 3 {"column":3,"x":538.6562,"y":325.0781,"width":165.125,"height":36.5,"viewport":[517,672],"visibleWidth":0,"visibleHeight":36.5}
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:117:3
+ 2.   └─check_focus_visible(paste(stage, "Tab", i)) at test_data_provenance_browser.R:85:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 3. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial Shift+Tab 12 {"column":3,"x":538.6562,"y":-416.9219,"width":165.125,"height":36.5,"viewport":[517,672],"visibleWidth":0,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:117:3
+ 2.   └─check_focus_visible(paste(stage, "Shift+Tab", i)) at test_data_provenance_browser.R:100:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 4. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial Shift+Tab 13 {"column":2,"x":381.1875,"y":-357.9219,"width":141.4688,"height":36.5,"viewport":[517,672],"visibleWidth":40.8125,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:117:3
+ 2.   └─check_focus_visible(paste(stage, "Shift+Tab", i)) at test_data_provenance_browser.R:100:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 5. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial Shift+Tab 14 {"column":1,"x":223.7188,"y":-329.9219,"width":141.4688,"height":36.5,"viewport":[517,672],"visibleWidth":141.4688,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:117:3
+ 2.   └─check_focus_visible(paste(stage, "Shift+Tab", i)) at test_data_provenance_browser.R:100:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 6. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial Shift+Tab 15 {"column":0,"x":49,"y":-267.9219,"width":158.7188,"height":36.5,"viewport":[517,672],"visibleWidth":158.7188,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:117:3
+ 2.   └─check_focus_visible(paste(stage, "Shift+Tab", i)) at test_data_provenance_browser.R:100:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 7. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+filtered redraw Tab 3 {"column":3,"x":538.6562,"y":317.0781,"width":165.125,"height":36.5,"viewport":[517,672],"visibleWidth":0,"visibleHeight":36.5}
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:128:3
+ 2.   └─check_focus_visible(paste(stage, "Tab", i)) at test_data_provenance_browser.R:85:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 8. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+filtered redraw Shift+Tab 12 {"column":3,"x":538.6562,"y":-257.9219,"width":165.125,"height":36.5,"viewport":[517,672],"visibleWidth":0,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:128:3
+ 2.   └─check_focus_visible(paste(stage, "Shift+Tab", i)) at test_data_provenance_browser.R:100:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 9. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain opera
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+filtered redraw Shift+Tab 13 {"column":2,"x":381.1875,"y":-191.9219,"width":141.4688,"height":36.5,"viewport":[517,672],"visibleWidth":40.8125,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:128:3
+ 2.   └─check_focus_visible(paste(stage, "Shift+Tab", i)) at test_data_provenance_browser.R:100:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+
+── 10. Failure ('test_data_provenance_browser.R:45:5'): Data filters remain oper
+Expected `bounds$visibleWidth > 0 && bounds$visibleHeight > 0` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+filtered redraw Shift+Tab 14 {"column":1,"x":223.7188,"y":-160.9219,"width":141.4688,"height":36.5,"viewport":[517,672],"visibleWidth":141.4688,"visibleHeight":0}
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:128:3
+ 2.   └─check_focus_visible(paste(stage, "Shift+Tab", i)) at test_data_provenance_browser.R:100:7
+ 3.     └─testthat::expect_true(...) at test_data_provenance_browser.R:45:5
+  ... and 8 more
+
+
+Maximum number of 10 failures reached, some test results may be missing.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                            file
+1 test_data_provenance_browser.R
+                                                                     test
+1 Data filters remain operable without focusing or exposing sizing copies
+  failed error warning skipped passed
+1     18 FALSE       0   FALSE     90
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted

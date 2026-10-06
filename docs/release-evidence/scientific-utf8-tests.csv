@@ -1,0 +1,12 @@
+"file","test","failed","error","warning","skipped","passed"
+"test_scientific_copy.R","documented real units reach the strict Brain and exported chart data",0,FALSE,0,FALSE,61
+"test_scientific_copy.R","observations and fitted means use distinct scientifically correct chart labels",0,FALSE,0,FALSE,32
+"test_scientific_copy.R","coefficient units distinguish predictor units and transformed link scales",0,FALSE,0,FALSE,6
+"test_scientific_copy.R","GLMM diagnostic and enriched exports identify conditional predictions without refitting",0,FALSE,1,FALSE,18
+"test_scientific_copy_tables.R","Overview coefficients and enriched CSV include each predictor unit",0,FALSE,0,FALSE,4
+"test_scientific_copy_tables.R","unit validation rejects empty supplied metadata and names the actual link scale",0,FALSE,0,FALSE,12
+"test_scientific_metadata.R","out-of-domain grid rows are explained in the committed result",0,FALSE,0,FALSE,5
+"test_scientific_metadata.R","all real Plotly traces use literal scientific hover labels",0,FALSE,0,FALSE,77
+"test_scientific_metadata.R","real plot titles include exact model family labels and citations",0,FALSE,0,FALSE,18
+"test_scientific_metadata.R","simulation plots retain generic canonical axes without labels",0,FALSE,0,FALSE,5
+"test_scientific_metadata.R","every real provenance card defines variables and preprocessing",0,FALSE,0,FALSE,102

@@ -79,7 +79,7 @@ jobs:
           '@
           # The Windows bin/Rscript.exe dispatcher truncates multiline -e input.
           $checksPath = Join-Path $env:RUNNER_TEMP 'lmplot-ci-checks.R'
-          $checks | Set-Content -LiteralPath $checksPath -Encoding utf8
+          [System.IO.File]::WriteAllText($checksPath, $checks)
           Rscript $checksPath
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
@@ -100,7 +100,7 @@ jobs:
           stopifnot(!any(evidence$failed > 0L | evidence$error | evidence$skipped))
           '@
           $testsPath = Join-Path $env:RUNNER_TEMP 'lmplot-ci-tests.R'
-          $tests | Set-Content -LiteralPath $testsPath -Encoding utf8
+          [System.IO.File]::WriteAllText($testsPath, $tests)
           Rscript $testsPath
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

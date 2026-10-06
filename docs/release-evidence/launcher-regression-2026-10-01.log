@@ -1,0 +1,8 @@
+No issues found -- the project is in a consistent state.
+Rscript:  C:/Program Files/R/R-4.6.0/bin/x64/Rscript.exe 
+release: .........................................................................................................................................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+TOTAL tests: 15 passed: 137 failed: 0 errors: 0 skips: 0 warnings: 0 

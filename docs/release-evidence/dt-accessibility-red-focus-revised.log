@@ -1,0 +1,155 @@
+No issues found -- the project is in a consistent state.
+R version 4.6.0 (2026-04-24 ucrt) 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+data_provenance_browser: .......1.23..........4.56........7.89.......a.bc........d.ef.
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test_data_provenance_browser.R:44:7'): Data filters remain opera
+Expected `all(ignored)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+initial sizing copies exposed in AX
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:81:3
+ 2.   └─testthat::expect_true(all(ignored), info = paste(stage, "sizing copies exposed in AX")) at test_data_provenance_browser.R:44:7
+
+── 2. Failure ('test_data_provenance_browser.R:58:5'): Data filters remain opera
+Expected `any(visited_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+initial Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:81:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:58:5
+
+── 3. Failure ('test_data_provenance_browser.R:71:5'): Data filters remain opera
+Expected `any(reverse_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+initial Shift+Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("initial") at test_data_provenance_browser.R:81:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:71:5
+
+── 4. Failure ('test_data_provenance_browser.R:44:7'): Data filters remain opera
+Expected `all(ignored)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+filtered redraw sizing copies exposed in AX
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:92:3
+ 2.   └─testthat::expect_true(all(ignored), info = paste(stage, "sizing copies exposed in AX")) at test_data_provenance_browser.R:44:7
+
+── 5. Failure ('test_data_provenance_browser.R:58:5'): Data filters remain opera
+Expected `any(visited_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+filtered redraw Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:92:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:58:5
+
+── 6. Failure ('test_data_provenance_browser.R:71:5'): Data filters remain opera
+Expected `any(reverse_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+filtered redraw Shift+Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("filtered redraw") at test_data_provenance_browser.R:92:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:71:5
+
+── 7. Failure ('test_data_provenance_browser.R:44:7'): Data filters remain opera
+Expected `all(ignored)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+sorted and paginated redraw sizing copies exposed in AX
+Backtrace:
+    ▆
+ 1. └─check_filters("sorted and paginated redraw") at test_data_provenance_browser.R:104:3
+ 2.   └─testthat::expect_true(all(ignored), info = paste(stage, "sizing copies exposed in AX")) at test_data_provenance_browser.R:44:7
+
+── 8. Failure ('test_data_provenance_browser.R:58:5'): Data filters remain opera
+Expected `any(visited_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+sorted and paginated redraw Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("sorted and paginated redraw") at test_data_provenance_browser.R:104:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:58:5
+
+── 9. Failure ('test_data_provenance_browser.R:71:5'): Data filters remain opera
+Expected `any(reverse_copies)` to be FALSE.
+Differences:
+`actual`:   TRUE 
+`expected`: FALSE
+
+sorted and paginated redraw Shift+Tab reached a sizing copy
+Backtrace:
+    ▆
+ 1. └─check_filters("sorted and paginated redraw") at test_data_provenance_browser.R:104:3
+ 2.   └─testthat::expect_false(...) at test_data_provenance_browser.R:71:5
+
+── 10. Failure ('test_data_provenance_browser.R:44:7'): Data filters remain oper
+Expected `all(ignored)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+resized columns sizing copies exposed in AX
+Backtrace:
+    ▆
+ 1. └─check_filters("resized columns") at test_data_provenance_browser.R:107:3
+ 2.   └─testthat::expect_true(all(ignored), info = paste(stage, "sizing copies exposed in AX")) at test_data_provenance_browser.R:44:7
+  ... and 5 more
+
+
+Maximum number of 10 failures reached, some test results may be missing.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                            file
+1 test_data_provenance_browser.R
+                                                                     test
+1 Data filters remain operable without focusing or exposing sizing copies
+  failed error warning skipped passed
+1     15 FALSE       0   FALSE     46
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted

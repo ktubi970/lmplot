@@ -1,0 +1,17 @@
+"file","test","failed","error","warning","skipped","passed"
+"test_ci_scripts.R","both CI R steps execute later lines and propagate their failure on Windows",0,FALSE,0,FALSE,16
+"test_release.R","release retains the locked Shiny runtime and launch contract",0,FALSE,0,FALSE,4
+"test_release.R","a fresh R process activates the project library",0,FALSE,0,FALSE,1
+"test_release.R","README documents the exact beta matrix and trusted expert boundary",0,FALSE,0,FALSE,21
+"test_release.R","launcher validates an explicitly restored library before running Shiny",0,FALSE,0,FALSE,9
+"test_release.R","Windows launcher fails without bootstrapping an absent project library",0,FALSE,0,FALSE,5
+"test_release.R","direct R and CLI startup refuse a missing project library without bootstrapping",0,FALSE,0,FALSE,10
+"test_release.R","explicit bootstrap command restores an already locked project",0,FALSE,0,FALSE,2
+"test_release.R","renv lockfile covers runtime and test dependencies",0,FALSE,0,FALSE,2
+"test_release.R","ignore rules exclude transient state without hiding release evidence",0,FALSE,0,FALSE,2
+"test_release.R","TODO records completed automated beta verification",0,FALSE,0,FALSE,2
+"test_release.R","release identity agrees across runtime, image, docs and license",0,FALSE,0,FALSE,14
+"test_release.R","public release guidance documents CLI and the isolated deployment boundary",0,FALSE,0,FALSE,11
+"test_release.R","CI requires both locked R platforms and isolated Docker health",0,FALSE,0,FALSE,29
+"test_release.R","image and CI restoration explicitly opt in to renv bootstrap",0,FALSE,0,FALSE,3
+"test_release.R","runtime R sources never install dependencies",0,FALSE,0,FALSE,22

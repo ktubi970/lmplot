@@ -1,0 +1,104 @@
+[
+    {
+        "Id": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+        "RepoTags": [],
+        "RepoDigests": [],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-01T15:32:54.42016896Z",
+        "Config": {
+            "User": "shiny",
+            "ExposedPorts": {
+                "3838/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "R_VERSION=4.6.0",
+                "R_HOME=/usr/local/lib/R",
+                "TZ=Etc/UTC",
+                "CRAN=https://p3m.dev/cran/__linux__/noble/2026-06-23",
+                "LANG=en_US.UTF-8",
+                "S6_VERSION=v2.1.0.2",
+                "SHINY_SERVER_VERSION=latest",
+                "PANDOC_VERSION=default",
+                "DEBIAN_FRONTEND=noninteractive",
+                "RENV_CONFIG_PAK_ENABLED=FALSE",
+                "RENV_CONFIG_CACHE_ENABLED=FALSE",
+                "RENV_CONFIG_AUTO_SNAPSHOT=FALSE"
+            ],
+            "Cmd": [
+                "/usr/bin/shiny-server"
+            ],
+            "WorkingDir": "/srv/shiny-server/lmplot",
+            "Labels": {
+                "org.opencontainers.image.authors": "Carl Boettiger <cboettig@ropensci.org>",
+                "org.opencontainers.image.base.name": "docker.io/library/ubuntu:noble",
+                "org.opencontainers.image.description": "Shiny Server on versioned Rocker image.",
+                "org.opencontainers.image.licenses": "GPL-2.0-or-later",
+                "org.opencontainers.image.revision": "fdc7647bc73fc4e9574135895f119608ede4ae16",
+                "org.opencontainers.image.source": "https://github.com/rocker-org/rocker-versioned2",
+                "org.opencontainers.image.title": "rocker/shiny",
+                "org.opencontainers.image.vendor": "Rocker Project",
+                "org.opencontainers.image.version": "R-4.6.0"
+            },
+            "ArgsEscaped": true,
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "wget --quiet --tries=1 --timeout=60 --output-document=/dev/null http://127.0.0.1:3838/ || exit 1"
+                ],
+                "Interval": 10000000000,
+                "Timeout": 65000000000,
+                "StartPeriod": 90000000000,
+                "Retries": 3
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 898527531,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:98effb2dfe85d4c431f97d90482075f19e5fc3a57c2dd423d8bdfd4813620043",
+                "sha256:613659109016edd06de370f7bc2025e102bdcddaeac9de63a7b539d8bf3b1ae1",
+                "sha256:0b37a25965e9e9119a64e622f3101c8b7ef9f6eacab3a6dd9a4b062e9550f948",
+                "sha256:b52c4fe3ae39d7f3c34a04f72ac1e8ea873cbb9645bd2ea9bfe58f841059b60b",
+                "sha256:26cd91d7da066e47b7463ffd3d6e1795f3ba2d036f4a078b73cf3579830bc009",
+                "sha256:3a4afdc4e1d09235c386e112b3f8c8779ca06dcdeac06099001ba3260d49639d",
+                "sha256:ec6fefe0c3121efc177117dbbdeb477ee42ceaed9c69016132b6760ff3913698",
+                "sha256:302ccf550c77d31e23e25d143159bd62918d7539c3315dd676874ad611e62910",
+                "sha256:e4b9f3c92e3b5caecc9ef307b8157ee3b173b3ad2e45721914c2f578f301ae87",
+                "sha256:68e17bcc55626669948e82c18cda0d93fbcd51a76df15a0bbd8df2ce207bc06f",
+                "sha256:6b2a118d77888e3cc8d8f982f35242bc05a0ad8da2378f210eb1375b11c4d184",
+                "sha256:d609dfebb00f8a99775a4ff52415de60dfce2fede5e04882fa8a58252226e315",
+                "sha256:22fee66855495c60f438a10eac701f930f6de6dd2a5682c8a77ed9153163de1a",
+                "sha256:591e8125fae1a52f3ec784322032bd3a325f3140c0b94eb38d0b7e49d51e9b00",
+                "sha256:240d7c8e4b8abdd9cb9568eb526d92aa682a8657a5be72477521043c776d0bc2",
+                "sha256:35662f907f3623ba90ae3bd6379a52da3d515a73d64c0c1e592369adba9f4fc3",
+                "sha256:9876e91ea390673c0b90a9c8567684817ebfbc4f485be59689c8051ca7111177",
+                "sha256:5a823c1b64e983f90264076efa02e236fab83d7bb272ec9b2232236fd90e67b4",
+                "sha256:2f14c42180886167f2ec2e9a8f23ecdc6b991fa35bac9fb6cd6f41bf5b8082bb",
+                "sha256:9e08f5d321ba52d6851c088ebcb6574ed6b23899856a51d9a61e86ee6b247c2e",
+                "sha256:f7dad9b28a96fb8c2bd638ee28dbb9868ca04e4a36e33afd36642ca5764e0a12",
+                "sha256:17b6c55a9442fb42d1ac2062d6928dd20b302528ddf2d50604a9f22eafeca41d",
+                "sha256:52d31caa496cfc15022d8994fdd1e4d6d770c1419c06e0e00f8baf857ca14ae8",
+                "sha256:888209bf3ad57e1f877213802af48d8ffbab998a7a3da40abc91667686b393ca"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-01T15:32:57.815540585Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:1a17f011c8a3a30c3a0f1521b56d2ae7afda3ba3dbe3e4c2be649980f50c38dc",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "mhcnawu9eo7tkxh0123fhi6mt",
+                    "CreatedAt": "2026-10-01T15:32:58.689531287Z"
+                }
+            ]
+        }
+    }
+]

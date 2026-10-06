@@ -1,0 +1,69 @@
+
+NOTE: Dependency discovery took 14 seconds during snapshot using current .renvignore specifications.
+Consider modifying .renvignore or switching to explicit snapshots.
+See `?renv::dependencies` for more information.
+
+R version 4.6.0 (2026-04-24 ucrt) 
+LOCALE: LC_COLLATE=English_United Kingdom.utf8;LC_CTYPE=English_United Kingdom.utf8;LC_MONETARY=English_United Kingdom.utf8;LC_NUMERIC=C;LC_TIME=English_United Kingdom.utf8 
+$MBCS
+[1] TRUE
+
+$`UTF-8`
+[1] TRUE
+
+$`Latin-1`
+[1] FALSE
+
+$codepage
+[1] 65001
+
+$system.codepage
+[1] 65001
+
+scientific_copy: ...................................................................................................W..................
+scientific_copy_tables: ................
+scientific_metadata: ...............................................................................................................................................................................................................
+
+══ Warnings ════════════════════════════════════════════════════════════════════
+1. GLMM diagnostic and enriched exports identify conditional predictions without refitting ('test_scientific_copy.R:69:3') - package 'shiny' was built under R version 4.6.1
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Your tests are legendary!
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+                            file
+1         test_scientific_copy.R
+2         test_scientific_copy.R
+3         test_scientific_copy.R
+4         test_scientific_copy.R
+5  test_scientific_copy_tables.R
+6  test_scientific_copy_tables.R
+7     test_scientific_metadata.R
+8     test_scientific_metadata.R
+9     test_scientific_metadata.R
+10    test_scientific_metadata.R
+11    test_scientific_metadata.R
+                                                                                      test
+1                     documented real units reach the strict Brain and exported chart data
+2           observations and fitted means use distinct scientifically correct chart labels
+3                coefficient units distinguish predictor units and transformed link scales
+4  GLMM diagnostic and enriched exports identify conditional predictions without refitting
+5                       Overview coefficients and enriched CSV include each predictor unit
+6          unit validation rejects empty supplied metadata and names the actual link scale
+7                            out-of-domain grid rows are explained in the committed result
+8                               all real Plotly traces use literal scientific hover labels
+9                         real plot titles include exact model family labels and citations
+10                           simulation plots retain generic canonical axes without labels
+11                          every real provenance card defines variables and preprocessing
+   failed error warning skipped passed
+1       0 FALSE       0   FALSE     61
+2       0 FALSE       0   FALSE     32
+3       0 FALSE       0   FALSE      6
+4       0 FALSE       1   FALSE     18
+5       0 FALSE       0   FALSE      4
+6       0 FALSE       0   FALSE     12
+7       0 FALSE       0   FALSE      5
+8       0 FALSE       0   FALSE     77
+9       0 FALSE       0   FALSE     18
+10      0 FALSE       0   FALSE      5
+11      0 FALSE       0   FALSE    102

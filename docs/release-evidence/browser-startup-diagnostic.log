@@ -1,0 +1,166 @@
+R=R version 4.6.0 (2026-04-24 ucrt)
+UTF8=TRUE
+CHROME=C:/Program Files/Google/Chrome/Application/chrome.exe
+Error in `app_initialize()`:
+! Chromote: timed out waiting for response to command Page.navigate
+
+
+ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
+ℹ AppDriver logs:
+{shinytest2} R info   20:07:29.52 Start AppDriver initialization
+{shinytest2} R info   20:07:30.49 Starting Shiny app
+{shinytest2} R info   20:07:58.82 Creating new ChromoteSession
+{shinytest2} R info   20:08:06.26 Navigating to Shiny app
+{shinytest2} R info   20:08:16.28 Error while initializing AppDriver:
+                                  Chromote: timed out waiting for response to command Page.navigate
+{shiny}      R stderr ----------- Loading required package: shiny
+{shiny}      R stderr ----------- Warning: package 'shiny' was built under R version 4.6.1
+{shiny}      R stderr ----------- Running application in test mode.
+{shiny}      R stderr ----------- 
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:7069
+
+Caused by error:
+! Chromote: timed out waiting for response to command Page.navigate
+Backtrace:
+     ▆
+  1. ├─base::local(...)
+  2. │ └─base::eval.parent(substitute(eval(quote(expr), envir)))
+  3. │   └─base::eval(expr, p)
+  4. │     └─base::eval(expr, p)
+  5. ├─base::eval(...)
+  6. │ └─base::eval(...)
+  7. │   └─shinytest2::AppDriver$new(...)
+  8. │     └─shinytest2 (local) initialize(...)
+  9. │       └─shinytest2:::app_initialize(...)
+ 10. │         ├─base::withCallingHandlers(...)
+ 11. │         └─shinytest2:::app_initialize_(self, private, ..., view = view)
+ 12. │           └─self$get_chromote_session()$Page$navigate(private$shiny_url$get())
+ 13. │             └─self$wait_for(p)
+ 14. │               └─self$parent$wait_for(p)
+ 15. │                 └─chromote:::synchronize(p, loop = private$child_loop)
+ 16. │                   ├─promises::with_promise_domain(...)
+ 17. │                   │ └─domain$wrapSync(expr)
+ 18. │                   │   └─base::force(expr)
+ 19. │                   ├─base::tryCatch(...)
+ 20. │                   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 21. │                   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 22. │                   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 23. │                   └─base::stop(value)
+ 24. └─shinytest2 (local) `<fn>`(`<smplErrr>`)
+ 25.   └─shinytest2:::app_abort(...)
+ 26.     └─rlang::abort(..., app = self, call = call)
+Execution halted
+CHROMOTE_DATA_PROBE
+UTF8=TRUE
+$protocolVersion
+[1] "1.3"
+
+$product
+[1] "Chrome/153.0.8010.53"
+
+$revision
+[1] "@792bf6722e73a45aa9e47c163b9901bdc17f3230"
+
+$userAgent
+[1] "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36"
+
+$jsVersion
+[1] "15.3.76.13"
+
+$frameId
+[1] "8AD1BC4B688E48533CB6C0B652B926C0"
+
+$loaderId
+[1] "79D82B8B76013DFDA33E032D0403E9F1"
+
+$isDownload
+[1] FALSE
+
+$result
+$result$type
+[1] "object"
+
+$result$value
+$result$value$title
+[1] "probe"
+
+$result$value$body
+[1] "probe"
+
+
+
+CHROMOTE_DATA_SUCCESS
+SHINY_HTTP_CHROMOTE_PROBE
+UTF8=TRUE
+URL=http://127.0.0.1:24014/
+HTTP_READY_SECONDS=40.647
+HTTP_STATUS=200 BYTES=23580 HAS_TITLE=TRUE
+NAV_SECONDS=4.359
+$frameId
+[1] "C21557C6080951132752745DDB6915DD"
+
+$loaderId
+[1] "21B7000412B54008372BE07BAF4BA15B"
+
+$isDownload
+[1] FALSE
+
+$result
+$result$type
+[1] "object"
+
+$result$subtype
+[1] "error"
+
+$result$className
+[1] "TypeError"
+
+$result$description
+[1] "TypeError: Cannot read properties of null (reading 'innerText')\n    at <anonymous>:1:71"
+
+$result$objectId
+[1] "-2349966101555834650.2.1"
+
+
+$exceptionDetails
+$exceptionDetails$exceptionId
+[1] 1
+
+$exceptionDetails$text
+[1] "Uncaught"
+
+$exceptionDetails$lineNumber
+[1] 0
+
+$exceptionDetails$columnNumber
+[1] 70
+
+$exceptionDetails$scriptId
+[1] "5"
+
+$exceptionDetails$exception
+$exceptionDetails$exception$type
+[1] "object"
+
+$exceptionDetails$exception$subtype
+[1] "error"
+
+$exceptionDetails$exception$className
+[1] "TypeError"
+
+$exceptionDetails$exception$description
+[1] "TypeError: Cannot read properties of null (reading 'innerText')\n    at <anonymous>:1:71"
+
+$exceptionDetails$exception$objectId
+[1] "-2349966101555834650.2.2"
+
+
+
+SHINY_CHROMOTE_SUCCESS
+APP_STOPPED
+DIAGNOSTIC_INTERPRETATION_2026-09-23
+- Minimal AppDriver with clean Windows locale and explicit Chrome timed out waiting for Page.navigate after Shiny reported listening; this reproduces startup failure without the full test suite.
+- Independent Chromote data: navigation and DOM read succeeded on Chrome/153.0.8010.53. Independent warm Shiny: HTTP 200 after 40.647 s; Page.navigate succeeded in 4.359 s.
+- AppDriver began Page.navigate approximately 35.8 s after Shiny startup and hit Chromote's 10.0 s command timeout. Cold-page timing is a plausible explanation, not a demonstrated root cause. Shiny process announcing Listening does not prove first-page completion.
+- Immediate DOM evaluation in the warm Shiny probe returned document.body null; Page.navigate itself succeeded. The probe did not wait for DOM readiness, so it does not establish complete UI load.
+- No application code, dependency, or timeout was changed. Four original suite error traces remained pending when this note was written.

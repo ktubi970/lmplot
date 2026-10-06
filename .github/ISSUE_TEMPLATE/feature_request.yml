@@ -1,0 +1,37 @@
+name: Feature Request
+description: Propose a new model, visualization, diagnostic, or enhancement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new idea or enhancement for LM Plot Explorer!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Motivation
+      description: Is your feature request related to a specific scientific, pedagogical, or statistical exploration need?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution / Enhancement
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: statistical_rationale
+    attributes:
+      label: Statistical / Pedagogical Rationale
+      description: How does this fit into the 15 supported model/link combinations, or does it propose expanding the model registry? Note that post-beta plans currently anticipate user-uploaded datasets, formula builders, and generalized mixed models.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or workarounds you have considered.
+    validations:
+      required: false

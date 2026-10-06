@@ -1,0 +1,50 @@
+ci_scripts: ..................1.2.3.4
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test_ci_scripts.R:78:5'): CI saves complete test evidence before
+Expected `file.exists(path)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+passed
+
+── 2. Failure ('test_ci_scripts.R:78:5'): CI saves complete test evidence before
+Expected `file.exists(path)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+failed
+
+── 3. Failure ('test_ci_scripts.R:78:5'): CI saves complete test evidence before
+Expected `file.exists(path)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+error
+
+── 4. Failure ('test_ci_scripts.R:78:5'): CI saves complete test evidence before
+Expected `file.exists(path)` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+skipped
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+No one gets it right on their first try
+Warning message:
+package 'testthat' was built under R version 4.6.1 
+               file
+1 test_ci_scripts.R
+2 test_ci_scripts.R
+                                                                        test
+1 both CI R steps execute later lines and propagate their failure on Windows
+2 CI saves complete test evidence before failing for errors or skipped tests
+  failed error warning skipped passed
+1      0 FALSE       0   FALSE     16
+2      4 FALSE       0   FALSE      5
+Error: !any(evidence$failed > 0L | evidence$error | evidence$skipped) is not TRUE
+Execution halted
