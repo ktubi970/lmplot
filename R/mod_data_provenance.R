@@ -31,11 +31,13 @@ analysis_prediction_context <- function(result) {
 
 data_provenance_ui <- function(id) {
   ns <- shiny::NS(id)
-  shiny::tagList(shiny::h2("Data & provenance"), shiny::uiOutput(ns("provenance")),
-    shiny::downloadButton(ns("download"), "Download enriched CSV"), DT::DTOutput(ns("table")),
-    shiny::h3("Reproducible R code"),
-    shiny::p("Run this code with the LM Plot Explorer R helpers loaded from the project folder."),
-    shiny::div(class = "repro-code-card", shiny::verbatimTextOutput(ns("code"))))
+  shiny::tagList(shiny::div(class = "view-heading", shiny::h2("Data & provenance"),
+      shiny::downloadButton(ns("download"), "Download enriched CSV")), DT::DTOutput(ns("table")),
+    shiny::tags$details(class = "view-details", shiny::tags$summary("Sources & provenance"),
+      shiny::uiOutput(ns("provenance"))),
+    shiny::tags$details(class = "view-details", shiny::tags$summary("Reproducible R code"),
+      shiny::p("Run this code with the LM Plot Explorer R helpers loaded from the project folder."),
+      shiny::div(class = "repro-code-card", shiny::verbatimTextOutput(ns("code")))))
 }
 
 data_provenance_server <- function(id, result, successful_request = shiny::reactive(NULL),
@@ -63,7 +65,7 @@ data_provenance_server <- function(id, result, successful_request = shiny::react
     output$code <- shiny::renderText({ shiny::req(result()); result()$code })
     output$provenance <- shiny::renderUI({
       value <- result()
-      if (is.null(value)) return(shiny::p("No analysis yet. Generate a model to inspect its data and provenance."))
+      if (is.null(value)) return(shiny::p("No analysis yet. Select a model to inspect its data and provenance."))
       if (is.null(value$example)) {
         request <- successful_request()
         return(shiny::tagList(shiny::h3("Simulated data"), shiny::p("Rows: ", nrow(value$data)),
@@ -88,5 +90,6 @@ data_provenance_server <- function(id, result, successful_request = shiny::react
           lapply(intersect(names(fields), names(metadata)), function(key)
           shiny::tagList(shiny::tags$dt(fields[[key]]), shiny::tags$dd(metadata[[key]])))))
     })
+    shiny::outputOptions(output, "provenance", suspendWhenHidden = FALSE)
   })
 }

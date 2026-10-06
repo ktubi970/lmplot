@@ -111,7 +111,6 @@ test_that("Data filters remain operable without focusing or exposing sizing copi
     expect_true(reached_x, info = paste(stage, "Shift+Tab did not reach X"))
   }
 
-  app$click("configuration-generate")
   app$wait_for_idle()
   app$set_inputs(main_nav_tabs = "data_provenance")
   app$wait_for_js(paste0("document.querySelector('", filter(1L), "') !== null"))
@@ -147,7 +146,6 @@ test_that("Data filters remain operable without focusing or exposing sizing copi
 
   app$set_inputs(`configuration-model_type` = "lm_3d")
   app$wait_for_idle()
-  app$click("configuration-generate")
   app$wait_for_idle()
   app$wait_for_js(paste0("document.querySelector('", root,
     " .dataTables_scrollHead thead tr:first-child th:nth-child(2)').textContent === 'Y'"))

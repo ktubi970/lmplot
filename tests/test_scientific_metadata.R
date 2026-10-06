@@ -320,12 +320,11 @@ rendered_scientific_html <- function(tag) {
 test_that("every real provenance card defines variables and preprocessing", {
   shiny::testServer(server, {
     session$flushReact()
-    generation <- 0L
     for (model_type in names(scientific_provenance_specs)) {
       session$setInputs(`configuration-model_type` = model_type, `configuration-data_source` = "real")
       session$flushReact()
-      generation <- generation + 1L
-      session$setInputs(`configuration-generate` = generation)
+      session$setInputs(`configuration-link_sel` = scientific_provenance_specs[[model_type]]$link)
+      session$elapse(350)
       info <- rendered_scientific_html(output$`data_provenance-provenance`)
       expected <- scientific_provenance_specs[[model_type]]
 

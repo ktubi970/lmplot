@@ -6,7 +6,7 @@ app_root <- if (file.exists(file.path("R", "config.R"))) "." else ".."
 for (file in c("config.R", "model_registry.R", "mod_model.R", "model_metrics.R",
     "model_diagnostics.R", "mod_simulation.R", "mod_examples.R", "mod_visualization.R",
     "mod_model_brain.R", "model_brain_plots.R", "mod_model_brain_ui.R", "mod_pipeline.R", "mod_eli5.R", "app_coordinator.R",
-    "mod_configuration.R", "mod_overview.R", "mod_diagnostics.R", "mod_data_provenance.R")) {
+    "mod_configuration.R", "mod_overview.R", "mod_diagnostics.R", "mod_data_provenance.R", "browser_compatibility.R")) {
   source(file.path(app_root, "R", file), local = TRUE)
 }
 options(shiny.sanitize.errors = TRUE)
@@ -40,14 +40,13 @@ ui <- bslib::page_sidebar(
 
 ui <- htmltools::tagQuery(ui)$find('main')$addAttrs(id = 'main-content', tabindex = '-1')$allTags()
 ui <- htmltools::tagQuery(ui)$find('aside')$addAttrs(`aria-label` = 'Configuration')$allTags()
+ui <- adapt_browser_downloads(ui)
 
 server <- function(input, output, session) {
   coordinator <- create_app_coordinator(services, trusted_local, app_root)
   config <- configuration_server("configuration", trusted_local, app_root)
-  shiny::observeEvent(config$generate(), {
-    coordinator$analyze(config$payload())
-  }, ignoreInit = TRUE, ignoreNULL = TRUE)
-  coordinator_status_server("analysis_status", coordinator)
+  automatic <- bind_automatic_analysis(config, coordinator)
+  coordinator_status_server("analysis_status", coordinator, automatic$pending)
   overview <- overview_server("overview", coordinator$result, coordinator$generation)
   diagnostics_server("diagnostics", coordinator$result)
   data_provenance_server("data_provenance", coordinator$result, coordinator$successful_request)

@@ -6,3 +6,6 @@ docs/
 .git/
 artifacts/
 .positai/
+# Export tools use their own build library; they are not native app dependencies.
+scripts/export_shinylive.R
+.build-tools/

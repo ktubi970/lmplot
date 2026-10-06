@@ -45,10 +45,8 @@ guided_interpretation <- function(result) {
 
 guided_interpretation_ui <- function(id) {
   ns <- shiny::NS(id)
-  shiny::div(class = "card mb-3",
-    shiny::div(class = "card-header", shiny::h3("Guided interpretation", class = "h6"),
-      shiny::p("Deterministic explanations of estimates, uncertainty and diagnostic limitations."),
-      shiny::actionButton(ns("show"), "Show interpretation", class = "btn btn-sm btn-secondary")),
+  shiny::div(class = "guided-interpretation",
+    shiny::actionButton(ns("show"), "Guided interpretation", class = "btn btn-sm btn-secondary"),
     shiny::uiOutput(ns("content")))
 }
 
@@ -63,8 +61,7 @@ guided_interpretation_server <- function(id, last_result, interpret = guided_int
     shiny::observeEvent(input$show, show(TRUE))
     output$content <- shiny::renderUI({
       result <- last_result()
-      if (is.null(result)) return(shiny::p("No analysis yet. Generate a model to see its interpretation."))
-      if (!show()) return(shiny::p(class = "p-3", "Select Show interpretation to inspect this model."))
+      if (is.null(result) || !show()) return(NULL)
       explanation <- interpret(result)
       shiny::div(class = "card-body",
         shiny::p(explanation$concept),

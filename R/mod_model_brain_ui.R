@@ -9,14 +9,16 @@ write_chart_csv <- function(data, file) {
 }
 
 chart_section_ui <- function(ns, key, title, plot = TRUE) {
+  details <- shiny::tagList(shiny::textOutput(ns(paste0(key, '_summary'))),
+    shiny::uiOutput(ns(paste0(key, '_table'))),
+    shiny::downloadLink(ns(paste0(key, '_download')), paste('Download', tolower(title), '(CSV)')))
+  if (!plot) return(shiny::tags$details(class = 'view-details',
+    shiny::tags$summary(id = ns(paste0(key, '_heading')), title), details))
   shiny::tags$section(class = 'chart-section', `aria-labelledby` = ns(paste0(key, '_heading')),
-    shiny::h3(id = ns(paste0(key, '_heading')), title),
-    shiny::textOutput(ns(paste0(key, '_summary'))),
-    if (plot) shiny::div(role = 'region', `aria-label` = title,
-      `aria-describedby` = ns(paste0(key, '_summary')), plotly::plotlyOutput(ns(paste0(key, '_plot')))),
-    shiny::tags$details(shiny::tags$summary(paste('View', tolower(title), 'data')),
-      shiny::uiOutput(ns(paste0(key, '_table')))),
-    shiny::downloadLink(ns(paste0(key, '_download')), paste('Download', tolower(title), 'data (CSV)')))
+    shiny::div(class = 'chart-heading', shiny::h3(id = ns(paste0(key, '_heading')), title)),
+    shiny::div(role = 'region', `aria-label` = title,
+      `aria-describedby` = ns(paste0(key, '_summary')), plotly::plotlyOutput(ns(paste0(key, '_plot')), height = '360px')),
+    shiny::tags$details(class = 'chart-details', shiny::tags$summary('Details & data'), details))
 }
 
 accessible_data_table <- function(data, caption) {
@@ -43,30 +45,36 @@ bind_chart_bundle <- function(output, key, bundle, title) {
     filename = function() paste0('lmplot-', key, '.csv'), content = function(file) {
       shiny::req(bundle()); write_chart_csv(bundle()$table, file)
     })
+  shiny::outputOptions(output, paste0(key, '_summary'), suspendWhenHidden = FALSE)
+  shiny::outputOptions(output, paste0(key, '_download'), suspendWhenHidden = FALSE)
 }
 
 model_brain_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(shiny::h2('Model Brain'),
-    shiny::div(id = ns('observation_summary'), `aria-live` = 'polite', `aria-atomic` = 'true', role = 'status',
-      class = 'shiny-text-output'),
-    shiny::tags$fieldset(id = ns('controls'), disabled = 'disabled',
-      shiny::tags$legend('Explore an observation'),
-      shiny::div(class = 'brain-navigation', shiny::actionButton(ns('previous'), 'Previous'),
+    shiny::tags$fieldset(id = ns('controls'), class = 'brain-controls', disabled = 'disabled',
+      shiny::tags$legend(class = 'visually-hidden', 'Explore an observation'),
+      shiny::div(class = 'brain-navigation', `aria-describedby` = ns('navigation_help'),
+        shiny::actionButton(ns('previous'), 'Previous'),
         shiny::actionButton(ns('next'), 'Next')),
-      shiny::p('Previous at the first observation wraps to the last; Next at the last wraps to the first.'),
+      shiny::p(id = ns('navigation_help'), class = 'visually-hidden',
+        'Previous at the first observation wraps to the last; Next at the last wraps to the first.'),
       htmltools::tagAppendAttributes(shiny::numericInput(ns('observation_index'), 'Observation number', 1, min = 1, step = 1),
         `data-index-control` = ns('observation_index')),
-      shiny::div(id = ns('index_error'), role = 'alert', class = 'shiny-text-output'),
       shiny::conditionalPanel(sprintf("output['%s']", ns('is_mixed')),
-        shiny::selectInput(ns('prediction_mode'), 'Prediction mode', c('Conditional' = 'conditional', 'Population' = 'population')))),
+        shiny::selectInput(ns('prediction_mode'), 'Prediction mode',
+          c('Conditional' = 'conditional', 'Population' = 'population'), selectize = FALSE)),
+      shiny::div(id = ns('index_error'), role = 'alert', class = 'shiny-text-output')),
+    shiny::div(id = ns('observation_summary'), `aria-live` = 'polite', `aria-atomic` = 'true', role = 'status',
+      class = 'shiny-text-output observation-summary'),
     shiny::conditionalPanel(sprintf("output['%s']", ns('has_result')),
-      chart_section_ui(ns, 'equation', 'Exact equation', FALSE),
-      chart_section_ui(ns, 'contribution', 'Contribution waterfall'),
-      chart_section_ui(ns, 'link', 'Link transformation'),
-      chart_section_ui(ns, 'coefficient', 'Coefficient overview'),
-      shiny::conditionalPanel(sprintf("output['%s']", ns('is_mixed')),
-        chart_section_ui(ns, 'random', 'Random effects'))))
+      shiny::div(class = 'brain-plot-grid',
+        chart_section_ui(ns, 'contribution', 'Contribution waterfall'),
+        chart_section_ui(ns, 'link', 'Link transformation'),
+        chart_section_ui(ns, 'coefficient', 'Coefficient overview'),
+        shiny::conditionalPanel(sprintf("output['%s']", ns('is_mixed')),
+          chart_section_ui(ns, 'random', 'Random effects'))),
+      chart_section_ui(ns, 'equation', 'Exact equation', FALSE)))
 }
 
 model_brain_server <- function(id, result, generation, selection, select_observation) {
@@ -116,12 +124,11 @@ model_brain_server <- function(id, result, generation, selection, select_observa
       error_id = session$ns('index_error'), invalid = nzchar(index_error()))) })
     output$observation_summary <- shiny::renderText({
       o <- selected_observation()
-      if (is.null(o)) return('No analysis yet. Choose settings and select Generate & fit model.')
-      sprintf('Observation %d of %d, ID %s; %s. Predicted mean %s; observed %s; residual %s. Response unit: %s. %s',
-        o$index, result()$model_brain$n, o$observation_id, o$prediction_mode,
+      if (is.null(o)) return('No analysis yet. Select a model to begin.')
+      sprintf('Observation %d of %d · %s · predicted mean %s; observed %s; residual %s (%s).',
+        o$index, result()$model_brain$n, o$prediction_mode,
         format(o$prediction, digits = 6), format(o$observed, digits = 6), format(o$residual, digits = 6),
-        result()$model_brain$units$z %||% 'unit not specified',
-        brain_interval_text(o$response_interval))
+        result()$model_brain$units$z %||% 'unit not specified')
     })
     view <- shiny::reactive({ shiny::req(selected_index()); brain_view_data(result()$model_brain, selected_index(), mode()) })
     renderers <- list(equation = exact_equation_view, contribution = contribution_waterfall,

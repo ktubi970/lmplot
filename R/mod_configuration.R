@@ -2,13 +2,14 @@ configuration_ui <- function(id, trusted_local = FALSE,
     model_choices = stats::setNames(model_ids(), vapply(MODEL_REGISTRY, `[[`, character(1), "label"))) {
   ns <- shiny::NS(id)
   shiny::tagList(shiny::h2("Configuration"),
-    shiny::selectInput(ns("data_source"), "Data source", c("Simulation" = "simulation", "Real data" = "real")),
     shiny::selectInput(ns("model_type"), "Model", model_choices),
+    shiny::selectInput(ns("data_source"), "Data source", c("Simulation" = "simulation", "Real data" = "real")),
     shiny::uiOutput(ns("link_ui")),
     shiny::conditionalPanel("input.data_source === 'simulation'", ns = ns,
-      sim_ui(ns("simulation"), trusted_local)),
+      shiny::tags$details(class = "simulation-settings", shiny::tags$summary("Simulation settings"),
+        sim_ui(ns("simulation"), trusted_local))),
     shiny::uiOutput(ns("example_preview")),
-    bslib::input_task_button(ns("generate"), "Generate & fit model"))
+    shiny::p(class = "configuration-hint", "Results update automatically."))
 }
 
 configuration_server <- function(id, trusted_local = FALSE, root = ".",
@@ -80,9 +81,23 @@ configuration_server <- function(id, trusted_local = FALSE, root = ".",
         values <- simulation()
         out$simulation <- values$parameters; out$expert <- values$expert
       }
-      request_constructor(out, trusted_local = trusted_local)
+      validated <- request_constructor(out, trusted_local = trusted_local)
+      # Browser controls can acknowledge whole values with different numeric
+      # types. Normalize both integer and real parameters before deduplication.
+      if (source() == "simulation") {
+        out$simulation <- validated$simulation
+        for (key in setdiff(names(out$simulation), c("n", "seed", "groups", "pattern"))) {
+          out$simulation[[key]] <- as.double(out$simulation[[key]])
+        }
+      }
       out
     })
-    list(payload = payload, generate = shiny::reactive(input$generate))
+    ready <- shiny::reactive({
+      state <- link_selection()
+      !is.null(input$model_type) && !is.null(state) && identical(state$model, model()) &&
+        identical(state$source, source()) &&
+        (length(registry[[model()]]$links) == 1L || !state$awaiting_default_ack)
+    })
+    list(payload = payload, ready = ready)
   })
 }
