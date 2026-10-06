@@ -42,7 +42,7 @@ jobs:
                          libpath = .libPaths(), show = TRUE,
                          system_profile = FALSE, user_profile = FALSE)
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site/
       - name: Upload Shinylive archive artifact
