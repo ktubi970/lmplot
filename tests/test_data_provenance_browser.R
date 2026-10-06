@@ -1,5 +1,8 @@
+source(if (file.exists("helper-browser.R")) "helper-browser.R" else file.path("tests", "helper-browser.R"), local = TRUE)
+
 test_that("Data filters remain operable without focusing or exposing sizing copies", {
   withr::local_envvar(c(NOT_CRAN = "true", LMPLOT_TRUSTED_LOCAL = NA))
+  configure_chromote_timeout(60)
   app <- shinytest2::AppDriver$new("..", name = "data-filter-keyboard",
     seed = 123, width = 517, height = 672, load_timeout = 1e5, timeout = 1e5)
   on.exit(app$stop(), add = TRUE)

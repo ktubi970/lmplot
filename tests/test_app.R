@@ -1,3 +1,5 @@
+source(if (file.exists("helper-browser.R")) "helper-browser.R" else file.path("tests", "helper-browser.R"), local = TRUE)
+
 unexpected_app_logs <- function(logs) {
   level <- tolower(trimws(as.character(logs$level)))
   location <- tolower(trimws(as.character(logs$location)))

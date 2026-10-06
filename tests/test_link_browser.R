@@ -1,7 +1,9 @@
 source(file.path("..", "app.R"), local = TRUE)
+source(if (file.exists("helper-browser.R")) "helper-browser.R" else file.path("tests", "helper-browser.R"), local = TRUE)
 
 test_that("same-default model switch fits the link selected in the browser", {
   withr::local_envvar(c(NOT_CRAN = "true", LMPLOT_TRUSTED_LOCAL = NA))
+  configure_chromote_timeout(60)
   app <- shinytest2::AppDriver$new("..", name = "shared-link", seed = 123,
     load_timeout = 1e5, timeout = 1e5)
   on.exit(app$stop(), add = TRUE)
